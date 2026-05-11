@@ -1,0 +1,128 @@
+<!-- 
+  Plantilla base de página — Diseño institucional para Canvas LMS.
+  Todos los estilos son INLINE porque Canvas filtra <style> y <link>.
+  Variables Jinja2: titulo, contenido, modulo_nombre, numero_pagina, media_files, colors, fonts
+-->
+
+<div style="
+  font-family: {{ fonts.body }};
+  max-width: 900px;
+  margin: 0 auto;
+  color: {{ colors.text_dark }};
+  line-height: 1.7;
+">
+
+  <!-- ====== CABECERA DE PÁGINA ====== -->
+  <div style="
+    background: linear-gradient(135deg, {{ colors.primary }} 0%, {{ colors.primary_light }} 100%);
+    border-radius: 12px 12px 0 0;
+    padding: 28px 32px;
+    margin-bottom: 0;
+  ">
+    {% if modulo_nombre %}
+    <p style="
+      color: {{ colors.primary_lighter }};
+      font-family: {{ fonts.heading }};
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin: 0 0 8px 0;
+      opacity: 0.9;
+    ">{{ modulo_nombre }}</p>
+    {% endif %}
+
+    <h1 style="
+      color: {{ colors.bg_white }};
+      font-family: {{ fonts.heading }};
+      font-size: 26px;
+      font-weight: 700;
+      margin: 0;
+      line-height: 1.3;
+    ">{{ titulo }}</h1>
+  </div>
+
+  <!-- ====== BARRA DECORATIVA ====== -->
+  <div style="
+    height: 4px;
+    background: linear-gradient(90deg, {{ colors.accent }} 0%, {{ colors.accent_light }} 50%, {{ colors.primary_lighter }} 100%);
+  "></div>
+
+  <!-- ====== CONTENIDO PRINCIPAL ====== -->
+  <div style="
+    background: {{ colors.bg_white }};
+    padding: 32px;
+    border: 1px solid {{ colors.border }};
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  ">
+    
+    <!-- Contenido del documento -->
+    <div style="
+      font-size: 15px;
+      color: {{ colors.text_dark }};
+      line-height: 1.8;
+    ">
+      {{ contenido | safe }}
+    </div>
+
+    {% if media_files %}
+    <!-- ====== RECURSOS MULTIMEDIA ====== -->
+    <div style="
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 2px solid {{ colors.border }};
+    ">
+      <h3 style="
+        font-family: {{ fonts.heading }};
+        font-size: 18px;
+        color: {{ colors.primary }};
+        margin: 0 0 16px 0;
+        display: flex;
+        align-items: center;
+      ">
+        📎 Recursos asociados
+      </h3>
+      
+      <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+        {% for media in media_files %}
+        <div style="
+          background: {{ colors.bg_light }};
+          border: 1px solid {{ colors.border }};
+          border-radius: 8px;
+          padding: 12px 16px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex: 0 0 auto;
+        ">
+          {% if media.type == 'image' %}
+          <span style="font-size: 20px;">🖼️</span>
+          {% elif media.type == 'video' %}
+          <span style="font-size: 20px;">🎬</span>
+          {% elif media.type == 'audio' %}
+          <span style="font-size: 20px;">🎵</span>
+          {% elif media.type == 'document' %}
+          <span style="font-size: 20px;">📄</span>
+          {% else %}
+          <span style="font-size: 20px;">📁</span>
+          {% endif %}
+          
+          <a href="{{ media.path }}" 
+             style="
+               color: {{ colors.primary_light }};
+               text-decoration: none;
+               font-size: 14px;
+               font-weight: 500;
+             "
+             target="_blank">
+            {{ media.filename }}
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>

@@ -1,0 +1,49 @@
+<!-- 
+  Plantilla Home Nativa (Solo Fragmento para Canvas)
+-->
+<div id="dp-wrapper" class="dp-wrapper dp-flat-sections-main variation-2">
+  
+  <!-- Banner Principal -->
+  <div class="dp-banner-image" style="text-align: center;">
+    {% if banner_url %}
+    <img src="{{ banner_url }}" alt="{{ titulo }}" style="width: 100%; max-width: 1100px; height: auto;">
+    {% else %}
+    <div style="background-color: {{ colors.primary }}; color: white; padding: 60px; text-align: center; border-radius: 4px;">
+      <h1 style="font-family: {{ fonts.heading }}; font-size: 2.5em; margin: 0;">{{ titulo }}</h1>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Cuadrícula de Navegación -->
+  <nav class="container-fluid dp-link-grid dp-flat-sections variation-2" style="margin-top: 20px;">
+    <ul style="display: flex; list-style: none; padding: 0; flex-wrap: wrap; justify-content: center; gap: 15px;">
+      <li style="flex: 1; min-width: 180px; background: {{ colors.primary }}; border-radius: 4px; text-align: center;">
+        <a href="$CANVAS_COURSE_REFERENCE$/modules" style="color: white; text-decoration: none; display: block; padding: 25px;">
+          <i class="icon-forward" aria-hidden="true" style="display: block; font-size: 1.8em; margin-bottom: 8px;"></i>
+          <strong>Comenzar</strong>
+        </a>
+      </li>
+      <li style="flex: 1; min-width: 180px; background: {{ colors.primary }}; border-radius: 4px; text-align: center;">
+        <a href="$CANVAS_COURSE_REFERENCE$/assignments/syllabus" style="color: white; text-decoration: none; display: block; padding: 25px;">
+          <i class="icon-syllabus" aria-hidden="true" style="display: block; font-size: 1.8em; margin-bottom: 8px;"></i>
+          <strong>Programa</strong>
+        </a>
+      </li>
+      <li style="flex: 1; min-width: 180px; background: {{ colors.primary }}; border-radius: 4px; text-align: center;">
+        <a href="$CANVAS_COURSE_REFERENCE$/modules" style="color: white; text-decoration: none; display: block; padding: 25px;">
+          <i class="icon-module" aria-hidden="true" style="display: block; font-size: 1.8em; margin-bottom: 8px;"></i>
+          <strong>Módulos</strong>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Bloque de Bienvenida -->
+  <div class="dp-content-block" style="margin-top: 40px; text-align: center;">
+    <h2 style="color: {{ colors.primary }}; font-family: {{ fonts.heading }}; border-bottom: 2px solid {{ colors.primary }}; display: inline-block; padding-bottom: 5px;">¡Te damos la bienvenida!</h2>
+    <div style="font-family: {{ fonts.body }}; line-height: 1.6; max-width: 850px; margin: 20px auto; text-align: left;">
+      {{ contenido | safe }}
+    </div>
+  </div>
+
+</div>

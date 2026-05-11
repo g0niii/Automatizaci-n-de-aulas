@@ -1,0 +1,166 @@
+<!-- 
+  Plantilla de bloque de actividad — Para tareas, ejercicios y evaluaciones.
+  Diseño diferenciado con colores de acción.
+  Variables: titulo, contenido, modulo_nombre, numero_pagina, media_files, colors, fonts
+-->
+
+<div style="
+  font-family: {{ fonts.body }};
+  max-width: 900px;
+  margin: 0 auto;
+  color: {{ colors.text_dark }};
+  line-height: 1.7;
+">
+
+  <!-- ====== CABECERA DE ACTIVIDAD ====== -->
+  <div style="
+    background: linear-gradient(135deg, {{ colors.accent }} 0%, #c05621 100%);
+    border-radius: 12px 12px 0 0;
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  ">
+    <!-- Ícono de actividad -->
+    <div style="
+      background: rgba(255,255,255,0.2);
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    ">✏️</div>
+
+    <div>
+      {% if modulo_nombre %}
+      <p style="
+        color: rgba(255,255,255,0.8);
+        font-family: {{ fonts.heading }};
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin: 0 0 4px 0;
+      ">{{ modulo_nombre }} · Actividad</p>
+      {% endif %}
+      
+      <h1 style="
+        color: {{ colors.bg_white }};
+        font-family: {{ fonts.heading }};
+        font-size: 22px;
+        font-weight: 700;
+        margin: 0;
+        line-height: 1.3;
+      ">{{ titulo }}</h1>
+    </div>
+  </div>
+
+  <!-- ====== BARRA DECORATIVA ====== -->
+  <div style="
+    height: 4px;
+    background: linear-gradient(90deg, {{ colors.accent_light }} 0%, {{ colors.warning }} 100%);
+  "></div>
+
+  <!-- ====== CONTENIDO DE LA ACTIVIDAD ====== -->
+  <div style="
+    background: {{ colors.bg_white }};
+    border: 1px solid {{ colors.border }};
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    padding: 32px;
+  ">
+    <!-- Alerta de actividad -->
+    <div style="
+      background: #fffaf0;
+      border: 1px solid {{ colors.accent_light }};
+      border-left: 4px solid {{ colors.accent }};
+      border-radius: 0 8px 8px 0;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    ">
+      <p style="
+        color: {{ colors.accent }};
+        font-size: 14px;
+        font-weight: 700;
+        margin: 0 0 4px 0;
+      ">⚡ Actividad práctica</p>
+      <p style="
+        color: {{ colors.text_medium }};
+        font-size: 13px;
+        margin: 0;
+      ">Completa la siguiente actividad según las instrucciones proporcionadas.</p>
+    </div>
+
+    <!-- Instrucciones / Contenido -->
+    <div style="
+      font-size: 15px;
+      color: {{ colors.text_dark }};
+      line-height: 1.8;
+    ">
+      {{ contenido | safe }}
+    </div>
+
+    {% if media_files %}
+    <!-- ====== RECURSOS DE LA ACTIVIDAD ====== -->
+    <div style="
+      margin-top: 28px;
+      padding: 20px 24px;
+      background: #fffaf0;
+      border-radius: 10px;
+      border: 1px solid {{ colors.accent_light }};
+    ">
+      <h3 style="
+        font-family: {{ fonts.heading }};
+        font-size: 16px;
+        color: {{ colors.accent }};
+        margin: 0 0 14px 0;
+      ">📋 Recursos de la actividad</h3>
+      
+      {% for media in media_files %}
+      <div style="
+        padding: 10px 14px;
+        margin-bottom: 6px;
+        border-radius: 6px;
+        background: {{ colors.bg_white }};
+        border: 1px solid {{ colors.accent_light }};
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      ">
+        {% if media.type == 'image' %}
+        <span>🖼️</span>
+        {% elif media.type == 'video' %}
+        <span>🎬</span>
+        {% elif media.type == 'document' %}
+        <span>📄</span>
+        {% else %}
+        <span>📁</span>
+        {% endif %}
+        <a href="{{ media.path }}" 
+           style="color: {{ colors.accent }}; text-decoration: none; font-size: 14px; font-weight: 500;"
+           target="_blank">{{ media.filename }}</a>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- ====== NOTA DE ENTREGA ====== -->
+    <div style="
+      margin-top: 24px;
+      padding: 16px 20px;
+      background: {{ colors.bg_light }};
+      border-radius: 8px;
+      border: 1px solid {{ colors.border }};
+      text-align: center;
+    ">
+      <p style="
+        color: {{ colors.text_medium }};
+        font-size: 13px;
+        margin: 0;
+      ">📤 Recuerda subir tu trabajo en la sección de <strong>Tareas</strong> de este módulo.</p>
+    </div>
+  </div>
+</div>
