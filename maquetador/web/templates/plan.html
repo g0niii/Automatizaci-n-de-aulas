@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% macro badge(item) %}
+  {% if item.tipo.value == 'video' %}
+    <span class="badge b-manual">manual · Canvas Studio</span>
+  {% elif item.fuente.archivo and item.fuente.confianza >= 0.8 %}
+    <span class="badge b-alta">{{ (item.fuente.confianza * 100) | round | int }}%</span>
+  {% elif item.fuente.archivo and item.fuente.confianza >= 0.6 %}
+    <span class="badge b-media">{{ (item.fuente.confianza * 100) | round | int }}%</span>
+  {% elif item.fuente.archivo %}
+    <span class="badge b-baja">{{ (item.fuente.confianza * 100) | round | int }}% · revisar</span>
+  {% else %}
+    <span class="badge b-baja">sin fuente</span>
+  {% endif %}
+{% endmacro %}
+
+{% macro fila(item) %}
+  <tr>
+    <td style="width:46%">
+      {{ item.titulo }}
+      {% for iss in item.issues %}
+        <div class="issue i-{{ iss.severidad.value }}">
+          {% if iss.severidad.value == 'bloqueante' %}⛔{% elif iss.severidad.value == 'aviso' %}⚠{% else %}ℹ{% endif %}
+          {{ iss.mensaje }}</div>
+      {% endfor %}
+    </td>
+    <td class="muted">
+      {% if item.fuente.archivo %}{{ item.fuente.archivo.name }}
+        {% if item.fuente.seccion %}<br>→ {{ item.fuente.seccion }}{% endif %}
+      {% else %}—{% endif %}
+    </td>
+    <td style="width:120px">{{ badge(item) }}</td>
+  </tr>
+{% endmacro %}
+
+{% block contenido %}
+<div class="card">
+  <h2>{{ spec.nombre }}</h2>
+  <p class="muted">
+    {% if spec.codigo %}Código: <b>{{ spec.codigo }}</b> · {% endif %}
+    {% if spec.docentes %}Docente(s): {{ spec.docentes | join(', ') }} · {% endif %}
+    Carpeta: {{ spec.carpeta_origen }}
+  </p>
+
+  <h3>1 · Elegí el aula base</h3>
+  {% for t in temas %}
+    <a class="btn btn-sec btn-tema {{ 'activo' if t == tema }}"
+       href="{{ url_for('ver_curso', curso_id=curso_id, tema=t) }}">
+       {{ 'Educación a Distancia' if t == 'educacion' else 'Posgrado' }}</a>
+  {% endfor %}
+  {% if not tema %}
+    <p class="issue i-bloqueante" style="padding-left:0">⛔ Falta elegir el aula
+    base para poder generar.</p>
+  {% endif %}
+
+  {% if tema %}
+  <h3>2 · Generar el paquete</h3>
+  <form method="post" action="{{ url_for('generar', curso_id=curso_id) }}"
+        style="display:inline">
+    <input type="hidden" name="tema" value="{{ tema }}">
+    <button class="btn" type="submit" {{ 'disabled' if bloqueantes }}>
+      📦 Generar .imscc</button>
+  </form>
+  {% if bloqueantes %}
+    <span class="issue i-bloqueante">⛔ Hay {{ bloqueantes }} problemas
+    bloqueantes que resolver antes de generar (marcados abajo).</span>
+  {% endif %}
+  {% if ultimo_paquete %}
+    <a class="btn btn-sec" style="margin-left:8px"
+       href="{{ url_for('descargar', nombre=ultimo_paquete) }}">
+       ⬇ Descargar {{ ultimo_paquete }}</a>
+  {% endif %}
+  {% endif %}
+</div>
+
+{% set todos = spec.todos_los_items() | list %}
+{% set con_fuente = todos | selectattr('fuente.archivo') | list | length %}
+<div class="card">
+  <div class="resumen">
+    <div><b>{{ todos | length }}</b><span class="muted">ítems</span></div>
+    <div><b>{{ con_fuente }}</b><span class="muted">con fuente</span></div>
+    <div><b>{{ spec.modulos | length }}</b><span class="muted">módulos</span></div>
+    <div><b>{{ bloqueantes }}</b><span class="muted">bloqueantes</span></div>
+  </div>
+</div>
+
+{% if spec.items_inicio %}
+<div class="card">
+  <h2>Página de inicio / Programa</h2>
+  <table>
+    <tr><th>Ítem</th><th>Fuente</th><th>Confianza</th></tr>
+    {% for item in spec.items_inicio %}{{ fila(item) }}{% endfor %}
+  </table>
+</div>
+{% endif %}
+
+{% for mod in spec.modulos %}
+<div class="card">
+  <h2>Módulo {{ mod.numero }}{{ (': ' + mod.titulo) if mod.titulo }}</h2>
+  <table>
+    <tr><th>Ítem</th><th>Fuente</th><th>Confianza</th></tr>
+    {% for item in mod.items %}{{ fila(item) }}{% endfor %}
+  </table>
+</div>
+{% endfor %}
+
+{% if spec.afi %}
+<div class="card">
+  <h2>Actividad final integradora</h2>
+  <table>
+    <tr><th>Ítem</th><th>Fuente</th><th>Confianza</th></tr>
+    {% for item in spec.afi %}{{ fila(item) }}{% endfor %}
+  </table>
+</div>
+{% endif %}
+
+{% if spec.issues %}
+<div class="card">
+  <h2>Avisos generales</h2>
+  {% for iss in spec.issues %}
+    {% if not iss.mensaje.startswith('Falta elegir') %}
+    <div class="issue i-{{ iss.severidad.value }}">
+      {% if iss.severidad.value == 'bloqueante' %}⛔{% elif iss.severidad.value == 'aviso' %}⚠{% else %}ℹ{% endif %}
+      {% if iss.contexto %}<b>[{{ iss.contexto }}]</b>{% endif %}
+      {{ iss.mensaje }}</div>
+    {% endif %}
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

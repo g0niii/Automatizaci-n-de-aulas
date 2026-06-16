@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modules xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">
+  <module identifier="g76edbc385780f076b0301afacf4a9d93">
+    <title>Modulo 1: (Nombre del módulo)</title>
+    <workflow_state>active</workflow_state>
+    <position>1</position>
+    <require_sequential_progress>false</require_sequential_progress>
+    <locked>false</locked>
+    <items>
+      <item identifier="g0c02ef841f89bd0b753ded987b0ba39a">
+        <content_type>WikiPage</content_type>
+        <workflow_state>active</workflow_state>
+        <title>Introducción M1</title>
+        <identifierref>g55d35fbde2cd1a82540eefe01f675080</identifierref>
+        <position>1</position>
+        <new_tab>false</new_tab>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+      <item identifier="gc2dc21405046cc8791c1be64a08f7e86">
+        <content_type>DiscussionTopic</content_type>
+        <workflow_state>active</workflow_state>
+        <title>Foro de apertura</title>
+        <identifierref>g2d5ebbb59c599a0d1652aeea94563921</identifierref>
+        <position>2</position>
+        <new_tab>false</new_tab>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+      <item identifier="g1eef38405b114925feb79d1c8f0889d9">
+        <content_type>WikiPage</content_type>
+        <workflow_state>active</workflow_state>
+        <title>1.1. (El primer uno hace referencia al modulo y el segundo uno corresponde al submódulo)</title>
+        <identifierref>gec0bb6dc64bbb19da1912348a38e4ed4</identifierref>
+        <position>3</position>
+        <new_tab>false</new_tab>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+      <item identifier="g85ffda99717ee665dd4c7630b92cb9e3">
+        <content_type>DiscussionTopic</content_type>
+        <workflow_state>active</workflow_state>
+        <title>Foro obligatorio M1</title>
+        <identifierref>g9a347ec135e86e4ba3a7eed036712028</identifierref>
+        <position>4</position>
+        <new_tab>false</new_tab>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+      <item identifier="g4b4a805cdc36dcfbf177c7d065013da1">
+        <content_type>Quizzes::Quiz</content_type>
+        <workflow_state>active</workflow_state>
+        <title>Autoevaluación M1</title>
+        <identifierref>g22383962d7ed1cb54e1d32370bd3529f</identifierref>
+        <position>5</position>
+        <new_tab>false</new_tab>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+      <item identifier="g0c0e1c5668026bab1fa69f87dd03f242">
+        <content_type>Assignment</content_type>
+        <workflow_state>active</workflow_state>
+        <title>Actividad obligatoria M1</title>
+        <identifierref>g0707870008dde1a2f5685c8f885edd7c</identifierref>
+        <position>6</position>
+        <new_tab>false</new_tab>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+      <item identifier="gca0ab88a4b5425ecf18923c6f54f6f91">
+        <content_type>WikiPage</content_type>
+        <workflow_state>active</workflow_state>
+        <title>Bibliografía M1</title>
+        <identifierref>geb2d7111ec1240485377b76daab4ee21</identifierref>
+        <position>7</position>
+        <new_tab>false</new_tab>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+    </items>
+    <completionRequirements>
+      <completionRequirement type="min_score">
+        <min_score>7.0</min_score>
+        <identifierref>g0c0e1c5668026bab1fa69f87dd03f242</identifierref>
+      </completionRequirement>
+    </completionRequirements>
+  </module>
+  <module identifier="gcf5ad7987f91d3408be0424977310861">
+    <title>Módulo 2: (Nombre del módulo)</title>
+    <workflow_state>active</workflow_state>
+    <position>2</position>
+    <require_sequential_progress>false</require_sequential_progress>
+    <locked>false</locked>
+    <items>
+      <item identifier="gc96a9ddeaf2d28b75460c60dc99f8575">
+        <content_type>WikiPage</content_type>
+        <workflow_state>active</workflow_state>
+        <title>Introducción M2</title>
+        <identifierref>g710db0bdc3451d3ba488c170a36623da</identifierref>
+        <position>1</position>
+        <new_tab>false</new_tab>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+      <item identifier="gc59df7615bc7887c7edcf6b4659fa5dc">
+        <content_type>WikiPage</content_type>
+        <workflow_state>active</workflow_state>
+        <title>2.1. (El primer uno hace referencia al modulo y el segundo uno corresponde al submódulo)</title>
+        <identifierref>g7677974de11c6311d5f34462f8f40413</identifierref>
+        <position>2</position>
+        <new_tab>false</new_tab>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+      <item identifier="gde7bb4520ea3250b3aa35e59c9a97f00">
+        <content_type>DiscussionTopic</content_type>
+        <workflow_state>active</workflow_state>
+        <title>Foro obligatorio M2</title>
+        <identifierref>g84c5b2cd659c7b72c4a7cb52785fc14a</identifierref>
+        <position>3</position>
+        <new_tab>false</new_tab>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+      <item identifier="gadb19c2e757cc40f8b45bf29a1c16dd2">
+        <content_type>Quizzes::Quiz</content_type>
+        <workflow_state>active</workflow_state>
+        <title>Autoevaluación M2</title>
+        <identifierref>g20571ffef518eb3506d2b6d472a41826</identifierref>
+        <position>4</position>
+        <new_tab>false</new_tab>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+      <item identifier="g645f43f101c4e448efa1811307b86963">
+        <content_type>Assignment</content_type>
+        <workflow_state>active</workflow_state>
+        <title>Actividad obligatoria M2</title>
+        <identifierref>g88df17ba53b36a20dbe020b5745fbe5b</identifierref>
+        <position>5</position>
+        <new_tab>false</new_tab>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+      <item identifier="g60d8ba56e209cc513fb8c6672ec18978">
+        <content_type>WikiPage</content_type>
+        <workflow_state>active</workflow_state>
+        <title>Bibliografía M2</title>
+        <identifierref>gbeb8e0c173cfd00d093345ed0dc0aeb0</identifierref>
+        <position>6</position>
+        <new_tab>false</new_tab>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+    </items>
+    <completionRequirements>
+      <completionRequirement type="min_score">
+        <min_score>7.0</min_score>
+        <identifierref>g645f43f101c4e448efa1811307b86963</identifierref>
+      </completionRequirement>
+    </completionRequirements>
+  </module>
+  <module identifier="g21064a42908ee9844e7defaf2ce92e82">
+    <title>Módulo 3: (Nombre del módulo)</title>
+    <workflow_state>active</workflow_state>
+    <position>3</position>
+    <require_sequential_progress>false</require_sequential_progress>
+    <locked>false</locked>
+    <items>
+      <item identifier="g13f788069346194f6f146745288c478d">
+        <content_type>WikiPage</content_type>
+        <workflow_state>active</workflow_state>
+        <title>Introducción M3</title>
+        <identifierref>g86e669405d0c4a0275724e49d3cb7f27</identifierref>
+        <position>1</position>
+        <new_tab>false</new_tab>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+      <item identifier="ged88a1b0358ef805a8858407b89388b6">
+        <content_type>WikiPage</content_type>
+        <workflow_state>active</workflow_state>
+        <title> 3.1. (El primer uno hace referencia al modulo y el segundo uno corresponde al submódulo)</title>
+        <identifierref>g69da0868ee7b3f383fe5055f0ac86e88</identifierref>
+        <position>2</position>
+        <new_tab>false</new_tab>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+      <item identifier="g3a1d6e4617759c0c400834cc6a843651">
+        <content_type>DiscussionTopic</content_type>
+        <workflow_state>active</workflow_state>
+        <title>Foro obligatorio M3</title>
+        <identifierref>gbb2b8fe9596f27b4e2c041046da1907a</identifierref>
+        <position>3</position>
+        <new_tab>false</new_tab>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+      <item identifier="gea5bb7c3a5445fe8cea1a03d61ea2ea0">
+        <content_type>Quizzes::Quiz</content_type>
+        <workflow_state>active</workflow_state>
+        <title>Autoevaluación M3</title>
+        <identifierref>g2a65feb14fba7cb49e539a905c717a67</identifierref>
+        <position>4</position>
+        <new_tab>false</new_tab>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+      <item identifier="g1e31bec94306442ae153c5494956f906">
+        <content_type>Assignment</content_type>
+        <workflow_state>active</workflow_state>
+        <title>Actividad obligatoria M3</title>
+        <identifierref>g1e22bdca027ce0c24ac2eab7ef3cbe28</identifierref>
+        <position>5</position>
+        <new_tab>false</new_tab>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+      <item identifier="gbbb9af5ddb9b06b9f016db9a6c32101c">
+        <content_type>WikiPage</content_type>
+        <workflow_state>active</workflow_state>
+        <title>Bibliografía M3</title>
+        <identifierref>g1a999b3bc9fd4996411408cb5b15bb5a</identifierref>
+        <position>6</position>
+        <new_tab>false</new_tab>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+    </items>
+    <completionRequirements>
+      <completionRequirement type="min_score">
+        <min_score>7.0</min_score>
+        <identifierref>g1e31bec94306442ae153c5494956f906</identifierref>
+      </completionRequirement>
+    </completionRequirements>
+  </module>
+  <module identifier="g34445962547d25b79430fcdbafc2cd59">
+    <title>Encuesta de valoración final</title>
+    <workflow_state>active</workflow_state>
+    <position>4</position>
+    <require_sequential_progress>false</require_sequential_progress>
+    <locked>false</locked>
+    <prerequisites>
+      <prerequisite type="context_module">
+        <title>Modulo 1: (Nombre del módulo)</title>
+        <identifierref>g76edbc385780f076b0301afacf4a9d93</identifierref>
+      </prerequisite>
+      <prerequisite type="context_module">
+        <title>Módulo 2: (Nombre del módulo)</title>
+        <identifierref>gcf5ad7987f91d3408be0424977310861</identifierref>
+      </prerequisite>
+      <prerequisite type="context_module">
+        <title>Módulo 3: (Nombre del módulo)</title>
+        <identifierref>g21064a42908ee9844e7defaf2ce92e82</identifierref>
+      </prerequisite>
+    </prerequisites>
+    <items>
+      <item identifier="g06abfef8754331f085d323ad130a0710">
+        <content_type>Quizzes::Quiz</content_type>
+        <workflow_state>active</workflow_state>
+        <title>Encuesta de valoración final</title>
+        <identifierref>gb644adab91d5999f0c2290696dddb259</identifierref>
+        <position>1</position>
+        <new_tab/>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+    </items>
+  </module>
+  <module identifier="g4b205544b751bfb03c13a873d20e679c">
+    <title>Actividad final integradora</title>
+    <workflow_state>active</workflow_state>
+    <position>5</position>
+    <require_sequential_progress>false</require_sequential_progress>
+    <locked>false</locked>
+    <prerequisites>
+      <prerequisite type="context_module">
+        <title>Encuesta de valoración final</title>
+        <identifierref>g34445962547d25b79430fcdbafc2cd59</identifierref>
+      </prerequisite>
+    </prerequisites>
+    <items>
+      <item identifier="gc533e4ee4bf1b13e7de8920b2a93b87e">
+        <content_type>Assignment</content_type>
+        <workflow_state>active</workflow_state>
+        <title>Actividad final integradora</title>
+        <identifierref>g094b9bb4403cb5fda3d74aef3337a847</identifierref>
+        <position>1</position>
+        <new_tab>false</new_tab>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>
+    </items>
+    <completionRequirements>
+      <completionRequirement type="min_score">
+        <min_score>7.0</min_score>
+        <identifierref>gc533e4ee4bf1b13e7de8920b2a93b87e</identifierref>
+      </completionRequirement>
+    </completionRequirements>
+  </module>
+</modules>

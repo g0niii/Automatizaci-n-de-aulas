@@ -1,0 +1,633 @@
+<?xml version="1.0"?>
+<questestinterop xmlns="http://www.imsglobal.org/xsd/ims_qtiasiv1p2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/ims_qtiasiv1p2 http://www.imsglobal.org/xsd/ims_qtiasiv1p2p1.xsd">
+  <assessment ident="gb644adab91d5999f0c2290696dddb259" title="Encuesta de valoraci&#xF3;n final" external_assignment_id="4807">
+    <qtimetadata>
+      <qtimetadatafield>
+        <fieldlabel>cc_maxattempts</fieldlabel>
+        <fieldentry>1</fieldentry>
+      </qtimetadatafield>
+    </qtimetadata>
+    <section ident="root_section">
+      <item ident="132a000e25a9f00e52ce6bdfed189c9f" title="PREGUNTA 1">
+        <itemmetadata>
+          <qtimetadata>
+            <qtimetadatafield>
+              <fieldlabel>question_type</fieldlabel>
+              <fieldentry>multiple_answers_question</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>points_possible</fieldlabel>
+              <fieldentry>1.0</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>original_answer_ids</fieldlabel>
+              <fieldentry>ca489a1c-c1f4-4ea9-87fd-f317f8f28e3e,0dcf1a1a-a4d4-48f6-ac56-e26b8456d130,9d9ad87b-302f-40f3-9d83-0eaef5f6586e,8bb522e4-fa91-4e91-8d7f-be8b886935de,c13d8d66-9f92-44a5-a09e-50b85ed4452c,d1aaee5a-b194-4e38-854c-87f588850884,4a4229ab-1d03-4a16-bb70-01836dbd84bc</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>assessment_question_identifierref</fieldlabel>
+              <fieldentry>b456026b1fcb745786a3ce3a327a2a6a</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>calculator_type</fieldlabel>
+              <fieldentry>none</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>scoring_algorithm</fieldlabel>
+              <fieldentry>PartialScore</fieldentry>
+            </qtimetadatafield>
+          </qtimetadata>
+        </itemmetadata>
+        <presentation>
+          <material>
+            <mattext texttype="text/html">&lt;p&gt;Del material consultado en la plataforma &#xBF;Cu&#xE1;les te resultaron m&#xE1;s significativos en tu experiencia de aprendizaje? &lt;span style="font-weight: 400;"&gt;(Marca todos los que correspondan)&lt;/span&gt;&lt;/p&gt;</mattext>
+          </material>
+          <response_lid ident="response1" rcardinality="Multiple">
+            <render_choice>
+              <response_label ident="ca489a1c-c1f4-4ea9-87fd-f317f8f28e3e">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;Material de lectura&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="0dcf1a1a-a4d4-48f6-ac56-e26b8456d130">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;Videos&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="9d9ad87b-302f-40f3-9d83-0eaef5f6586e">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;span style="font-weight: 400;"&gt;Audio y/o Podcast&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="8bb522e4-fa91-4e91-8d7f-be8b886935de">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;span style="font-weight: 400;"&gt;Materiales interactivos (como genially, padlet)&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="c13d8d66-9f92-44a5-a09e-50b85ed4452c">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;span style="font-weight: 400;"&gt;Presentaciones visuales (como infograf&#xED;as, im&#xE1;genes)&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="d1aaee5a-b194-4e38-854c-87f588850884">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;span style="font-weight: 400;"&gt;Todos&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="4a4229ab-1d03-4a16-bb70-01836dbd84bc">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;span style="font-weight: 400;"&gt;Ninguno&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <outcomes>
+            <decvar maxvalue="100" minvalue="0" varname="SCORE" vartype="Decimal"/>
+          </outcomes>
+          <respcondition continue="No">
+            <conditionvar>
+              <and>
+                <varequal respident="response1">ca489a1c-c1f4-4ea9-87fd-f317f8f28e3e</varequal>
+                <varequal respident="response1">0dcf1a1a-a4d4-48f6-ac56-e26b8456d130</varequal>
+                <not>
+                  <varequal respident="response1">9d9ad87b-302f-40f3-9d83-0eaef5f6586e</varequal>
+                </not>
+                <not>
+                  <varequal respident="response1">8bb522e4-fa91-4e91-8d7f-be8b886935de</varequal>
+                </not>
+                <not>
+                  <varequal respident="response1">c13d8d66-9f92-44a5-a09e-50b85ed4452c</varequal>
+                </not>
+                <not>
+                  <varequal respident="response1">d1aaee5a-b194-4e38-854c-87f588850884</varequal>
+                </not>
+                <not>
+                  <varequal respident="response1">4a4229ab-1d03-4a16-bb70-01836dbd84bc</varequal>
+                </not>
+              </and>
+            </conditionvar>
+            <setvar action="Set" varname="SCORE">100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <item ident="5bab1e084563b2c738fd0e73988ca582" title="PREGUNTA 2">
+        <itemmetadata>
+          <qtimetadata>
+            <qtimetadatafield>
+              <fieldlabel>question_type</fieldlabel>
+              <fieldentry>multiple_choice_question</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>points_possible</fieldlabel>
+              <fieldentry>1.0</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>original_answer_ids</fieldlabel>
+              <fieldentry>48f71459-3097-40fb-9adb-d501b58e0c8d,7b09e68b-696a-4919-af50-5bd8d3bcb7a1,ebd162e3-948d-40f8-b114-2724dc959488,8b70b0a0-ac28-4dc1-b871-748c7d83a85b</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>assessment_question_identifierref</fieldlabel>
+              <fieldentry>2e8461a9f8e3631a3af2831653c9e04e</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>calculator_type</fieldlabel>
+              <fieldentry>none</fieldentry>
+            </qtimetadatafield>
+          </qtimetadata>
+        </itemmetadata>
+        <presentation>
+          <material>
+            <mattext texttype="text/html">&lt;p&gt;&#xBF;C&#xF3;mo evaluar&#xED;as la claridad y significatividad de las actividades propuestas durante tu proceso de aprendizaje?&lt;/p&gt;</mattext>
+          </material>
+          <response_lid ident="response1" rcardinality="Single">
+            <render_choice>
+              <response_label ident="48f71459-3097-40fb-9adb-d501b58e0c8d">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;strong&gt;Fueron significativas &lt;/strong&gt;&lt;span style="font-weight: 400;"&gt;y me ayudaron a comprender mejor la asignatura y a organizar mis tiempos de cursado&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="7b09e68b-696a-4919-af50-5bd8d3bcb7a1">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;strong&gt;Fueron &#xFA;tiles&lt;/strong&gt;&lt;span style="font-weight: 400;"&gt;, aunque podr&#xED;an haber sido m&#xE1;s frecuentes o con mayor nivel de detalle&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="ebd162e3-948d-40f8-b114-2724dc959488">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;strong&gt;No estoy seguro/a&lt;/strong&gt;&lt;span style="font-weight: 400;"&gt;, ya que percib&#xED; cierta falta de orientaci&#xF3;n o claridad en las consignas.&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="8b70b0a0-ac28-4dc1-b871-748c7d83a85b">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;strong&gt;No fueron &#xFA;tiles&lt;/strong&gt;&lt;span style="font-weight: 400;"&gt; y me sent&#xED; desorientado/a durante el cursado&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <outcomes>
+            <decvar maxvalue="100" minvalue="0" varname="SCORE" vartype="Decimal"/>
+          </outcomes>
+          <respcondition continue="No">
+            <conditionvar>
+              <varequal respident="response1">48f71459-3097-40fb-9adb-d501b58e0c8d</varequal>
+            </conditionvar>
+            <setvar action="Set" varname="SCORE">100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <item ident="736d571b45a9262dc3021e56a5168c94" title="PREGUNTA 3">
+        <itemmetadata>
+          <qtimetadata>
+            <qtimetadatafield>
+              <fieldlabel>question_type</fieldlabel>
+              <fieldentry>multiple_choice_question</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>points_possible</fieldlabel>
+              <fieldentry>1.0</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>original_answer_ids</fieldlabel>
+              <fieldentry>d708ba81-568e-49ad-992f-f679b96fa34f,2508dc3e-02da-4141-ba6b-a23d113c7e73,b919c05e-9c25-4a5f-bfa3-76fff052bc33,c843bb17-0710-4294-9c13-02e695abaec8</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>assessment_question_identifierref</fieldlabel>
+              <fieldentry>8752bf9f8d59f8ab28e850ba40883431</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>calculator_type</fieldlabel>
+              <fieldentry>none</fieldentry>
+            </qtimetadatafield>
+          </qtimetadata>
+        </itemmetadata>
+        <presentation>
+          <material>
+            <mattext texttype="text/html">&lt;p&gt;&#xBF;C&#xF3;mo evaluar&#xED;as la calidad de las devoluciones e intervenciones de tu docente tutor/a ( actividades evaluativas, foros, mensajer&#xED;a interna, anuncios y espacios sincr&#xF3;nicos optativos,) durante tu proceso de aprendizaje?&lt;/p&gt;</mattext>
+          </material>
+          <response_lid ident="response1" rcardinality="Single">
+            <render_choice>
+              <response_label ident="d708ba81-568e-49ad-992f-f679b96fa34f">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;strong&gt;Excelente&lt;/strong&gt;&lt;span style="font-weight: 400;"&gt;, las devoluciones fueron claras, espec&#xED;ficas y me proporcionaron informaci&#xF3;n valiosa para identificar mis fortalezas y posibilidades de mejora.&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="2508dc3e-02da-4141-ba6b-a23d113c7e73">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;strong&gt;Muy bueno&lt;/strong&gt;&lt;span style="font-weight: 400;"&gt;, las devoluciones fueron&amp;nbsp; claras y pertinentes. &lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="b919c05e-9c25-4a5f-bfa3-76fff052bc33">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;strong&gt;Aceptable&lt;/strong&gt;&lt;span style="font-weight: 400;"&gt;, las devoluciones fueron adecuadas, pero poco personalizadas y con comentarios generales que no profundizan en aspectos espec&#xED;ficos de mis presentaciones.&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="c843bb17-0710-4294-9c13-02e695abaec8">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;strong&gt;Insuficiente&lt;/strong&gt;&lt;span style="font-weight: 400;"&gt;, las devoluciones fueron m&#xED;nimas y carecen de detalles que me gu&#xED;en de manera significativa en el aprendizaje.&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <outcomes>
+            <decvar maxvalue="100" minvalue="0" varname="SCORE" vartype="Decimal"/>
+          </outcomes>
+          <respcondition continue="No">
+            <conditionvar>
+              <varequal respident="response1">d708ba81-568e-49ad-992f-f679b96fa34f</varequal>
+            </conditionvar>
+            <setvar action="Set" varname="SCORE">100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <item ident="7b90c44cc6e6413ebfe99e35a8d368d6" title="PREGUNTA  4">
+        <itemmetadata>
+          <qtimetadata>
+            <qtimetadatafield>
+              <fieldlabel>question_type</fieldlabel>
+              <fieldentry>multiple_choice_question</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>points_possible</fieldlabel>
+              <fieldentry>1.0</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>original_answer_ids</fieldlabel>
+              <fieldentry>9f7d0256-fb01-4cc7-8d40-7aeb9ba13323,6506dd27-7615-4259-b05f-feabb29d716a,e31b7ecd-6837-447d-86bf-214beed6cda2,c50410d9-d1b2-424a-a0ab-e0aaaf9e9924</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>assessment_question_identifierref</fieldlabel>
+              <fieldentry>facae3634ad652e9da3f811b950f5821</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>calculator_type</fieldlabel>
+              <fieldentry>none</fieldentry>
+            </qtimetadatafield>
+          </qtimetadata>
+        </itemmetadata>
+        <presentation>
+          <material>
+            <mattext texttype="text/html">&lt;p&gt;&#xBF;C&#xF3;mo evaluar&#xED;as la organizaci&#xF3;n de la propuesta de cursado de la asignatura en relaci&#xF3;n con la distribuci&#xF3;n del tiempo para las lecturas y la realizaci&#xF3;n de actividades?&lt;/p&gt;</mattext>
+          </material>
+          <response_lid ident="response1" rcardinality="Single">
+            <render_choice>
+              <response_label ident="9f7d0256-fb01-4cc7-8d40-7aeb9ba13323">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;strong&gt;Muy conforme&lt;span style="font-weight: 400;"&gt;: La distribuci&#xF3;n del tiempo fue excelente y me permiti&#xF3; cumplir con todas las lecturas y actividades sin problemas.&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="6506dd27-7615-4259-b05f-feabb29d716a">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;strong&gt;Conforme&lt;span style="font-weight: 400;"&gt;: La organizaci&#xF3;n fue buena, aunque hubo momentos en que me sent&#xED; un poco ajustado con el tiempo.&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="e31b7ecd-6837-447d-86bf-214beed6cda2">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;strong&gt;Poco conforme&lt;span style="font-weight: 400;"&gt;: La distribuci&#xF3;n del tiempo fue insatisfactoria; me cost&#xF3; organizarme para completar las lecturas y actividades.&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="c50410d9-d1b2-424a-a0ab-e0aaaf9e9924">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;strong&gt;Nada conforme&lt;/strong&gt;&lt;span style="font-weight: 400;"&gt;: La organizaci&#xF3;n del tiempo fue deficiente y me impidi&#xF3; cumplir con las lecturas y actividades de manera efectiva.&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <outcomes>
+            <decvar maxvalue="100" minvalue="0" varname="SCORE" vartype="Decimal"/>
+          </outcomes>
+          <respcondition continue="No">
+            <conditionvar>
+              <varequal respident="response1">9f7d0256-fb01-4cc7-8d40-7aeb9ba13323</varequal>
+            </conditionvar>
+            <setvar action="Set" varname="SCORE">100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <item ident="587d227a779ac870365e066879e6437f" title="PREGUNTA 5">
+        <itemmetadata>
+          <qtimetadata>
+            <qtimetadatafield>
+              <fieldlabel>question_type</fieldlabel>
+              <fieldentry>multiple_choice_question</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>points_possible</fieldlabel>
+              <fieldentry>1.0</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>original_answer_ids</fieldlabel>
+              <fieldentry>a7bbf98e-db70-47d4-b851-56f261caa828,6848dfc7-24ef-4e7b-bcc2-c5b1749e1420,8a954d21-d0f1-4036-837a-3cd06ec2ffe9,da51b4a3-0e5d-42b1-b9e1-33d4029a2f19,7b128f4d-04ef-46de-a584-0ed4036e2045</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>assessment_question_identifierref</fieldlabel>
+              <fieldentry>f0181d69f31243b7c7415953cda7c254</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>calculator_type</fieldlabel>
+              <fieldentry>none</fieldentry>
+            </qtimetadatafield>
+          </qtimetadata>
+        </itemmetadata>
+        <presentation>
+          <material>
+            <mattext texttype="text/html">&lt;p&gt;&#xBF;Te result&#xF3; clara la estructura visual de la asignatura (botones, m&#xF3;dulos, bloques)?&amp;nbsp;&lt;span style="font-weight: 400;"&gt;1 representa poco satisfactoria y 5 muy satisfactoria.&lt;/span&gt;&lt;/p&gt;</mattext>
+          </material>
+          <response_lid ident="response1" rcardinality="Single">
+            <render_choice>
+              <response_label ident="a7bbf98e-db70-47d4-b851-56f261caa828">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;span&gt;1&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="6848dfc7-24ef-4e7b-bcc2-c5b1749e1420">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;span&gt;2&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="8a954d21-d0f1-4036-837a-3cd06ec2ffe9">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;span&gt;3&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="da51b4a3-0e5d-42b1-b9e1-33d4029a2f19">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;span&gt;4&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="7b128f4d-04ef-46de-a584-0ed4036e2045">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;span&gt;5&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <outcomes>
+            <decvar maxvalue="100" minvalue="0" varname="SCORE" vartype="Decimal"/>
+          </outcomes>
+          <respcondition continue="No">
+            <conditionvar>
+              <varequal respident="response1">a7bbf98e-db70-47d4-b851-56f261caa828</varequal>
+            </conditionvar>
+            <setvar action="Set" varname="SCORE">100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <item ident="f3d88edf08a75d869cc06b13bfeead86" title="PREGUNTA 6">
+        <itemmetadata>
+          <qtimetadata>
+            <qtimetadatafield>
+              <fieldlabel>question_type</fieldlabel>
+              <fieldentry>multiple_answers_question</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>points_possible</fieldlabel>
+              <fieldentry>1.0</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>original_answer_ids</fieldlabel>
+              <fieldentry>2761d652-3b9d-46bd-bedb-800c3e45af09,1332cfaa-9f06-4da2-97b9-375c2a3c6a10,b7144a64-d7d4-44a9-96bd-e1ca4ff974e2,edaddada-3056-47ad-b7b1-7e4a68ab98fd,5bfbe3b6-0777-4270-82f8-9ac08d2172ea,cc274335-c97a-4646-8746-f20cf14c4f9b,eed0e6be-11de-4715-934a-50875e8d03ec,6b93711d-9879-4226-a27e-ddc178431918,32d6c8aa-564c-4609-8fa9-6055a998b7cd,7beddd71-dc98-4a95-923f-445cb76f6835</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>assessment_question_identifierref</fieldlabel>
+              <fieldentry>1f65384e2580659619535ac159b49cc8</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>calculator_type</fieldlabel>
+              <fieldentry>none</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>scoring_algorithm</fieldlabel>
+              <fieldentry>PartialScore</fieldentry>
+            </qtimetadatafield>
+          </qtimetadata>
+        </itemmetadata>
+        <presentation>
+          <material>
+            <mattext texttype="text/html">&lt;p&gt;&lt;strong&gt;&#xBF;Tuviste alg&#xFA;n problema t&#xE9;cnico? &lt;span style="font-weight: 400;"&gt;(Marca todos los que correspondan)&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;</mattext>
+          </material>
+          <response_lid ident="response1" rcardinality="Multiple">
+            <render_choice>
+              <response_label ident="2761d652-3b9d-46bd-bedb-800c3e45af09">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;span style="font-weight: 400;"&gt;Enlaces ca&#xED;dos&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="1332cfaa-9f06-4da2-97b9-375c2a3c6a10">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;span style="font-weight: 400;"&gt;Recursos que no cargaban&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="b7144a64-d7d4-44a9-96bd-e1ca4ff974e2">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;span style="font-weight: 400;"&gt;Videos con mala calidad&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="edaddada-3056-47ad-b7b1-7e4a68ab98fd">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;span style="font-weight: 400;"&gt;Archivos pesados&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="5bfbe3b6-0777-4270-82f8-9ac08d2172ea">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;span style="font-weight: 400;"&gt;Problemas de visualizaci&#xF3;n en celular&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="cc274335-c97a-4646-8746-f20cf14c4f9b">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;span style="font-weight: 400;"&gt;Problemas de accesibilidad (texto alternativo, contraste, tama&#xF1;o de fuente)&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="eed0e6be-11de-4715-934a-50875e8d03ec">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;span style="font-weight: 400;"&gt;Ca&#xED;da de la plataforma&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="6b93711d-9879-4226-a27e-ddc178431918">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;span style="font-weight: 400;"&gt;Navegaci&#xF3;n confusa&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="32d6c8aa-564c-4609-8fa9-6055a998b7cd">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;span style="font-weight: 400;"&gt;Ning&#xFA;n problema&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="7beddd71-dc98-4a95-923f-445cb76f6835">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;&lt;span style="font-weight: 400;"&gt;Otro&lt;/span&gt;&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <outcomes>
+            <decvar maxvalue="100" minvalue="0" varname="SCORE" vartype="Decimal"/>
+          </outcomes>
+          <respcondition continue="No">
+            <conditionvar>
+              <and>
+                <varequal respident="response1">2761d652-3b9d-46bd-bedb-800c3e45af09</varequal>
+                <varequal respident="response1">1332cfaa-9f06-4da2-97b9-375c2a3c6a10</varequal>
+                <not>
+                  <varequal respident="response1">b7144a64-d7d4-44a9-96bd-e1ca4ff974e2</varequal>
+                </not>
+                <not>
+                  <varequal respident="response1">edaddada-3056-47ad-b7b1-7e4a68ab98fd</varequal>
+                </not>
+                <not>
+                  <varequal respident="response1">5bfbe3b6-0777-4270-82f8-9ac08d2172ea</varequal>
+                </not>
+                <not>
+                  <varequal respident="response1">cc274335-c97a-4646-8746-f20cf14c4f9b</varequal>
+                </not>
+                <not>
+                  <varequal respident="response1">eed0e6be-11de-4715-934a-50875e8d03ec</varequal>
+                </not>
+                <not>
+                  <varequal respident="response1">6b93711d-9879-4226-a27e-ddc178431918</varequal>
+                </not>
+                <not>
+                  <varequal respident="response1">32d6c8aa-564c-4609-8fa9-6055a998b7cd</varequal>
+                </not>
+                <not>
+                  <varequal respident="response1">7beddd71-dc98-4a95-923f-445cb76f6835</varequal>
+                </not>
+              </and>
+            </conditionvar>
+            <setvar action="Set" varname="SCORE">100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <item ident="d545861e62430c3676282d5e5d50ef77" title="PREGUNTA 7 ">
+        <itemmetadata>
+          <qtimetadata>
+            <qtimetadatafield>
+              <fieldlabel>question_type</fieldlabel>
+              <fieldentry>multiple_choice_question</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>points_possible</fieldlabel>
+              <fieldentry>1.0</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>original_answer_ids</fieldlabel>
+              <fieldentry>319c7c57-e294-44b6-927a-85ca6dc91221,5f39eee9-d70a-4a22-b854-878d0a2e8c3b,d2023643-0c9e-4c53-8521-3d6ffe81a812,d9b63f97-1304-4d89-9fa3-d6298dc67b33,56621381-b7c4-42e1-b9c8-5956f1ef4a9b</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>assessment_question_identifierref</fieldlabel>
+              <fieldentry>3115093727605745a84ebb5d16b7b719</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>calculator_type</fieldlabel>
+              <fieldentry>none</fieldentry>
+            </qtimetadatafield>
+          </qtimetadata>
+        </itemmetadata>
+        <presentation>
+          <material>
+            <mattext texttype="text/html">&lt;p&gt;&lt;span style="font-weight: 400;"&gt;En una escala del 1 al 5, &lt;/span&gt;&lt;strong&gt;&#xBF;C&#xF3;mo valorar&#xED;as tu experiencia como estudiante durante el cursado de esta asignatura?&lt;/strong&gt;&lt;span style="font-weight: 400;"&gt; (Ten en cuenta todos los aspectos de las anteriores preguntas) 1 representa poco satisfactoria y 5 muy satisfactoria.&lt;/span&gt;&lt;/p&gt;</mattext>
+          </material>
+          <response_lid ident="response1" rcardinality="Single">
+            <render_choice>
+              <response_label ident="319c7c57-e294-44b6-927a-85ca6dc91221">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;1&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="5f39eee9-d70a-4a22-b854-878d0a2e8c3b">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;2&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="d2023643-0c9e-4c53-8521-3d6ffe81a812">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;3&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="d9b63f97-1304-4d89-9fa3-d6298dc67b33">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;4&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+              <response_label ident="56621381-b7c4-42e1-b9c8-5956f1ef4a9b">
+                <material>
+                  <mattext texttype="text/html">&lt;p&gt;5&lt;/p&gt;</mattext>
+                </material>
+              </response_label>
+            </render_choice>
+          </response_lid>
+        </presentation>
+        <resprocessing>
+          <outcomes>
+            <decvar maxvalue="100" minvalue="0" varname="SCORE" vartype="Decimal"/>
+          </outcomes>
+          <respcondition continue="No">
+            <conditionvar>
+              <varequal respident="response1">319c7c57-e294-44b6-927a-85ca6dc91221</varequal>
+            </conditionvar>
+            <setvar action="Set" varname="SCORE">100</setvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+      <item ident="b599e72a8bc288240c0a1a3bada6643c" title="PREGUNTA 8 ">
+        <itemmetadata>
+          <qtimetadata>
+            <qtimetadatafield>
+              <fieldlabel>question_type</fieldlabel>
+              <fieldentry>essay_question</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>points_possible</fieldlabel>
+              <fieldentry>1.0</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>original_answer_ids</fieldlabel>
+              <fieldentry/>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>assessment_question_identifierref</fieldlabel>
+              <fieldentry>c70628ef83db69f75c336d611c7795e7</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>calculator_type</fieldlabel>
+              <fieldentry>none</fieldentry>
+            </qtimetadatafield>
+            <qtimetadatafield>
+              <fieldlabel>grading_notes</fieldlabel>
+              <fieldentry/>
+            </qtimetadatafield>
+          </qtimetadata>
+        </itemmetadata>
+        <presentation>
+          <material>
+            <mattext texttype="text/html">&lt;p&gt;&lt;strong&gt;Te invitamos a dejarnos alguna sugerencia o comentario&amp;nbsp; espec&#xED;fico para mejorar la experiencia de aprendizaje a distancia&lt;/strong&gt;&lt;/p&gt;</mattext>
+          </material>
+          <response_str ident="response1" rcardinality="Single" rce="Yes" word_count="No" spell_check="Yes" word_limit_enabled="No">
+            <render_fib>
+              <response_label ident="answer1" rshuffle="No"/>
+            </render_fib>
+          </response_str>
+        </presentation>
+        <resprocessing>
+          <outcomes>
+            <decvar maxvalue="100" minvalue="0" varname="SCORE" vartype="Decimal"/>
+          </outcomes>
+          <respcondition continue="No">
+            <conditionvar>
+              <other/>
+            </conditionvar>
+          </respcondition>
+        </resprocessing>
+      </item>
+    </section>
+  </assessment>
+</questestinterop>

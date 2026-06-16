@@ -1,0 +1,213 @@
+# -*- coding: utf-8 -*-
+"""Escáner de la carpeta de curso que envía asesoría.
+
+No asume una convención de nombres fija: clasifica cada archivo por su rol
+(estructura, contenido modular, actividad, foro, guion de video, diseño…)
+usando patrones sobre nombres normalizados y la ubicación relativa.
+
+Convenciones observadas en casos reales (todas soportadas):
+  A) "1- Programa…", "4- Desarrollo teórico por módulos", "6- Maquetación"
+  B) "Etapa 1" … "Etapa 4"
+  C) "a - Etapa 1_ Programa" … "d - Etapa 4_ Maquetación"
+"""
+
+import re
+import unicodedata
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Optional
+
+from maquetador.models import Issue, Severidad
+
+
+def normalizar(texto: str) -> str:
+    """minúsculas + sin acentos + espacios colapsados."""
+    t = unicodedata.normalize("NFKD", texto)
+    t = "".join(c for c in t if not unicodedata.combining(c))
+    return re.sub(r"\s+", " ", t.lower()).strip()
+
+
+# Archivos que son borradores o material descartado: nunca son fuente.
+_DESCARTAR = re.compile(
+    r"(borrador|copia de|eliminada|despues se borra|devoluci|^no_|^~\$)", re.I)
+
+# Carpeta(s) en la ruta que marcan material no usable
+_CARPETAS_DESCARTAR = ("borrador", "borradores", "devoluciones")
+
+_PAT_MODULO_NUM = re.compile(
+    r"(?:m[óo]dulo[\s_]*(\d+)|[-_\s]m[\s_]?(\d+)\b|\bm(\d+)\b)", re.I)
+
+
+def _numero_modulo(nombre: str) -> Optional[int]:
+    m = _PAT_MODULO_NUM.search(nombre)
+    if not m:
+        return None
+    return int(next(g for g in m.groups() if g))
+
+
+@dataclass
+class InventarioCurso:
+    """Resultado del escaneo: cada archivo relevante clasificado por rol."""
+    raiz: Path
+    nombre_curso: str = ""
+    estructura_xlsx: Optional[Path] = None
+    docx_modulos: dict = field(default_factory=dict)      # {n: Path} desarrollo teórico
+    actividades: list = field(default_factory=list)       # [(n|None, Path)]
+    foros: list = field(default_factory=list)             # [(n|None, Path)]
+    guiones_video: list = field(default_factory=list)     # [(n|None, Path)]
+    programa: list = field(default_factory=list)          # PDF/DOCX del programa
+    hoja_de_ruta: list = field(default_factory=list)
+    biografia: list = field(default_factory=list)
+    fotos_docente: list = field(default_factory=list)
+    imagenes_diseno: list = field(default_factory=list)   # figuras/esquemas/tablas
+    esquema: list = field(default_factory=list)           # esquema introductorio
+    otros: list = field(default_factory=list)
+    issues: list = field(default_factory=list)
+
+    def to_dict(self):
+        def _l(x):
+            return [str(p) for p in x] if x and not isinstance(x[0], tuple) else \
+                   [{"modulo": n, "archivo": str(p)} for n, p in x]
+        return {
+            "raiz": str(self.raiz), "nombre_curso": self.nombre_curso,
+            "estructura_xlsx": str(self.estructura_xlsx) if self.estructura_xlsx else None,
+            "docx_modulos": {n: str(p) for n, p in sorted(self.docx_modulos.items())},
+            "actividades": _l(self.actividades), "foros": _l(self.foros),
+            "guiones_video": _l(self.guiones_video), "programa": _l(self.programa),
+            "hoja_de_ruta": _l(self.hoja_de_ruta), "biografia": _l(self.biografia),
+            "fotos_docente": _l(self.fotos_docente),
+            "imagenes_diseno": _l(self.imagenes_diseno), "esquema": _l(self.esquema),
+            "issues": [i.to_dict() for i in self.issues],
+        }
+
+
+def _encontrar_raiz(carpeta: Path) -> Path:
+    """Los ZIP de Drive suelen envolver todo en 1-2 niveles de carpeta única."""
+    raiz = carpeta
+    for _ in range(3):
+        hijos = [h for h in raiz.iterdir() if not h.name.startswith(".")]
+        if len(hijos) == 1 and hijos[0].is_dir():
+            raiz = hijos[0]
+        else:
+            break
+    return raiz
+
+
+def _descartable(path: Path, raiz: Path) -> bool:
+    rel = path.relative_to(raiz)
+    if _DESCARTAR.search(path.name):
+        return True
+    for parte in rel.parts[:-1]:
+        n = normalizar(parte)
+        if any(n.startswith(c) or c in n for c in _CARPETAS_DESCARTAR):
+            return True
+    return False
+
+
+def escanear(carpeta: Path) -> InventarioCurso:
+    raiz = _encontrar_raiz(Path(carpeta))
+    # Nombre del curso: nombre de la carpeta raíz sin el prefijo de orden
+    # ("16. Agile Project Management" → "Agile Project Management").
+    nombre = re.sub(r"^\s*\d+\s*[-._)]\s*", "", raiz.name.strip()).strip()
+    inv = InventarioCurso(raiz=raiz, nombre_curso=nombre or raiz.name.strip())
+
+    for path in sorted(raiz.rglob("*")):
+        if not path.is_file():
+            continue
+        if _descartable(path, raiz):
+            continue
+
+        nombre = normalizar(path.name)
+        carpeta_padre = normalizar(str(path.parent.relative_to(raiz)))
+        ext = path.suffix.lower()
+        num = _numero_modulo(path.name)
+
+        # --- Planilla de estructura (la lleva la etapa de maquetación) ---
+        if ext == ".xlsx" and "estructura" in nombre and "maquetaci" in nombre:
+            if inv.estructura_xlsx:
+                inv.issues.append(Issue(Severidad.AVISO,
+                    f"Hay más de una planilla de estructura; uso '{inv.estructura_xlsx.name}' "
+                    f"y descarto '{path.name}'. Verificar cuál es la vigente."))
+            else:
+                inv.estructura_xlsx = path
+            continue
+
+        if ext == ".xlsx" and "cronograma" in nombre:
+            inv.otros.append(path)
+            continue
+
+        # --- DOCX ---
+        if ext == ".docx":
+            if "foro" in nombre:
+                inv.foros.append((num, path))
+            elif "actividad" in nombre or re.search(r"\bafi\b", nombre):
+                inv.actividades.append((num, path))
+            elif "video" in nombre or "guion" in nombre or "audiovisual" in nombre \
+                    or ("grabaci" in carpeta_padre and "biograf" not in nombre):
+                inv.guiones_video.append((num, path))
+            elif "biograf" in nombre or "presentacion" in nombre and "foro" not in nombre:
+                inv.biografia.append(path)
+            elif "hoja de ruta" in nombre or "hoja_de_ruta" in nombre:
+                inv.hoja_de_ruta.append(path)
+            elif "programa" in nombre:
+                inv.programa.append(path)
+            elif "esquema" in nombre:
+                inv.esquema.append(path)
+            elif "plantilla" in nombre:
+                # Las plantillas vacías que reparte asesoría no son contenido.
+                inv.otros.append(path)
+            elif ("modulo" in nombre or "multimedial" in nombre or num is not None) \
+                    and ("multimedial" in carpeta_padre or "modulo" in carpeta_padre
+                         or "desarrollo" in carpeta_padre or "multimedial" in nombre
+                         or "modulo" in nombre):
+                if num is None:
+                    num = _numero_modulo(carpeta_padre) or 0
+                if num in inv.docx_modulos:
+                    inv.issues.append(Issue(Severidad.AVISO,
+                        f"Más de un DOCX para el módulo {num}: ya tenía "
+                        f"'{inv.docx_modulos[num].name}', apareció '{path.name}'. "
+                        "Verificar cuál es la versión final.", f"Módulo {num}"))
+                else:
+                    inv.docx_modulos[num] = path
+            else:
+                inv.otros.append(path)
+            continue
+
+        # --- PDFs ---
+        if ext == ".pdf":
+            if "programa" in nombre and "10a" not in nombre:
+                inv.programa.append(path)
+            elif "hoja de ruta" in nombre:
+                inv.hoja_de_ruta.append(path)
+            else:
+                inv.otros.append(path)
+            continue
+
+        # --- Imágenes ---
+        if ext in (".jpg", ".jpeg", ".png", ".gif", ".webp"):
+            if re.search(r"(figura|fig\b|fig\s|tabla|m_?\d)", nombre):
+                inv.imagenes_diseno.append(path)
+            elif "esquema" in nombre:
+                inv.esquema.append(path)
+            elif "diseno" in carpeta_padre or "diseño" in carpeta_padre:
+                inv.imagenes_diseno.append(path)
+            elif "grabaci" in carpeta_padre or "maquetaci" in carpeta_padre \
+                    or "etapa 3" in carpeta_padre or "etapa 4" in carpeta_padre:
+                # La foto del docente viene con el material de grabación
+                # o en la etapa de maquetación.
+                inv.fotos_docente.append(path)
+            else:
+                inv.otros.append(path)
+            continue
+
+        inv.otros.append(path)
+
+    # --- Validaciones globales ---
+    if not inv.estructura_xlsx:
+        inv.issues.append(Issue(Severidad.BLOQUEANTE,
+            "No se encontró la planilla 'Estructura general - Para maquetación'. "
+            "Sin ella no se puede armar la estructura del aula automáticamente."))
+    if not inv.docx_modulos:
+        inv.issues.append(Issue(Severidad.BLOQUEANTE,
+            "No se encontró ningún DOCX de desarrollo teórico/material multimedial de módulos."))
+    return inv

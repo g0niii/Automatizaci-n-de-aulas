@@ -1,0 +1,787 @@
+# -*- coding: utf-8 -*-
+"""Procesador de contenido con los snippets oficiales CidiLabs de la UCC.
+
+Los bloques se replican EXACTAMENTE como en el aula de snippets
+(cidiplus-export) y las aulas maquetadas a mano:
+
+  - CTA con barra de título (Lectura, Video, Podcast, Imagen…):
+    dp-callout-color-lg-tip + dp-callout-type-title-bar, borde #1b1e31,
+    icono SVG de web_resources/Iconos/.
+  - Resaltado Profundización (Reflexiona / Para pensar / Para saber más):
+    dp-callout-color-lg-warning + ícono lámpara, título #757121.
+  - Resaltado Atención/Importante: dp-callout-color-danger + triángulo.
+  - Resaltado simple (sin título): borde #1b1e31, solo card-body.
+
+Detección sobre el HTML del DOCX: las tablas de UNA columna son recuadros
+(la primera fila es la etiqueta del tipo); las tablas multicolumna son
+tablas de datos reales y se conservan.
+
+Además convierte los subtítulos en negrita en <h3> (como hace el equipo a
+mano: el dp-wrapper los estiliza) y estiliza figuras y sus epígrafes.
+"""
+
+import re
+import unicodedata
+
+from bs4 import BeautifulSoup
+
+ACCENT = "#1b1e31"
+ICONOS_BASE = "$IMS-CC-FILEBASE$/Iconos"
+ICONOS = {
+    "lectura": "Icono%20recuadro%20lectura.svg",
+    "video": "Icono%20recuadro%20video.svg",
+    "podcast": "Icono%20recuadro%20Podcast.svg",
+    "imagen": "Icono%20recuadro%20imagen.svg",
+    "foro": "Icono%20recuadro%20Foro.svg",
+    "mural": "icono%20recuadro%20Mural.svg",
+    "consigna": "Icono%20recuadro%20consigna.svg",
+}
+
+
+def _norm(t: str) -> str:
+    t = unicodedata.normalize("NFKD", t)
+    t = "".join(c for c in t if not unicodedata.combining(c))
+    return re.sub(r"\s+", " ", t.lower()).strip()
+
+
+# ---------------------------------------------------------------------- #
+#  Snippets oficiales
+# ---------------------------------------------------------------------- #
+
+def cta_titulo(etiqueta: str, body_html: str, icono: str = "") -> str:
+    """CTA con barra de título (Lectura, Video, Podcast…) — markup idéntico
+    al de las aulas maquetadas a mano."""
+    img = ""
+    if icono:
+        img = (f'<img role="presentation" src="{ICONOS_BASE}/{icono}" alt="" '
+               f'loading="lazy">&nbsp; ')
+    return f"""<div class="dp-callout dp-callout-color-lg-tip card dp-callout-position-default dp-callout-type-title-bar" style="border-color: {ACCENT}; border-radius: 5px;">
+<div class="card-body">
+<p class="card-title dp-heading-ignore" style="text-align: left; background-color: {ACCENT}; color: #ffffff;"><span style="font-size: 10pt;"><em><strong style="border-color: {ACCENT};">{img}</strong></em><strong style="border-color: {ACCENT};">{etiqueta}</strong></span></p>
+{body_html}
+</div>
+</div>"""
+
+
+def resaltado_profundizacion(titulo: str, body_html: str) -> str:
+    """Reflexiona / Para pensar / Para saber más — amarillo con lámpara."""
+    return f"""<div class="dp-callout dp-callout-placeholder card dp-callout-position-default dp-callout-type-info dp-callout-color-lg-warning">
+<div class="dp-callout-side-emphasis"><i class="dp-icon fas fa-lightbulb dp-default-icon">​</i></div>
+<div class="card-body">
+<h3 class="card-title" style="color: #757121;">{titulo}</h3>
+{body_html}
+</div>
+</div>"""
+
+
+def resaltado_atencion(body_html: str, titulo: str = "Atención / Importante") -> str:
+    return f"""<div class="dp-callout dp-callout-placeholder card dp-callout-position-default dp-callout-type-info dp-callout-color-danger">
+<div class="dp-callout-side-emphasis"><i class="dp-icon dp-default-icon fas fa-exclamation-triangle">​</i></div>
+<div class="card-body">
+<h3 class="card-title">{titulo}</h3>
+{body_html}
+</div>
+</div>"""
+
+
+def resaltado_ejemplo(body_html: str, titulo: str = "Ejemplo") -> str:
+    return f"""<div class="dp-callout dp-callout-placeholder card dp-callout-position-default dp-callout-color-dp-primary dp-callout-type-info">
+<div class="dp-callout-side-emphasis"><i class="fas fa-copy dp-default-icon">​</i></div>
+<div class="card-body">
+<h3 class="card-title">{titulo}</h3>
+{body_html}
+</div>
+</div>"""
+
+
+def resaltado_simple(body_html: str) -> str:
+    """Recuadro destacado sin título (borde institucional)."""
+    return f"""<div class="dp-callout dp-callout-color-lg-tip card dp-callout-position-default dp-callout-type-title-bar" style="border-color: {ACCENT}; border-radius: 5px;">
+<div class="card-body">
+{body_html}
+</div>
+</div>"""
+
+
+# ---------------------------------------------------------------------- #
+#  Clasificación de recuadros (tablas de 1 columna del DOCX)
+# ---------------------------------------------------------------------- #
+
+def _clasificar_recuadro(etiqueta: str, texto_completo: str) -> tuple:
+    """Devuelve (tipo, titulo) para una tabla-recuadro según su etiqueta."""
+    n = _norm(etiqueta)
+    nt = _norm(texto_completo)
+
+    if n.startswith("foro"):
+        # Llamado a participar del foro: el título completo va en la barra.
+        return "foro", etiqueta
+    if n.startswith("actividad"):
+        # Actividad de página (rápida/sugerida): recuadro CTA Actividad.
+        # (Las obligatorias/integradoras ya fueron extraídas al assignment.)
+        return "actividad_cta", etiqueta
+
+    if n.startswith(("reflexion", "reflexiona", "para reflexionar",
+                     "para pensar", "para saber mas")):
+        # El equipo estandariza la etiqueta del docente ("Reflexiona",
+        # "Reflexión") al título oficial del snippet.
+        if n.startswith("para pensar"):
+            titulo = "Para pensar"
+        elif n.startswith("para saber"):
+            titulo = "Para saber más"
+        else:
+            titulo = "Para reflexionar"
+        return "profundizacion", titulo
+    if n.startswith("lectura") or "te invito a leer" in nt \
+            or "invitamos a leer" in nt or "te invito a la lectura" in nt:
+        return "lectura", "Lectura"
+    if n.startswith("video") or "visualizar el video" in nt[:200]:
+        return "video", "Video"
+    if n.startswith("podcast") or n.startswith("audio"):
+        return "podcast", "Podcast"
+    if n.startswith("imagen"):
+        return "imagen", "Imagen"
+    if n.startswith(("atencion", "importante")):
+        return "atencion", "Atención / Importante"
+    if n.startswith(("ejemplo", "por ejemplo")):
+        titulo = etiqueta if len(etiqueta) <= 35 else "Ejemplo"
+        return "ejemplo", titulo
+    return "simple", ""
+
+
+def _es_instruccion_maquetacion(texto: str) -> bool:
+    """Etiquetas que son INDICACIONES de maquetación (cómo formatear), no
+    contenido: no van en el aula. P.ej. 'Tabla con resaltado sutil'."""
+    n = _norm(texto)
+    return n.startswith((
+        "tabla con", "tabla de datos", "con resaltado", "resaltado",
+        "recuadro con", "cuadro con", "imagen con", "imagen de diseno",
+        "recurso tipo", "esquema con", "infografia con", "cita con"))
+
+
+def _tabla_a_recuadro(tabla) -> str:
+    """Convierte una tabla de 1 columna en el snippet que corresponda."""
+    filas = tabla.find_all("tr")
+    celdas = [c for c in (tr.find(["td", "th"]) for tr in filas) if c is not None]
+    if not celdas:
+        return ""
+
+    # "Líneas" del recuadro: las celdas (tabla multi-fila) o, si hay una sola
+    # celda con varios párrafos, cada <p> (así la 1ª línea = etiqueta/instrucción).
+    if len(celdas) == 1:
+        ps = [p for p in celdas[0].find_all("p") if p.get_text(strip=True)]
+        lineas = ps if len(ps) >= 2 else celdas
+    else:
+        lineas = celdas
+
+    etiqueta = lineas[0].get_text(" ", strip=True)
+    texto_completo = tabla.get_text(" ", strip=True)
+    tipo, titulo = _clasificar_recuadro(etiqueta, texto_completo)
+
+    def _html_lineas(ls):
+        partes = []
+        for el in ls:
+            if getattr(el, "name", "") == "p":
+                partes.append(str(el))
+                continue
+            inner = "".join(str(x) for x in el.children).strip()
+            if inner and not inner.lstrip().startswith("<"):
+                inner = f"<p>{inner}</p>"
+            partes.append(inner)
+        return "\n".join(p for p in partes if p)
+
+    # La 1ª línea se quita del cuerpo si es una etiqueta/instrucción reconocida
+    # (foro/actividad/lectura/…) o una indicación de maquetación. En tablas
+    # multi-fila, además, una 1ª fila corta se asume etiqueta (como antes).
+    es_instr = _es_instruccion_maquetacion(etiqueta)
+    if len(celdas) == 1:
+        quitar = (tipo != "simple") or es_instr
+    else:
+        quitar = len(etiqueta) <= 35 or tipo == "foro" or es_instr
+    body = _html_lineas(lineas[1:] if quitar and len(lineas) > 1 else lineas)
+    if not body:
+        body = _html_lineas(lineas)
+
+    if tipo == "foro":
+        return cta_titulo(titulo, body, ICONOS["foro"])
+    if tipo == "actividad_cta":
+        # CTA - Actividad del catálogo oficial (dp-primary, barra de título)
+        return f"""<div class="dp-callout dp-callout-placeholder card dp-callout-position-default dp-callout-color-dp-primary dp-callout-type-title-bar">
+<div class="card-body">
+<p class="card-title dp-heading-ignore" style="text-align: left;"><span style="font-size: 10pt;"><strong>{titulo}</strong></span></p>
+{body}
+</div>
+</div>"""
+    if tipo == "profundizacion":
+        return resaltado_profundizacion(titulo, body)
+    if tipo in ("lectura", "video", "podcast", "imagen"):
+        return cta_titulo(titulo, body, ICONOS.get(tipo, ""))
+    if tipo == "atencion":
+        return resaltado_atencion(body)
+    if tipo == "ejemplo":
+        return resaltado_ejemplo(body, titulo or "Ejemplo")
+    return resaltado_simple(body)
+
+
+# ---------------------------------------------------------------------- #
+#  Figuras de DISEÑO: reemplazan a las imágenes embebidas del DOCX
+# ---------------------------------------------------------------------- #
+
+_PAT_FIG_CAPTION = re.compile(r"^(figura|esquema|tabla)\s*(\d+)?\s*[\.:]", re.I)
+# Nombres reales observados: "M_1 Fig 4.jpg", "M1 Figura 2.jpg",
+# "Figura 4 M3.png", "Tabla 1 M2.jpg", "Esquema.jpg"
+_PAT_FIG_FILE = re.compile(
+    r"(?:m[_\s]?(\d+)\s*fig(?:ura)?\s*(\d+))|(?:fig(?:ura)?\s*(\d+)\s*m[_\s]?(\d+))"
+    r"|(?:tabla\s*(\d+)\s*m[_\s]?(\d+))|(?:m[_\s]?(\d+)\s*tabla\s*(\d+))", re.I)
+
+
+def indexar_figuras_diseno(archivos: list) -> dict:
+    """{(modulo, 'figura'|'tabla', n): Path} a partir de los archivos de DISEÑO."""
+    indice = {}
+    for path in archivos:
+        nombre = _norm(path.stem)
+        m = _PAT_FIG_FILE.search(nombre)
+        if m:
+            g = m.groups()
+            if g[0]:   mod, num, tipo = int(g[0]), int(g[1]), "figura"
+            elif g[2]: mod, num, tipo = int(g[3]), int(g[2]), "figura"
+            elif g[4]: mod, num, tipo = int(g[5]), int(g[4]), "tabla"
+            else:      mod, num, tipo = int(g[6]), int(g[7]), "tabla"
+            indice.setdefault((mod, tipo, num), path)
+        elif "esquema" in nombre:
+            indice.setdefault(("esquema",), path)
+    return indice
+
+
+def reemplazar_figuras_diseno(html: str, modulo: int, indice: dict,
+                              usadas: set) -> str:
+    """Donde hay un epígrafe 'Figura N.' con una imagen embebida al lado,
+    usa la figura de DISEÑO (mejor calidad) en su lugar. Marca en `usadas`
+    los paths aprovechados. La ruta queda como __DISENO__/<nombre> para que
+    el empaquetador la resuelva."""
+    if not html or not indice:
+        return html
+    soup = BeautifulSoup(html, "html.parser")
+
+    def _vecino_reemplazable(p):
+        """Imagen embebida o tabla de datos junto al epígrafe. Se priorizan los
+        vecinos MÁS CERCANOS (el siguiente antes que el anterior, porque el
+        epígrafe suele estar arriba de la imagen) y la imagen embebida del
+        docente por sobre una tabla."""
+        sig = list(p.find_next_siblings())
+        prev = list(p.find_previous_siblings())
+        cercanos = []
+        for i in range(2):
+            if i < len(sig):
+                cercanos.append(sig[i])
+            if i < len(prev):
+                cercanos.append(prev[i])
+
+        def _img_embebida(vecino):
+            nombre = getattr(vecino, "name", "")
+            if nombre in ("p", "div"):
+                img = vecino.find("img")
+                if img and "__MEDIA__" in (img.get("src") or ""):
+                    return img
+            elif nombre == "img" and "__MEDIA__" in (vecino.get("src") or ""):
+                return vecino
+            return None
+
+        for vecino in cercanos:        # 1º: imagen embebida adyacente
+            img = _img_embebida(vecino)
+            if img is not None:
+                return ("img", img)
+        for vecino in cercanos:        # 2º: tabla (el docente la hizo, diseño la rehízo)
+            if getattr(vecino, "name", "") == "table":
+                return ("table", vecino)
+        return (None, None)
+
+    for p in soup.find_all("p"):
+        texto = p.get_text(" ", strip=True)
+        m = _PAT_FIG_CAPTION.match(texto)
+        if not m:
+            continue
+        tipo = m.group(1).lower()
+        num = int(m.group(2)) if m.group(2) else None
+        if tipo == "esquema":
+            path = indice.get(("esquema",))
+        elif num is not None:
+            path = (indice.get((modulo, "figura" if tipo == "figura" else "tabla", num))
+                    or (indice.get((modulo, "tabla", num)) if tipo == "figura" else None))
+        else:
+            path = None
+        if not path:
+            continue
+        clase, vecino = _vecino_reemplazable(p)
+        if clase == "img":
+            vecino["src"] = f"__DISENO__/{path.name}"
+            usadas.add(path)
+        elif clase == "table":
+            nueva = BeautifulSoup(
+                f'<p style="text-align: center;"><img class="dp-popup-image '
+                f'dp-image-rounded-10 dp-image-padded dp-image-bordered '
+                f'dp-image-shadow" style="width: 700px; height: auto;" '
+                f'src="__DISENO__/{path.name}" alt="{texto[:120]}" '
+                f'loading="lazy"></p>', "html.parser")
+            vecino.replace_with(nueva)
+            usadas.add(path)
+    return str(soup)
+
+
+# ---------------------------------------------------------------------- #
+#  Consignas de foro: van al DiscussionTopic, no a la página de contenido
+# ---------------------------------------------------------------------- #
+
+_SENALES_CONSIGNA_FORO = (
+    "responde en el foro", "responder en el foro", "respondan en el foro",
+    "comenta en las respuestas", "comenta las respuestas",
+    "participa del foro respondiendo", "no mas de", "en un maximo de",
+)
+
+
+def separar_consignas(html: str) -> tuple:
+    """Las CONSIGNAS embebidas en el documento multimedial no van en la
+    página de contenido: van dentro del recurso de Canvas (foro/actividad).
+
+    Detecta tablas de 1 columna cuya etiqueta es:
+      - "Foro …" con señales de consigna (las invitaciones quedan en la página)
+      - "Actividad …" (obligatoria/sugerida/práctica/integradora): siempre
+        es consigna → al assignment
+      - "Autoevaluación …": consigna de quiz → se extrae y queda para carga
+        manual (los QTI no se generan automáticamente)
+
+    Devuelve (html_sin_consignas, [(tipo, titulo, body_html), …]) con
+    tipo ∈ {foro, actividad, autoevaluacion}.
+    """
+    low = (html or "").lower()
+    if not html or ("foro" not in low and "actividad" not in low
+                    and "autoevaluaci" not in low):
+        return html, []
+    soup = BeautifulSoup(html, "html.parser")
+    consignas = []
+    for tabla in soup.find_all("table"):
+        max_cols = max((len(tr.find_all(["td", "th"]))
+                        for tr in tabla.find_all("tr")), default=0)
+        if max_cols != 1:
+            continue
+        celdas = [tr.find(["td", "th"]) for tr in tabla.find_all("tr")]
+        celdas = [c for c in celdas if c is not None]
+        if not celdas:
+            continue
+        etiqueta = celdas[0].get_text(" ", strip=True)
+        ne = _norm(etiqueta)
+        # El docente a veces antepone la referencia al ícono ("Ícono actividad
+        # obligatoria"); se ignora ese prefijo para clasificar la etiqueta.
+        ne = re.sub(r"^[ií]con[oa]?\s+", "", ne)
+        texto = _norm(tabla.get_text(" ", strip=True))
+
+        if ne.startswith("foro"):
+            if not any(s in texto for s in _SENALES_CONSIGNA_FORO):
+                continue   # invitación: queda en la página como CTA Foro
+            tipo = "foro"
+        elif ne.startswith("actividad") and any(
+                k in ne for k in ("obligatoria", "integradora", "final")):
+            # Solo las actividades CALIFICABLES van al assignment; las
+            # rápidas/sugeridas/de ejercitación son parte de la página
+            # (quedan como recuadro CTA Actividad).
+            tipo = "actividad"
+        elif ne.startswith("autoevaluacion") or ne.startswith("auto evaluacion"):
+            tipo = "autoevaluacion"
+        else:
+            continue
+
+        cuerpo = []
+        for c in celdas[1:]:
+            inner = "".join(str(x) for x in c.children).strip()
+            if inner and not inner.lstrip().startswith("<"):
+                inner = f"<p>{inner}</p>"
+            cuerpo.append(inner)
+        if not cuerpo and len(celdas) == 1:
+            # todo el bloque vive en una sola celda: el cuerpo es la celda
+            # completa sin la primera línea-etiqueta
+            cuerpo = ["".join(str(x) for x in celdas[0].children).strip()]
+        consignas.append((tipo, etiqueta, "\n".join(cuerpo)))
+        tabla.decompose()
+    return (str(soup), consignas) if consignas else (html, [])
+
+
+# ---------------------------------------------------------------------- #
+#  Recuadros a nivel párrafo (frases-señal que el equipo maqueta a mano)
+# ---------------------------------------------------------------------- #
+
+_CUES_PARRAFO = (
+    # (tipo, frases con que ARRANCA el párrafo)
+    ("lectura", ("te invito a leer", "te invitamos a leer",
+                 "proponemos la lectura", "te propongo la lectura",
+                 "propongo la lectura", "sugerimos la lectura",
+                 "invitamos a la lectura", "te invito a la lectura")),
+    ("video", ("te propongo visualizar", "te invitamos a visualizar",
+               "te invito a visualizar", "te invito a ver el video",
+               "te invitamos a ver el video", "proponemos visualizar")),
+    ("atencion", ("es importante destacar", "es importante señalar",
+                  "es importante senalar", "es importante recordar",
+                  "es importante tener presente", "importante:")),
+    ("imagen", ("les proponemos que observen", "proponemos que observen",
+                "te propongo observar", "te invitamos a observar",
+                "te invito a observar")),
+)
+
+# Invitación a ver un video, en cualquier parte del párrafo (no solo al inicio):
+# "ver/mirar/visualizar/observar (el) (siguiente) video".
+_PAT_VIDEO_INVIT = re.compile(
+    r"\b(?:ver|mirar|mir[aá]|visualiz\w+|observa[rl]?\w*|reproduc\w+)\b\s+"
+    r"(?:atentamente\s+)?(?:el|los|un|este|la)?\s*(?:siguientes?\s+)?\bvideos?\b",
+    re.I)
+# Referencia a un video YA visto (no es una invitación a uno nuevo).
+_PAT_VIDEO_REF = re.compile(
+    r"^\s*(?:luego de|despu[eé]s de|una vez|tras|habiendo|al\s+terminar|"
+    r"a partir de)", re.I)
+_PAT_URL_VIDEO = re.compile(r"youtu\.?be|youtube\.com|vimeo\.com", re.I)
+
+# Párrafo que introduce una cita textual: termina en ":" con verbo de decir.
+_PAT_INTRO_CITA = re.compile(
+    r"\b(dice|dicen|señala|senala|sostiene|afirma|plantea|expresa|define|"
+    r"menciona|agrega|explica|describe|resume)\b[^:]{0,80}:$")
+
+
+def _detectar_cue(texto_norm: str) -> str:
+    for tipo, frases in _CUES_PARRAFO:
+        if texto_norm.startswith(frases):
+            return tipo
+    return ""
+
+
+def _absorber_siguientes(p) -> list:
+    """Tras un párrafo-cue, los 1-2 párrafos siguientes cortos con el link o
+    la referencia bibliográfica forman parte del mismo recuadro."""
+    extras = []
+    sig = p.find_next_sibling()
+    while sig is not None and len(extras) < 2 and getattr(sig, "name", "") == "p":
+        texto = sig.get_text(" ", strip=True)
+        tiene_link = sig.find("a") is not None
+        es_corto = len(texto) <= 220
+        if (tiene_link and es_corto) or (es_corto and sig.find(["em", "i"])):
+            extras.append(sig)
+            sig = sig.find_next_sibling()
+        else:
+            break
+    return extras
+
+
+def _procesar_cues_parrafo(soup):
+    for p in list(soup.find_all("p")):
+        if p.parent is None or p.find_parent(class_="dp-callout"):
+            continue
+        # El asesor pidió explícitamente NO encuadrar este párrafo.
+        if p.get("data-keep-plain"):
+            continue
+        texto = p.get_text(" ", strip=True)
+        if not texto or len(texto) > 700:
+            continue
+        tipo = _detectar_cue(_norm(texto))
+        if not tipo and _PAT_VIDEO_INVIT.search(texto):
+            # Invitación a ver un video aunque no arranque con la frase-cue.
+            # Si es una referencia a un video ya visto ("luego de ver el
+            # video, ¿…?") y no trae enlace, no es un recuadro de video.
+            tiene_url = bool(_PAT_URL_VIDEO.search(texto)) or any(
+                _PAT_URL_VIDEO.search(s.get_text(" ", strip=True))
+                for s in _absorber_siguientes(p))
+            if tiene_url or not _PAT_VIDEO_REF.match(texto):
+                tipo = "video"
+        if not tipo:
+            continue
+        grupo = [p] + _absorber_siguientes(p)
+        body = "\n".join(str(x) for x in grupo)
+        if tipo == "lectura":
+            nuevo = cta_titulo("Lectura", body, ICONOS["lectura"])
+        elif tipo == "video":
+            nuevo = cta_titulo("Video", body, ICONOS["video"])
+        elif tipo == "imagen":
+            nuevo = cta_titulo("Imagen", body, ICONOS["imagen"])
+        else:
+            nuevo = resaltado_atencion(body)
+        p.replace_with(BeautifulSoup(nuevo, "html.parser"))
+        for x in grupo[1:]:
+            x.decompose()
+
+    # Citas textuales: párrafo introductorio con verbo de decir terminado
+    # en ":", seguido de un párrafo largo (la cita) → recuadro simple.
+    for p in list(soup.find_all("p")):
+        if p.parent is None or p.find_parent(class_="dp-callout"):
+            continue
+        texto = p.get_text(" ", strip=True)
+        if not texto.endswith(":") or len(texto) > 250:
+            continue
+        if not _PAT_INTRO_CITA.search(_norm(texto)):
+            continue
+        cita = p.find_next_sibling()
+        if cita is None or getattr(cita, "name", "") != "p":
+            continue
+        texto_cita = cita.get_text(" ", strip=True)
+        if len(texto_cita) < 250:
+            continue
+        body = str(p) + "\n" + str(cita)
+        p.replace_with(BeautifulSoup(resaltado_simple(body), "html.parser"))
+        cita.decompose()
+
+
+# ---------------------------------------------------------------------- #
+#  Procesador principal
+# ---------------------------------------------------------------------- #
+
+_PAT_CAPTION = re.compile(r"^(figura|tabla|esquema)\s*\d*[\.:]", re.I)
+_NO_H3 = re.compile(r"^(figura|tabla|esquema|nota[\.:]|fuente[\.:])", re.I)
+_PAT_URL = re.compile(r"(https?://[^\s<>\"')\]]+)")
+
+
+def _autolink_urls(soup):
+    """Convierte URLs en texto plano en <a> (el equipo linkea toda URL)."""
+    from bs4 import NavigableString
+    for nodo in list(soup.find_all(string=True)):
+        if not isinstance(nodo, NavigableString):
+            continue
+        if nodo.find_parent("a") or nodo.find_parent(["script", "style"]):
+            continue
+        texto = str(nodo)
+        if "http" not in texto or not _PAT_URL.search(texto):
+            continue
+        partes = _PAT_URL.split(texto)
+        nuevos = []
+        for parte in partes:
+            if _PAT_URL.fullmatch(parte):
+                url = parte.rstrip(".,;")
+                resto = parte[len(url):]
+                a = soup.new_tag("a", href=url)
+                a.string = url
+                nuevos.append(a)
+                if resto:
+                    nuevos.append(NavigableString(resto))
+            elif parte:
+                nuevos.append(NavigableString(parte))
+        for nuevo in reversed(nuevos):
+            nodo.insert_after(nuevo)
+        nodo.extract()
+
+
+def limpiar_anclas_vacias(html: str) -> str:
+    """Quita las anclas internas de Word/Google Docs (<a id="_heading=…"></a>
+    o <a name="_xxx"></a>): marcadores de navegación sin href ni texto que
+    mammoth arrastra. Son ruido invisible; el equipo las borra a mano."""
+    if not html:
+        return html
+    soup = BeautifulSoup(html, "html.parser")
+    for a in soup.find_all("a"):
+        if not a.get("href") and not a.get_text(strip=True) and not a.find("img"):
+            a.unwrap() if a.contents else a.decompose()
+    return str(soup)
+
+
+_PAT_GENIALLY_URL = re.compile(r"https?://(?:[\w-]+\.)?genial\.?ly/[^\s\"'<>]+", re.I)
+_EXPANDER_KW = ("expander", "expandible", "expandibles", "acordeon",
+                "desplegable", "desplegables")
+
+
+_FLIP_KW = ("flip card", "flip cards", "flipcard", "flipcards")
+
+
+def _tabla_a_flipcards(tabla):
+    """Tabla con etiqueta 'Flip cards …' → tarjetas (frente=título en negrita,
+    dorso=descripción). Se descarta el párrafo de instrucción inicial."""
+    cell = tabla.find(["td", "th"])
+    if cell is None:
+        return None
+    parrafos = [p for p in cell.find_all("p") if p.get_text(strip=True)]
+    items, i, n = [], 0, len(parrafos)
+    while i < n:
+        p = parrafos[i]
+        strong = p.find("strong")
+        if not strong:        # instrucción inicial o dorso huérfano: se ignora
+            i += 1
+            continue
+        frente = strong.get_text(" ", strip=True).strip(" .:–-")
+        strong.extract()
+        dorso = [re.sub(r"^[\s.:–-]+", "", "".join(str(x) for x in p.children).strip())]
+        j = i + 1
+        while j < n and not parrafos[j].find("strong"):   # dorso = párrafos sin negrita
+            dorso.append(parrafos[j].get_text(" ", strip=True))
+            j += 1
+        if frente:
+            items.append((frente, " ".join(d for d in dorso if d) or "&nbsp;"))
+        i = j
+    if len(items) < 2:
+        return None
+    tarjetas = "\n".join(
+        '<div class="dp-flip-card">\n<div class="dp-flip-card-inner">\n'
+        f'<div class="dp-flip-card-front card"><div class="card-body">'
+        f'<p class="card-title"><strong>{f}</strong></p></div></div>\n'
+        f'<div class="dp-flip-card-back card"><div class="card-body">'
+        f'<p class="card-text">{b}</p></div></div>\n</div>\n</div>'
+        for f, b in items)
+    return ('<div class="dp-content-block">\n<div class="dp-flip-card-deck row" '
+            f'title="contenido insertado">\n{tarjetas}\n</div>\n</div>')
+
+
+def _tabla_a_acordeon(tabla):
+    """Tabla cuya etiqueta es 'Expander/Expandible/Acordeón' → acordeón
+    (dp-panels-wrapper). Cada párrafo con título en negrita es un panel:
+    el <strong> es el encabezado y el resto, el contenido."""
+    cell = tabla.find(["td", "th"])
+    if cell is None:
+        return None
+    parrafos = [p for p in cell.find_all("p") if p.get_text(strip=True)]
+    # El primer párrafo es la etiqueta ('Expander'); si la etiqueta y el primer
+    # ítem comparten párrafo, igual se procesan los que tienen <strong>.
+    grupos = []
+    for p in parrafos:
+        strong = p.find("strong")
+        if not strong:
+            continue
+        heading = strong.get_text(" ", strip=True).strip(" .:–-")
+        strong.extract()
+        cuerpo = "".join(str(x) for x in p.children).strip()
+        cuerpo = re.sub(r"^[\s.:–-]+", "", cuerpo)
+        if heading:
+            grupos.append((heading, cuerpo or "&nbsp;"))
+    if len(grupos) < 2:        # un acordeón necesita al menos 2 paneles
+        return None
+    paneles = "\n".join(
+        f'<div class="dp-panel-group">\n'
+        f'<h3 class="dp-panel-heading"><strong>{h}</strong></h3>\n'
+        f'<div class="dp-panel-content"><p>{c}</p></div>\n</div>'
+        for h, c in grupos)
+    return ('<div class="dp-panels-wrapper dp-expander-default '
+            'dp-panel-color-dp-primary dp-panel-active-color-dp-secondary" '
+            f'title="contenido insertado">\n{paneles}\n</div>')
+
+
+def _procesar_genially(soup):
+    """Genially: si hay URL, se incrusta (iframe). Si es una descripción del
+    recurso ('Recurso tipo Genially: …'), no va como texto: se reemplaza por un
+    recuadro que marca dónde incrustarlo, con la indicación para hacerlo a mano."""
+    for p in list(soup.find_all(["p", "li"])):
+        if p.parent is None:
+            continue
+        texto = p.get_text(" ", strip=True)
+        if "genial" not in texto.lower():
+            continue
+        m = _PAT_GENIALLY_URL.search(str(p))
+        if m:
+            url = m.group(0).rstrip(".,;)")
+            embed = (
+                '<div class="dp-content-block" data-title="Genially">\n'
+                '<div class="dp-embed-wrapper" style="text-align: center;">'
+                f'<iframe src="{url}" width="100%" height="500" frameborder="0" '
+                'allowfullscreen="allowfullscreen" loading="lazy"></iframe></div>\n</div>')
+            p.replace_with(BeautifulSoup(embed, "html.parser"))
+        elif re.search(r"genial\.?ly", texto, re.I):
+            # No hay URL todavía: marca mínima dónde va el Genially. La
+            # descripción es una INDICACIÓN para el diseñador y NO se copia.
+            p.replace_with(BeautifulSoup(resaltado_atencion(
+                "<p><strong>Recurso Genially — incrustar aquí.</strong></p>",
+                "Genially"), "html.parser"))
+
+
+def procesar_contenido(html: str) -> str:
+    if not html:
+        return html
+    soup = BeautifulSoup(html, "html.parser")
+
+    # 0. Anclas internas de Word/Google Docs (ruido de la conversión).
+    for a in soup.find_all("a"):
+        if not a.get("href") and not a.get_text(strip=True) and not a.find("img"):
+            a.unwrap() if a.contents else a.decompose()
+
+    # 0.5 Genially: incrustar (URL) o marcar para incrustar (descripción).
+    _procesar_genially(soup)
+
+    # 1. Tablas → acordeón ('Expander'), recuadro (1 columna) o tabla de datos
+    for tabla in soup.find_all("table"):
+        primer = tabla.find(["td", "th"])
+        etiqueta = _norm(primer.get_text(" ", strip=True)) if primer else ""
+        if etiqueta.startswith(_FLIP_KW):
+            flip = _tabla_a_flipcards(tabla)
+            if flip:
+                tabla.replace_with(BeautifulSoup(flip, "html.parser"))
+                continue
+        if etiqueta.startswith(_EXPANDER_KW):
+            acordeon = _tabla_a_acordeon(tabla)
+            if acordeon:
+                tabla.replace_with(BeautifulSoup(acordeon, "html.parser"))
+                continue
+        max_cols = max((len(tr.find_all(["td", "th"]))
+                        for tr in tabla.find_all("tr")), default=0)
+        if max_cols == 1:
+            nuevo = _tabla_a_recuadro(tabla)
+            if nuevo:
+                tabla.replace_with(BeautifulSoup(nuevo, "html.parser"))
+        else:
+            tabla["style"] = ("border-collapse: collapse; width: 100%;")
+            tabla["border"] = "1"
+
+    # 1.5 Citas (estilo Quote de Word) → resaltado simple
+    for bq in soup.find_all("blockquote"):
+        inner = "".join(str(x) for x in bq.children).strip()
+        if inner:
+            bq.replace_with(BeautifulSoup(resaltado_simple(inner), "html.parser"))
+
+    # 1.6 Párrafos con frases-señal → recuadros (Lectura / Video / Atención)
+    _procesar_cues_parrafo(soup)
+
+    # 2. Subtítulos en negrita → <h3> (el dp-wrapper los estiliza)
+    for p in soup.find_all("p"):
+        strongs = p.find_all("strong")
+        if not strongs:
+            continue
+        texto = p.get_text(" ", strip=True)
+        texto_strong = " ".join(s.get_text(" ", strip=True) for s in strongs)
+        if (texto and texto == texto_strong and 10 <= len(texto) <= 90
+                and not texto.endswith(":") and not _NO_H3.match(texto)
+                and not p.find("img")):
+            h3 = soup.new_tag("h3")
+            h3.string = texto
+            p.replace_with(h3)
+
+    # 3. Imágenes de contenido → estilo figura CidiLabs
+    #    (los iconos SVG de los recuadros NO son figuras)
+    for img in soup.find_all("img"):
+        src = img.get("src", "")
+        if "/Iconos/" in src or src.endswith(".svg"):
+            continue
+        if img.find_parent(class_="card-title") or img.find_parent(class_="dp-callout"):
+            continue
+        clases = img.get("class", [])
+        if "dp-popup-image" not in clases:
+            img["class"] = ("dp-popup-image dp-image-rounded-10 dp-image-padded "
+                            "dp-image-bordered dp-image-shadow")
+            img["style"] = "width: 700px; height: auto;"
+            padre = img.parent
+            if padre and padre.name == "p":
+                padre["style"] = "text-align: center;"
+
+    # 3.5 Enlaces: URLs sueltas → <a>; todo enlace externo con el estilo
+    #     institucional (inline_disabled dp-ext-ignore, target _blank)
+    _autolink_urls(soup)
+    for a in soup.find_all("a"):
+        href = a.get("href", "")
+        if href.startswith("http"):
+            a["class"] = "inline_disabled dp-ext-ignore"
+            a["target"] = "_blank"
+    # Párrafos que son solo un link largo → estilo de bibliografía
+    for p in soup.find_all("p"):
+        hijos = [x for x in p.children
+                 if getattr(x, "name", None) or str(x).strip()]
+        if len(hijos) == 1 and getattr(hijos[0], "name", "") == "a" \
+                and len(hijos[0].get_text(strip=True)) > 40:
+            p["class"] = "text-break"
+            p["style"] = "margin: 0; padding: 0;"
+
+    # 4. Epígrafes (Figura N. / Nota.) → centrados, tamaño 10pt
+    for p in soup.find_all("p"):
+        texto = p.get_text(" ", strip=True)
+        if _PAT_CAPTION.match(texto) or texto.startswith("Nota."):
+            p["class"] = "dp-heading-ignore"
+            p["style"] = "text-align: center;"
+            inner = f'<span style="font-size: 10pt;"><strong>{texto}</strong></span>'
+            p.clear()
+            p.append(BeautifulSoup(inner, "html.parser"))
+
+    return str(soup)

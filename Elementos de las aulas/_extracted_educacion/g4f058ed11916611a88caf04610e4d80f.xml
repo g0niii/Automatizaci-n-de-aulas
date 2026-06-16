@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<topic xmlns="http://www.imsglobal.org/xsd/imsccv1p1/imsdt_v1p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsccv1p1/imsdt_v1p1  http://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imsdt_v1p1.xsd">
+  <title>Foro sugerido M3</title>
+  <text texttype="text/html">&lt;div id="dp-wrapper" class="dp-wrapper dp-flat-sections variation-2 dp-border-radius-10"&gt;
+&lt;div id="" class="dp-banner-image"&gt;&lt;img src="$IMS-CC-FILEBASE$/Multimedia%20cargada/Foro%20sugerido%20M3.png" alt="Foro sugerido del módulo 3" data-api-endpoint="https://distancia.ucc.edu.ar/api/v1/courses/261/files/43341" data-api-returntype="File" loading="lazy"&gt;&lt;/div&gt;
+&lt;div class="dp-content-block kl_custom_block_1"&gt;&amp;nbsp;
+&lt;p class="dp-progress-placeholder dp-module-progress-completion" style="display: none; background-color: #003087; color: #ffffff;"&gt;Module Item Completion (built in browser, hidden in app)&lt;/p&gt;
+&amp;nbsp;&lt;/div&gt;
+&lt;div class="dp-content-block kl_lectures2"&gt;
+&lt;h3 class="dp-has-icon" style="color: #ffffff;"&gt;&lt;i class="fas fa-comment-alt" style="background-color: #003087; color: #ffffff;" aria-hidden="true"&gt;&lt;/i&gt;&lt;/h3&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;</text>
+</topic>

@@ -1,0 +1,660 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="ga844d073777f40bfa80b10028ecd507b" xmlns="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1" xmlns:lom="http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource" xmlns:lomimscc="http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imscp_v1p2_v1p0.xsd http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lomresource_v1p0.xsd http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lommanifest_v1p0.xsd">
+  <metadata>
+    <schema>IMS Common Cartridge</schema>
+    <schemaversion>1.1.0</schemaversion>
+    <lomimscc:lom>
+      <lomimscc:general>
+        <lomimscc:title>
+          <lomimscc:string>Aula base Educación a distancia</lomimscc:string>
+        </lomimscc:title>
+      </lomimscc:general>
+      <lomimscc:lifeCycle>
+        <lomimscc:contribute>
+          <lomimscc:date>
+            <lomimscc:dateTime>2026-05-10</lomimscc:dateTime>
+          </lomimscc:date>
+        </lomimscc:contribute>
+      </lomimscc:lifeCycle>
+      <lomimscc:rights>
+        <lomimscc:copyrightAndOtherRestrictions>
+          <lomimscc:value>yes</lomimscc:value>
+        </lomimscc:copyrightAndOtherRestrictions>
+        <lomimscc:description>
+          <lomimscc:string>Private (Copyrighted) - http://en.wikipedia.org/wiki/Copyright</lomimscc:string>
+        </lomimscc:description>
+      </lomimscc:rights>
+    </lomimscc:lom>
+  </metadata>
+  <organizations>
+    <organization identifier="org_1" structure="rooted-hierarchy">
+      <item identifier="LearningModules">
+        <item identifier="g64faea07950fb549e0ebb9023b9a7733">
+          <title>Módulo 1: (Nombre del módulo)</title>
+          <item identifier="g5f41bd9254a059ffa72abbec979582be" identifierref="g350746494d73c3865322666c0e032372">
+            <title>Introducción M1</title>
+          </item>
+          <item identifier="gff8f7c0b98e1b9338b0aa6fe95a267bd" identifierref="gaf321598bbb10f89c6980715c02af5c6">
+            <title>Foro de apertura</title>
+          </item>
+          <item identifier="gd69544c387297979cd0c18d7dcbafdfd" identifierref="g3465766e04cfa58c7cd92cebe40deb67">
+            <title>1.1. (El primer uno hace referencia al modulo y el segundo uno corresponde al submódulo)</title>
+          </item>
+          <item identifier="g9f39e230a939b15620940ecd229323e2" identifierref="g34c7a54a7eaa37218229c9bf3b158cc6">
+            <title>Foro obligatorio M1</title>
+          </item>
+          <item identifier="g542e3a75799c7653ac6224c2a7ef36f0" identifierref="geb437fb33b5bd9dadedf2d425e8ba6a6">
+            <title>Autoevaluación M1</title>
+          </item>
+          <item identifier="ge88b58c43522f0e6b7757ca55339fe37" identifierref="gc3d5cb9930dbac4bd21274f329ca9c4d">
+            <title>Actividad obligatoria M1</title>
+          </item>
+          <item identifier="g0ae5076ee269fb9100deed4295b868bd" identifierref="g18137b526015fe0ee3ef18dbf2ddf157">
+            <title>Bibliografía M1</title>
+          </item>
+        </item>
+        <item identifier="g98f66bec165be5222d1752ac728c4825">
+          <title>Módulo 2: (Nombre del módulo)</title>
+          <item identifier="gc564431f4b8844462765da637ceaff82" identifierref="g3a9bc7faf57859eee5f66e52c8cf8aef">
+            <title>Introducción M2</title>
+          </item>
+          <item identifier="g2b7b24f9309f404f12b0f043949a650d" identifierref="g5c89c2b76b76ab6e2e02df3ef102af25">
+            <title>2.1. (El primer uno hace referencia al modulo y el segundo uno corresponde al submódulo)</title>
+          </item>
+          <item identifier="g2f05e42a775ebe67281c50387b0a5466" identifierref="gf52147588e09caa8dba7f002898592af">
+            <title>Foro obligatorio M2</title>
+          </item>
+          <item identifier="ga48a7e7c9d077e7fe9e401863a7a87aa" identifierref="gcc658cb5f8971653bb16fd06c742067f">
+            <title>Autoevaluación M2</title>
+          </item>
+          <item identifier="g168971e176031811931bfdfe7477de45" identifierref="g329e7c03a171c9684201c3cf553f00c0">
+            <title>Actividad obligatoria M2</title>
+          </item>
+          <item identifier="g5050c2413577c4b46898e8f17035c386" identifierref="g768d0fc93f5110b3b24682123f9671d1">
+            <title>Bibliografía M2</title>
+          </item>
+        </item>
+        <item identifier="g4d2390fb980e59531dd100d739ab234e">
+          <title>Módulo 3: (Nombre del módulo)</title>
+          <item identifier="g157f052b052c9c3a770c46e53a0c330a" identifierref="g3e20d46eda67321f0ad5b445d9b98951">
+            <title>Introducción M3</title>
+          </item>
+          <item identifier="g596b650054a054943d6f64802b4e88f3" identifierref="g4faac4c02d54c506efd5f443c3da07c9">
+            <title> 3.1. (El primer uno hace referencia al modulo y el segundo uno corresponde al submódulo)</title>
+          </item>
+          <item identifier="g70f91d7109c28de67644698467193d3b" identifierref="g550348223c5b2f0f5e8c1791a379b897">
+            <title>Foro obligatorio M3</title>
+          </item>
+          <item identifier="g3ac8b6b480fdb09d43f112738ddfd666" identifierref="g99e6615f9c797889d9491889e0c4213a">
+            <title>Autoevaluación M3</title>
+          </item>
+          <item identifier="g9af66dc41f062b7214fc93b178dab29e" identifierref="g3e749918d4960954ce7492d2e128aaf6">
+            <title>Actividad obligatoria M3</title>
+          </item>
+          <item identifier="gdf8a7c8bb1d85c4afb304d4f2d0addba" identifierref="g691f3853815d29c10cf104f5a0ce8ca9">
+            <title>Bibliografía M3</title>
+          </item>
+        </item>
+        <item identifier="g3ca049b099d6758b1dbd17091a7a8c43">
+          <title>Módulo 4: (Nombre del módulo)</title>
+          <item identifier="g407ca307cb7f09e91c24cc0bd913200c" identifierref="gabcd24b086a8905077b358535d60685e">
+            <title>Introducción M4</title>
+          </item>
+          <item identifier="g9f4e1950ec62fcaf2e6181ff513f8597" identifierref="g2954c126bf831a7c1fdeadb2c700d1e5">
+            <title> 4.1. (El primer uno hace referencia al modulo y el segundo uno corresponde al submódulo)</title>
+          </item>
+          <item identifier="g6322d89dab9003107157c1fa5c8b7d91" identifierref="g91192f9a05d987d7bf0d5eda2411b07c">
+            <title>Foro obligatorio M4</title>
+          </item>
+          <item identifier="g46d6413ecf5b53eb69132f1effd69213" identifierref="gccd2729a5f735642f0f6d8570344d992">
+            <title>Autoevaluación M4</title>
+          </item>
+          <item identifier="g6c0ecd0f7c8f23567bf60c27365e7443" identifierref="g11c9b66427f8764124c4b00d21185ca5">
+            <title>Actividad obligatoria M4</title>
+          </item>
+          <item identifier="g7b33b1cc9184c6f665933ee412f75d89" identifierref="g9ea158948940b305407203edfa4caf8e">
+            <title>Bibliografía M4</title>
+          </item>
+        </item>
+        <item identifier="g29dc74a4ffff5906b75a7e7ecd93afe3">
+          <title>Actividad final integradora</title>
+          <item identifier="g6b7d7a644e1b43433fad411424a7c6e9" identifierref="gb9820a8125e02ab4e0a2e895c093f2ca">
+            <title>Actividad final integradora</title>
+          </item>
+        </item>
+        <item identifier="g88e7daf311dd3e2f434b1a3d1c7641ea">
+          <title>Encuesta de valoración final</title>
+          <item identifier="g052d1ac728677e509a8170a62953bca4" identifierref="g8d43e0c444d771d185a988cbffd4c6cb">
+            <title>Encuesta de valoración final </title>
+          </item>
+        </item>
+      </item>
+    </organization>
+  </organizations>
+  <resources>
+    <resource identifier="g9f481186288e65dc6339300ddcae6828_syllabus" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="course_settings/syllabus.html" intendeduse="syllabus">
+      <file href="course_settings/syllabus.html"/>
+    </resource>
+    <resource identifier="g9f481186288e65dc6339300ddcae6828" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="course_settings/canvas_export.txt">
+      <file href="course_settings/course_settings.xml"/>
+      <file href="course_settings/module_meta.xml"/>
+      <file href="course_settings/assignment_groups.xml"/>
+      <file href="course_settings/files_meta.xml"/>
+      <file href="course_settings/late_policy.xml"/>
+      <file href="course_settings/context.xml"/>
+      <file href="course_settings/media_tracks.xml"/>
+      <file href="course_settings/canvas_export.txt"/>
+    </resource>
+    <resource identifier="g3465766e04cfa58c7cd92cebe40deb67" type="webcontent" href="wiki_content/1-dot-1-el-primer-uno-hace-referencia-al-modulo-y-el-segundo-uno-corresponde-al-submodulo.html">
+      <file href="wiki_content/1-dot-1-el-primer-uno-hace-referencia-al-modulo-y-el-segundo-uno-corresponde-al-submodulo.html"/>
+    </resource>
+    <resource identifier="g5c89c2b76b76ab6e2e02df3ef102af25" type="webcontent" href="wiki_content/2-dot-1-el-primer-uno-hace-referencia-al-modulo-y-el-segundo-uno-corresponde-al-submodulo.html">
+      <file href="wiki_content/2-dot-1-el-primer-uno-hace-referencia-al-modulo-y-el-segundo-uno-corresponde-al-submodulo.html"/>
+    </resource>
+    <resource identifier="g4faac4c02d54c506efd5f443c3da07c9" type="webcontent" href="wiki_content/3-dot-1-el-primer-uno-hace-referencia-al-modulo-y-el-segundo-uno-corresponde-al-submodulo.html">
+      <file href="wiki_content/3-dot-1-el-primer-uno-hace-referencia-al-modulo-y-el-segundo-uno-corresponde-al-submodulo.html"/>
+    </resource>
+    <resource identifier="g2954c126bf831a7c1fdeadb2c700d1e5" type="webcontent" href="wiki_content/4-dot-1-el-primer-uno-hace-referencia-al-modulo-y-el-segundo-uno-corresponde-al-submodulo.html">
+      <file href="wiki_content/4-dot-1-el-primer-uno-hace-referencia-al-modulo-y-el-segundo-uno-corresponde-al-submodulo.html"/>
+    </resource>
+    <resource identifier="g18137b526015fe0ee3ef18dbf2ddf157" type="webcontent" href="wiki_content/bibliografia-m1.html">
+      <file href="wiki_content/bibliografia-m1.html"/>
+    </resource>
+    <resource identifier="g768d0fc93f5110b3b24682123f9671d1" type="webcontent" href="wiki_content/bibliografia-m2.html">
+      <file href="wiki_content/bibliografia-m2.html"/>
+    </resource>
+    <resource identifier="g691f3853815d29c10cf104f5a0ce8ca9" type="webcontent" href="wiki_content/bibliografia-m3.html">
+      <file href="wiki_content/bibliografia-m3.html"/>
+    </resource>
+    <resource identifier="g9ea158948940b305407203edfa4caf8e" type="webcontent" href="wiki_content/bibliografia-m4.html">
+      <file href="wiki_content/bibliografia-m4.html"/>
+    </resource>
+    <resource identifier="g3a9bc7faf57859eee5f66e52c8cf8aef" type="webcontent" href="wiki_content/introduccion-m2.html">
+      <file href="wiki_content/introduccion-m2.html"/>
+    </resource>
+    <resource identifier="g3e20d46eda67321f0ad5b445d9b98951" type="webcontent" href="wiki_content/introduccion-m3.html">
+      <file href="wiki_content/introduccion-m3.html"/>
+    </resource>
+    <resource identifier="gabcd24b086a8905077b358535d60685e" type="webcontent" href="wiki_content/introduccion-m4.html">
+      <file href="wiki_content/introduccion-m4.html"/>
+    </resource>
+    <resource identifier="g50f5733e7cec08b88a187d25f47ccf00" type="webcontent" href="wiki_content/pagina-de-inicio.html">
+      <file href="wiki_content/pagina-de-inicio.html"/>
+    </resource>
+    <resource identifier="g350746494d73c3865322666c0e032372" type="webcontent" href="wiki_content/introduccion-m1-3.html">
+      <file href="wiki_content/introduccion-m1-3.html"/>
+    </resource>
+    <resource identifier="g54bdd52ef0d22bf6b41d6981cd2e62bb" type="imsbasiclti_xmlv1p3">
+      <file href="lti_resource_links/g54bdd52ef0d22bf6b41d6981cd2e62bb.xml"/>
+    </resource>
+    <resource identifier="ga92ac696331954489e0ad8098fca21d0" type="imsbasiclti_xmlv1p3">
+      <file href="lti_resource_links/ga92ac696331954489e0ad8098fca21d0.xml"/>
+    </resource>
+    <resource identifier="g34e8b2dd10c58e82e48c05bfd4766ff5" type="imsbasiclti_xmlv1p3">
+      <file href="lti_resource_links/g34e8b2dd10c58e82e48c05bfd4766ff5.xml"/>
+    </resource>
+    <resource identifier="g8f343129012b2e2ef9333be89606c75d" type="imsbasiclti_xmlv1p3">
+      <file href="lti_resource_links/g8f343129012b2e2ef9333be89606c75d.xml"/>
+    </resource>
+    <resource identifier="g536a841d089d504b2d83bef18eea06c2" type="imsbasiclti_xmlv1p3">
+      <file href="lti_resource_links/g536a841d089d504b2d83bef18eea06c2.xml"/>
+    </resource>
+    <resource identifier="gf7077393b2b0b5492869d130bc358262" type="imsbasiclti_xmlv1p3">
+      <file href="lti_resource_links/gf7077393b2b0b5492869d130bc358262.xml"/>
+    </resource>
+    <resource identifier="gbbb98bbd10e2febd10fef43b5016ed9d" type="imsbasiclti_xmlv1p3">
+      <file href="lti_resource_links/gbbb98bbd10e2febd10fef43b5016ed9d.xml"/>
+    </resource>
+    <resource identifier="ga0d8ae9a9ee0aadc950268dab755f560" type="imsbasiclti_xmlv1p3">
+      <file href="lti_resource_links/ga0d8ae9a9ee0aadc950268dab755f560.xml"/>
+    </resource>
+    <resource identifier="g56ad7f2c4d64603afb74b141f454787f" type="imsbasiclti_xmlv1p3">
+      <file href="lti_resource_links/g56ad7f2c4d64603afb74b141f454787f.xml"/>
+    </resource>
+    <resource identifier="g6c0c2518e596dc6994128dedc8345b1e" type="imsbasiclti_xmlv1p3">
+      <file href="lti_resource_links/g6c0c2518e596dc6994128dedc8345b1e.xml"/>
+    </resource>
+    <resource identifier="g76e3d33b29351c8ebfce7cef94c4123f" type="imsbasiclti_xmlv1p3">
+      <file href="lti_resource_links/g76e3d33b29351c8ebfce7cef94c4123f.xml"/>
+    </resource>
+    <resource identifier="gbae6db09f71be48f4b2742c791e07234" type="imsbasiclti_xmlv1p3">
+      <file href="lti_resource_links/gbae6db09f71be48f4b2742c791e07234.xml"/>
+    </resource>
+    <resource identifier="g9623e9f47587197b80932e2d64ea2b23" type="imsbasiclti_xmlv1p3">
+      <file href="lti_resource_links/g9623e9f47587197b80932e2d64ea2b23.xml"/>
+    </resource>
+    <resource identifier="g0e7c1ea26a2e845ee79cf4149441e462" type="imsbasiclti_xmlv1p3">
+      <file href="lti_resource_links/g0e7c1ea26a2e845ee79cf4149441e462.xml"/>
+    </resource>
+    <resource identifier="gb9820a8125e02ab4e0a2e895c093f2ca" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="gb9820a8125e02ab4e0a2e895c093f2ca/actividad-final-integradora.html">
+      <file href="gb9820a8125e02ab4e0a2e895c093f2ca/actividad-final-integradora.html"/>
+      <file href="gb9820a8125e02ab4e0a2e895c093f2ca/assignment_settings.xml"/>
+    </resource>
+    <resource identifier="gc3d5cb9930dbac4bd21274f329ca9c4d" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="gc3d5cb9930dbac4bd21274f329ca9c4d/actividad-obligatoria-m1.html">
+      <file href="gc3d5cb9930dbac4bd21274f329ca9c4d/actividad-obligatoria-m1.html"/>
+      <file href="gc3d5cb9930dbac4bd21274f329ca9c4d/assignment_settings.xml"/>
+    </resource>
+    <resource identifier="g329e7c03a171c9684201c3cf553f00c0" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="g329e7c03a171c9684201c3cf553f00c0/actividad-obligatoria-m2.html">
+      <file href="g329e7c03a171c9684201c3cf553f00c0/actividad-obligatoria-m2.html"/>
+      <file href="g329e7c03a171c9684201c3cf553f00c0/assignment_settings.xml"/>
+    </resource>
+    <resource identifier="g3e749918d4960954ce7492d2e128aaf6" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="g3e749918d4960954ce7492d2e128aaf6/actividad-obligatoria-m3.html">
+      <file href="g3e749918d4960954ce7492d2e128aaf6/actividad-obligatoria-m3.html"/>
+      <file href="g3e749918d4960954ce7492d2e128aaf6/assignment_settings.xml"/>
+    </resource>
+    <resource identifier="g11c9b66427f8764124c4b00d21185ca5" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="g11c9b66427f8764124c4b00d21185ca5/actividad-obligatoria-m4.html">
+      <file href="g11c9b66427f8764124c4b00d21185ca5/actividad-obligatoria-m4.html"/>
+      <file href="g11c9b66427f8764124c4b00d21185ca5/assignment_settings.xml"/>
+    </resource>
+    <resource identifier="g72d556ee69171651d0a71253a8daef89" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="g72d556ee69171651d0a71253a8daef89/actividad-sugerida-m1.html">
+      <file href="g72d556ee69171651d0a71253a8daef89/actividad-sugerida-m1.html"/>
+      <file href="g72d556ee69171651d0a71253a8daef89/assignment_settings.xml"/>
+    </resource>
+    <resource identifier="gcea374fa0b5e4e197dca9b6981c8cdbb" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="gcea374fa0b5e4e197dca9b6981c8cdbb/actividad-sugerida-m2.html">
+      <file href="gcea374fa0b5e4e197dca9b6981c8cdbb/actividad-sugerida-m2.html"/>
+      <file href="gcea374fa0b5e4e197dca9b6981c8cdbb/assignment_settings.xml"/>
+    </resource>
+    <resource identifier="g2f2f24da8c34e6ec3902439310b382fa" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="g2f2f24da8c34e6ec3902439310b382fa/actividad-sugerida-m3.html">
+      <file href="g2f2f24da8c34e6ec3902439310b382fa/actividad-sugerida-m3.html"/>
+      <file href="g2f2f24da8c34e6ec3902439310b382fa/assignment_settings.xml"/>
+    </resource>
+    <resource identifier="g744de7db2793f0c09c8d78c3c7207e4a" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="g744de7db2793f0c09c8d78c3c7207e4a/actividad-sugerida-m4.html">
+      <file href="g744de7db2793f0c09c8d78c3c7207e4a/actividad-sugerida-m4.html"/>
+      <file href="g744de7db2793f0c09c8d78c3c7207e4a/assignment_settings.xml"/>
+    </resource>
+    <resource identifier="gdff25549c1ba6ec46cac0fac730ad467" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="gdff25549c1ba6ec46cac0fac730ad467/calificacion-de-la-asignatura.html">
+      <file href="gdff25549c1ba6ec46cac0fac730ad467/calificacion-de-la-asignatura.html"/>
+      <file href="gdff25549c1ba6ec46cac0fac730ad467/assignment_settings.xml"/>
+    </resource>
+    <resource identifier="g4f058ed11916611a88caf04610e4d80f" type="imsdt_xmlv1p1">
+      <file href="g4f058ed11916611a88caf04610e4d80f.xml"/>
+      <dependency identifierref="ga1be26b1ea5a6cfa025a448ffa61abc6"/>
+    </resource>
+    <resource identifier="ga1be26b1ea5a6cfa025a448ffa61abc6" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="ga1be26b1ea5a6cfa025a448ffa61abc6.xml">
+      <file href="ga1be26b1ea5a6cfa025a448ffa61abc6.xml"/>
+    </resource>
+    <resource identifier="g11b72b6332166f11e6fe2bbb7ff22098" type="imsdt_xmlv1p1">
+      <file href="g11b72b6332166f11e6fe2bbb7ff22098.xml"/>
+      <dependency identifierref="ge2492eabdf289ea82ffa90497af7c347"/>
+    </resource>
+    <resource identifier="ge2492eabdf289ea82ffa90497af7c347" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="ge2492eabdf289ea82ffa90497af7c347.xml">
+      <file href="ge2492eabdf289ea82ffa90497af7c347.xml"/>
+    </resource>
+    <resource identifier="g3a18f30b5e4a154124e5db57843ac938" type="imsdt_xmlv1p1">
+      <file href="g3a18f30b5e4a154124e5db57843ac938.xml"/>
+      <dependency identifierref="g5e9e362bba1906961f782377a58e398b"/>
+    </resource>
+    <resource identifier="g5e9e362bba1906961f782377a58e398b" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="g5e9e362bba1906961f782377a58e398b.xml">
+      <file href="g5e9e362bba1906961f782377a58e398b.xml"/>
+    </resource>
+    <resource identifier="gd48762edd83d17da000367223f222905" type="imsdt_xmlv1p1">
+      <file href="gd48762edd83d17da000367223f222905.xml"/>
+      <dependency identifierref="gd769c41fc69199d8753f63ee3cd229dd"/>
+    </resource>
+    <resource identifier="gd769c41fc69199d8753f63ee3cd229dd" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="gd769c41fc69199d8753f63ee3cd229dd.xml">
+      <file href="gd769c41fc69199d8753f63ee3cd229dd.xml"/>
+    </resource>
+    <resource identifier="g34c7a54a7eaa37218229c9bf3b158cc6" type="imsdt_xmlv1p1">
+      <file href="g34c7a54a7eaa37218229c9bf3b158cc6.xml"/>
+      <dependency identifierref="g0866e3aa5096313e1c88a345de639ad6"/>
+    </resource>
+    <resource identifier="g0866e3aa5096313e1c88a345de639ad6" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="g0866e3aa5096313e1c88a345de639ad6.xml">
+      <file href="g0866e3aa5096313e1c88a345de639ad6.xml"/>
+    </resource>
+    <resource identifier="gaf321598bbb10f89c6980715c02af5c6" type="imsdt_xmlv1p1">
+      <file href="gaf321598bbb10f89c6980715c02af5c6.xml"/>
+      <dependency identifierref="g92d3462570c47a6d959e4f155825118e"/>
+    </resource>
+    <resource identifier="g92d3462570c47a6d959e4f155825118e" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="g92d3462570c47a6d959e4f155825118e.xml">
+      <file href="g92d3462570c47a6d959e4f155825118e.xml"/>
+    </resource>
+    <resource identifier="g91192f9a05d987d7bf0d5eda2411b07c" type="imsdt_xmlv1p1">
+      <file href="g91192f9a05d987d7bf0d5eda2411b07c.xml"/>
+      <dependency identifierref="g867286df67f5d63f5f1b90e958a2d967"/>
+    </resource>
+    <resource identifier="g867286df67f5d63f5f1b90e958a2d967" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="g867286df67f5d63f5f1b90e958a2d967.xml">
+      <file href="g867286df67f5d63f5f1b90e958a2d967.xml"/>
+    </resource>
+    <resource identifier="g550348223c5b2f0f5e8c1791a379b897" type="imsdt_xmlv1p1">
+      <file href="g550348223c5b2f0f5e8c1791a379b897.xml"/>
+      <dependency identifierref="gf9a0e83d0aaacdb6275c32cf78d03465"/>
+    </resource>
+    <resource identifier="gf9a0e83d0aaacdb6275c32cf78d03465" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="gf9a0e83d0aaacdb6275c32cf78d03465.xml">
+      <file href="gf9a0e83d0aaacdb6275c32cf78d03465.xml"/>
+    </resource>
+    <resource identifier="gf52147588e09caa8dba7f002898592af" type="imsdt_xmlv1p1">
+      <file href="gf52147588e09caa8dba7f002898592af.xml"/>
+      <dependency identifierref="g931e53f8a196f2a06b4dc01bf6ad95d4"/>
+    </resource>
+    <resource identifier="g931e53f8a196f2a06b4dc01bf6ad95d4" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="g931e53f8a196f2a06b4dc01bf6ad95d4.xml">
+      <file href="g931e53f8a196f2a06b4dc01bf6ad95d4.xml"/>
+    </resource>
+    <resource identifier="g8d43e0c444d771d185a988cbffd4c6cb" type="imsqti_xmlv1p2/imscc_xmlv1p1/assessment">
+      <file href="g8d43e0c444d771d185a988cbffd4c6cb/assessment_qti.xml"/>
+      <dependency identifierref="i03b8ed5c0b70b6f356c306c7f17bbb61"/>
+    </resource>
+    <resource identifier="i03b8ed5c0b70b6f356c306c7f17bbb61" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="g8d43e0c444d771d185a988cbffd4c6cb/assessment_meta.xml">
+      <file href="g8d43e0c444d771d185a988cbffd4c6cb/assessment_meta.xml"/>
+      <file href="non_cc_assessments/g8d43e0c444d771d185a988cbffd4c6cb.xml.qti"/>
+    </resource>
+    <resource identifier="gccd2729a5f735642f0f6d8570344d992" type="imsqti_xmlv1p2/imscc_xmlv1p1/assessment">
+      <file href="gccd2729a5f735642f0f6d8570344d992/assessment_qti.xml"/>
+      <dependency identifierref="ib8862a9bfe90052f213d9b8bebe13c2c"/>
+    </resource>
+    <resource identifier="ib8862a9bfe90052f213d9b8bebe13c2c" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="gccd2729a5f735642f0f6d8570344d992/assessment_meta.xml">
+      <file href="gccd2729a5f735642f0f6d8570344d992/assessment_meta.xml"/>
+      <file href="non_cc_assessments/gccd2729a5f735642f0f6d8570344d992.xml.qti"/>
+    </resource>
+    <resource identifier="gcc658cb5f8971653bb16fd06c742067f" type="imsqti_xmlv1p2/imscc_xmlv1p1/assessment">
+      <file href="gcc658cb5f8971653bb16fd06c742067f/assessment_qti.xml"/>
+      <dependency identifierref="iea21af686f00d7fcdd018a6de341cbe7"/>
+    </resource>
+    <resource identifier="iea21af686f00d7fcdd018a6de341cbe7" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="gcc658cb5f8971653bb16fd06c742067f/assessment_meta.xml">
+      <file href="gcc658cb5f8971653bb16fd06c742067f/assessment_meta.xml"/>
+      <file href="non_cc_assessments/gcc658cb5f8971653bb16fd06c742067f.xml.qti"/>
+    </resource>
+    <resource identifier="g99e6615f9c797889d9491889e0c4213a" type="imsqti_xmlv1p2/imscc_xmlv1p1/assessment">
+      <file href="g99e6615f9c797889d9491889e0c4213a/assessment_qti.xml"/>
+      <dependency identifierref="i7cc3602f515eb62cb14552d9bb618e33"/>
+    </resource>
+    <resource identifier="i7cc3602f515eb62cb14552d9bb618e33" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="g99e6615f9c797889d9491889e0c4213a/assessment_meta.xml">
+      <file href="g99e6615f9c797889d9491889e0c4213a/assessment_meta.xml"/>
+      <file href="non_cc_assessments/g99e6615f9c797889d9491889e0c4213a.xml.qti"/>
+    </resource>
+    <resource identifier="geb437fb33b5bd9dadedf2d425e8ba6a6" type="imsqti_xmlv1p2/imscc_xmlv1p1/assessment">
+      <file href="geb437fb33b5bd9dadedf2d425e8ba6a6/assessment_qti.xml"/>
+      <dependency identifierref="ie6c081c570ff52d6feac35e4cd99ae2c"/>
+    </resource>
+    <resource identifier="ie6c081c570ff52d6feac35e4cd99ae2c" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="geb437fb33b5bd9dadedf2d425e8ba6a6/assessment_meta.xml">
+      <file href="geb437fb33b5bd9dadedf2d425e8ba6a6/assessment_meta.xml"/>
+      <file href="non_cc_assessments/geb437fb33b5bd9dadedf2d425e8ba6a6.xml.qti"/>
+    </resource>
+    <resource identifier="g37905fe1d5baa194bdd8bb705e213d61" type="imsqti_xmlv1p2/imscc_xmlv1p1/assessment">
+      <file href="g37905fe1d5baa194bdd8bb705e213d61/assessment_qti.xml"/>
+      <dependency identifierref="i6ab3d565e5a13ad01916b627d6b2da7a"/>
+    </resource>
+    <resource identifier="i6ab3d565e5a13ad01916b627d6b2da7a" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="g37905fe1d5baa194bdd8bb705e213d61/assessment_meta.xml">
+      <file href="g37905fe1d5baa194bdd8bb705e213d61/assessment_meta.xml"/>
+      <file href="non_cc_assessments/g37905fe1d5baa194bdd8bb705e213d61.xml.qti"/>
+    </resource>
+    <resource type="webcontent" identifier="g39791340d28ace7709c87af6e40513e6" href="web_resources/Multimedia cargada/0-Encabezado-Ed-adistancia.png">
+      <file href="web_resources/Multimedia cargada/0-Encabezado-Ed-adistancia.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g08c17ac8c1396f8ef129151de30d4413" href="web_resources/Multimedia cargada/Modulo1Ejemplo.png">
+      <file href="web_resources/Multimedia cargada/Modulo1Ejemplo.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g8b6c0537df2a18860e971813683610aa" href="web_resources/Multimedia cargada/Módulo2Ejemplo.png">
+      <file href="web_resources/Multimedia cargada/Módulo2Ejemplo.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gf1678c1299fd5d7039125cad0cd03ee1" href="web_resources/Multimedia cargada/Módulo3Ejemplo.png">
+      <file href="web_resources/Multimedia cargada/Módulo3Ejemplo.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gc4359214dc71d44b0dd3b59c175757d4" href="web_resources/Multimedia cargada/Módulo4Ejemplo.png">
+      <file href="web_resources/Multimedia cargada/Módulo4Ejemplo.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g4f305271ffe391c4055f099755c09905" href="web_resources/Multimedia cargada/Banner-ForoM1.png">
+      <file href="web_resources/Multimedia cargada/Banner-ForoM1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gdec8b3bbd10d6132abf946c80a09c421" href="web_resources/Multimedia cargada/Banner-PreguntaDeAperturaALaAsignatura.png">
+      <file href="web_resources/Multimedia cargada/Banner-PreguntaDeAperturaALaAsignatura.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gbc4a8fb5a7685a59823034bb8f7282ea" href="web_resources/Multimedia cargada/Banner-ForoM2.png">
+      <file href="web_resources/Multimedia cargada/Banner-ForoM2.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g468f58fb91f2e9845200b63f2a68dd35" href="web_resources/Multimedia cargada/Banner-ForoM3.png">
+      <file href="web_resources/Multimedia cargada/Banner-ForoM3.png"/>
+    </resource>
+    <resource type="webcontent" identifier="ge8cc1267bac25e56939bb80e1f366e45" href="web_resources/Multimedia cargada/Banner-ForoM4.png">
+      <file href="web_resources/Multimedia cargada/Banner-ForoM4.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g3e4a4252316039e6bb539f1ac6c23465" href="web_resources/Multimedia cargada/Banner-BibliografíaM1.png">
+      <file href="web_resources/Multimedia cargada/Banner-BibliografíaM1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gbcada5581f2ccfc5d20c7c92a04c2ba0" href="web_resources/Multimedia cargada/Banner-BibliografíaM2.png">
+      <file href="web_resources/Multimedia cargada/Banner-BibliografíaM2.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gd39fb38dbed010611d1a3445b0358fca" href="web_resources/Multimedia cargada/Banner-BibliografíaM3.png">
+      <file href="web_resources/Multimedia cargada/Banner-BibliografíaM3.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gf14882c52c41e797d29b54536ec7be37" href="web_resources/Multimedia cargada/Banner-BibliografíaM4.png">
+      <file href="web_resources/Multimedia cargada/Banner-BibliografíaM4.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gc22f111713123bed55805938a478c8a5" href="web_resources/Multimedia cargada/Banner-PrimerosPasos.png">
+      <file href="web_resources/Multimedia cargada/Banner-PrimerosPasos.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g00ebe4d5c0215e319666334df9846d7b" href="web_resources/Multimedia cargada/Logo UCC ED especial con bg.png">
+      <file href="web_resources/Multimedia cargada/Logo UCC ED especial con bg.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g13bc0c8968a46c326cedb46c2e9fa047" href="web_resources/Multimedia cargada/Logo UCC ED especial con bg-1.png">
+      <file href="web_resources/Multimedia cargada/Logo UCC ED especial con bg-1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g5aef793f2d376a7f93c75dbf1aae8fc9" href="web_resources/Multimedia cargada/Banner-EducaciónADistancia.png">
+      <file href="web_resources/Multimedia cargada/Banner-EducaciónADistancia.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gb6299ce9b11c180915ac1b84f1682f97" href="web_resources/Multimedia cargada/Banner-Autoevaluaciones  Actividades Calificables.png">
+      <file href="web_resources/Multimedia cargada/Banner-Autoevaluaciones  Actividades Calificables.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gf9314f4c1086fe3b41c5ec2a0d0bc6d7" href="web_resources/Multimedia cargada/LOGO_UCC-1.png">
+      <file href="web_resources/Multimedia cargada/LOGO_UCC-1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g27060ae53c3b138733e46a86509753aa" href="web_resources/Multimedia cargada/1.png">
+      <file href="web_resources/Multimedia cargada/1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="ge5b15354085397a40a51c5b9fb5954df" href="web_resources/Multimedia cargada/2.png">
+      <file href="web_resources/Multimedia cargada/2.png"/>
+    </resource>
+    <resource type="webcontent" identifier="ga3ab53915efa113aeb8ecfecd7f70150" href="web_resources/Multimedia cargada/3.png">
+      <file href="web_resources/Multimedia cargada/3.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g71312e04daf10e05f0cc74706fdd8559" href="web_resources/Multimedia cargada/1.1. (El primer uno hace referencia al modulo y el segundo uno corresponde al submódulo).png">
+      <file href="web_resources/Multimedia cargada/1.1. (El primer uno hace referencia al modulo y el segundo uno corresponde al submódulo).png"/>
+    </resource>
+    <resource type="webcontent" identifier="g8e1b26ef4f60771f537a9ff90860190f" href="web_resources/Multimedia cargada/1.1. (El primer número hace referencia al modulo y el segundo número corresponde al submódulo).png">
+      <file href="web_resources/Multimedia cargada/1.1. (El primer número hace referencia al modulo y el segundo número corresponde al submódulo).png"/>
+    </resource>
+    <resource type="webcontent" identifier="gced5fb2be1c493282e0709a9c1ae37bb" href="web_resources/Multimedia cargada/Criterio Rubrica.pdf">
+      <file href="web_resources/Multimedia cargada/Criterio Rubrica.pdf"/>
+    </resource>
+    <resource type="webcontent" identifier="ga0a24a1156ebbce9c6b2ccbf979814f4" href="web_resources/Multimedia cargada/Banner-AutoEvaluaciónM1.png">
+      <file href="web_resources/Multimedia cargada/Banner-AutoEvaluaciónM1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="ge9fbf8a64c1b347120f5f4073b4bdcce" href="web_resources/Multimedia cargada/Banner-AutoEvaluaciónM2.png">
+      <file href="web_resources/Multimedia cargada/Banner-AutoEvaluaciónM2.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g2d7ad6aa8bbe547c1441b6692411195d" href="web_resources/Multimedia cargada/Banner-AutoEvaluaciónM3.png">
+      <file href="web_resources/Multimedia cargada/Banner-AutoEvaluaciónM3.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g74608d3d9a0185c5f42f9779855a9413" href="web_resources/Multimedia cargada/Banner-AutoEvaluaciónM4.png">
+      <file href="web_resources/Multimedia cargada/Banner-AutoEvaluaciónM4.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g6973cd773463bc7ee938c468e251efb1" href="web_resources/Multimedia cargada/Banner-ActividadFinalIntegradora.png">
+      <file href="web_resources/Multimedia cargada/Banner-ActividadFinalIntegradora.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gf15f8c949310c5f7cea728297ebdf940" href="web_resources/Multimedia cargada/Avatar tutor.png">
+      <file href="web_resources/Multimedia cargada/Avatar tutor.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gcc1ac90fead4697c4a283740becbaadb" href="web_resources/Multimedia cargada/Avatar profesor.png">
+      <file href="web_resources/Multimedia cargada/Avatar profesor.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g120dc89c28778b3b89434e86da430f39" href="web_resources/Multimedia cargada/icono lectura.svg">
+      <file href="web_resources/Multimedia cargada/icono lectura.svg"/>
+    </resource>
+    <resource type="webcontent" identifier="g74d17c946997c71c9db4b28d85f65154" href="web_resources/Multimedia cargada/Foro obligatorio M1.png">
+      <file href="web_resources/Multimedia cargada/Foro obligatorio M1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gce31e46be80b280c05e1ac4e09187ab9" href="web_resources/Multimedia cargada/Foro obligatorio M2.png">
+      <file href="web_resources/Multimedia cargada/Foro obligatorio M2.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g429b2f78850f49a1a25ae4c612535f06" href="web_resources/Multimedia cargada/Foro obligatorio M3.png">
+      <file href="web_resources/Multimedia cargada/Foro obligatorio M3.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g414e3bfd5076c1f88c2be15a77876743" href="web_resources/Multimedia cargada/Foro obligatorio M4.png">
+      <file href="web_resources/Multimedia cargada/Foro obligatorio M4.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gfdd049ba88f6c4a78fb4e6b9136d5ee3" href="web_resources/Multimedia cargada/Banner -Encuesta de valoración final.png">
+      <file href="web_resources/Multimedia cargada/Banner -Encuesta de valoración final.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gff467b87683d6a279105767bab2a1a5f" href="web_resources/Multimedia cargada/Foto - Natalia Gonzalez.png">
+      <file href="web_resources/Multimedia cargada/Foto - Natalia Gonzalez.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g4e1a9a11088734d726daca46e48d8150" href="web_resources/Multimedia cargada/Natalia Gonzalez - Foto Tutora.png">
+      <file href="web_resources/Multimedia cargada/Natalia Gonzalez - Foto Tutora.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gdb358bbda33ef63068c52f445b815efb" href="web_resources/Multimedia cargada/Calificación de la asignatura.png">
+      <file href="web_resources/Multimedia cargada/Calificación de la asignatura.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g096e18bd43b77c59323aaecbd44e4d88" href="web_resources/Multimedia cargada/La didáctica de las ciencias naturales.png">
+      <file href="web_resources/Multimedia cargada/La didáctica de las ciencias naturales.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g190bad0d1298a256a38e1b6e1699e0a6" href="web_resources/Multimedia cargada/Foro de presentación.png">
+      <file href="web_resources/Multimedia cargada/Foro de presentación.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g4214d047840b15a773a2514985643b33" href="web_resources/Multimedia cargada/Foro de presentación-1.png">
+      <file href="web_resources/Multimedia cargada/Foro de presentación-1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gca106fbd0c70b9a27bbcf3adb71b4db7" href="web_resources/Multimedia cargada/Actividad obligatoria M1.png">
+      <file href="web_resources/Multimedia cargada/Actividad obligatoria M1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g95f6ebf39b766e59bc546f7af0aa2112" href="web_resources/Multimedia cargada/Actividad obligatoria M2.png">
+      <file href="web_resources/Multimedia cargada/Actividad obligatoria M2.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g4d888db7a16521a8db04bdd8222ee209" href="web_resources/Multimedia cargada/Actividad obligatoria M3.png">
+      <file href="web_resources/Multimedia cargada/Actividad obligatoria M3.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g8beea147414e027e07bed59d84864f54" href="web_resources/Multimedia cargada/Actividad obligatoria M4.png">
+      <file href="web_resources/Multimedia cargada/Actividad obligatoria M4.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g6e49f8272759a7a75663b3bd1fb67bdb" href="web_resources/Multimedia cargada/Foro optativo M4.png">
+      <file href="web_resources/Multimedia cargada/Foro optativo M4.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g09635dbe35e1d9f91455dd9298dfb1c3" href="web_resources/Multimedia cargada/Foro optativo M1.png">
+      <file href="web_resources/Multimedia cargada/Foro optativo M1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gb38b084e90738fb6a89e58f60ff91719" href="web_resources/Multimedia cargada/Foro optativo M3.png">
+      <file href="web_resources/Multimedia cargada/Foro optativo M3.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g361efd7a2abfc98e198004daba6f724c" href="web_resources/Multimedia cargada/Foro optativo M2.png">
+      <file href="web_resources/Multimedia cargada/Foro optativo M2.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g9e7eba367e979f48c08ca30ae0c08259" href="web_resources/Multimedia cargada/Foro optativo M1-1.png">
+      <file href="web_resources/Multimedia cargada/Foro optativo M1-1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g103e4fe2f7454d7de870a497485c98ba" href="web_resources/Multimedia cargada/Nombre de la Asignatura.png">
+      <file href="web_resources/Multimedia cargada/Nombre de la Asignatura.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g60a1b527c8b1136d671519604a8a56af" href="web_resources/Multimedia cargada/Actividad sugerida M1.png">
+      <file href="web_resources/Multimedia cargada/Actividad sugerida M1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g81d668aad843a248a4076c4a7f169f78" href="web_resources/Multimedia cargada/Actividad sugerida M2.png">
+      <file href="web_resources/Multimedia cargada/Actividad sugerida M2.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g0468ba1fd62176188d77703d6de91ef7" href="web_resources/Multimedia cargada/Actividad sugerida M3.png">
+      <file href="web_resources/Multimedia cargada/Actividad sugerida M3.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g9827da69ed4342d71260cf788ebf7368" href="web_resources/Multimedia cargada/Actividad sugerida M4.png">
+      <file href="web_resources/Multimedia cargada/Actividad sugerida M4.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g6be0e6d212bc1bf35d241951a2a69dd3" href="web_resources/Multimedia cargada/Foro sugerido M1.png">
+      <file href="web_resources/Multimedia cargada/Foro sugerido M1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g34db655551472ec585b0ae80747e74cd" href="web_resources/Multimedia cargada/Foro sugerido M3.png">
+      <file href="web_resources/Multimedia cargada/Foro sugerido M3.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gb9f4a9ba7175378d2ddc1ff0df21ef09" href="web_resources/Multimedia cargada/Foro sugerido M2.png">
+      <file href="web_resources/Multimedia cargada/Foro sugerido M2.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g5efbc283dc7de817c4efc3e00dfa0db3" href="web_resources/Multimedia cargada/Foro sugerido M1-1.png">
+      <file href="web_resources/Multimedia cargada/Foro sugerido M1-1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gd9505394c44865eb08aeab400ce16f09" href="web_resources/Multimedia cargada/Foro sugerido M4.png">
+      <file href="web_resources/Multimedia cargada/Foro sugerido M4.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g038fc4964ce0e23b1c7f36bfbdff6ae3" href="web_resources/Multimedia cargada/Foro de apertura (3).png">
+      <file href="web_resources/Multimedia cargada/Foro de apertura (3).png"/>
+    </resource>
+    <resource type="webcontent" identifier="g0ed265bd436cb986d332939ba0b4b587" href="web_resources/Multimedia cargada/Actividad Final Integradora.png">
+      <file href="web_resources/Multimedia cargada/Actividad Final Integradora.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g782285248e95a049f2d644ea8e613c1a" href="web_resources/course_image/Maquetacion.png">
+      <file href="web_resources/course_image/Maquetacion.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g9b670fd9ad1c02ef0e8070cae82cd43a" href="web_resources/course_image/Component 1.png">
+      <file href="web_resources/course_image/Component 1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gffb1a5b9c921ddb0c88bfc41392c5368" href="web_resources/course_image/FotoTablero.png">
+      <file href="web_resources/course_image/FotoTablero.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gc71c7564b7af37a4161b8c18190901df" href="web_resources/external_imports/1-1.png">
+      <file href="web_resources/external_imports/1-1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g87f48cefdf5fa7f8ee8b6484bd27f2df" href="web_resources/external_imports/1.png">
+      <file href="web_resources/external_imports/1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g0380d164ff6627db2f2709c1cb02aea8" href="web_resources/external_imports/1-1-1.png">
+      <file href="web_resources/external_imports/1-1-1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g9ae9a081f026556fa186476fd22746ce" href="web_resources/external_imports/1-2.png">
+      <file href="web_resources/external_imports/1-2.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g88d28bc994cff6159a40c898707bf41b" href="web_resources/external_imports/2-1.png">
+      <file href="web_resources/external_imports/2-1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="ge129f5e746068d848015eb93a912fca7" href="web_resources/external_imports/2.png">
+      <file href="web_resources/external_imports/2.png"/>
+    </resource>
+    <resource type="webcontent" identifier="ge9bd556b500eec403a5267ae6cdb424b" href="web_resources/external_imports/2-1-1.png">
+      <file href="web_resources/external_imports/2-1-1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g9b04fffe3b55f6f844ecc85229044dad" href="web_resources/external_imports/2-1-2.png">
+      <file href="web_resources/external_imports/2-1-2.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gc0a4c118504217a24d76f10f94d1c7bf" href="web_resources/external_imports/_README.txt">
+      <file href="web_resources/external_imports/_README.txt"/>
+    </resource>
+    <resource type="webcontent" identifier="gfae3ad3cabb5a3248d8cde432abaa2ae" href="web_resources/external_imports/La didáctica de las ciencias naturales.png">
+      <file href="web_resources/external_imports/La didáctica de las ciencias naturales.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gea58b000208a665e11b559fd348a95bd" href="web_resources/external_imports/Avatar profesor-1.png">
+      <file href="web_resources/external_imports/Avatar profesor-1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="g0641a9e78cdc81618d0e19e3befe6d57" href="web_resources/external_imports/Avatar tutor-1.png">
+      <file href="web_resources/external_imports/Avatar tutor-1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="gd088eed325e3f2c5e5b4054f59de0abf" href="web_resources/external_imports/Avatar tutor-1-1.png">
+      <file href="web_resources/external_imports/Avatar tutor-1-1.png"/>
+    </resource>
+    <resource type="webcontent" identifier="ge5dd3857cbbbcc4dcaddd53d5bf6afc9" href="web_resources/Iconos/icono podcast.svg">
+      <file href="web_resources/Iconos/icono podcast.svg"/>
+    </resource>
+    <resource type="webcontent" identifier="g8ba24e4918c6a147c769c11c99dfad20" href="web_resources/Iconos/Icono video.svg">
+      <file href="web_resources/Iconos/Icono video.svg"/>
+    </resource>
+    <resource type="webcontent" identifier="g51be2dc5f3475ff65c64c19a1222bb67" href="web_resources/Iconos/icono lectura.svg">
+      <file href="web_resources/Iconos/icono lectura.svg"/>
+    </resource>
+    <resource type="webcontent" identifier="g406095285be777de11677b5193c41fe6" href="web_resources/Iconos/Icono imagen.svg">
+      <file href="web_resources/Iconos/Icono imagen.svg"/>
+    </resource>
+    <resource type="webcontent" identifier="g9c2e68cc0cb96dc79110db266743e3c9" href="web_resources/Iconos/Icono recuadro consigna.svg">
+      <file href="web_resources/Iconos/Icono recuadro consigna.svg"/>
+    </resource>
+    <resource type="webcontent" identifier="g06cb7f2f5073de00672debdc4ec3443e" href="web_resources/Iconos/Icono recuadro lectura.svg">
+      <file href="web_resources/Iconos/Icono recuadro lectura.svg"/>
+    </resource>
+    <resource type="webcontent" identifier="g1e45f5f42d4f889ac1036d3e224045cd" href="web_resources/Iconos/Icono recuadro video.svg">
+      <file href="web_resources/Iconos/Icono recuadro video.svg"/>
+    </resource>
+    <resource type="webcontent" identifier="ga789b742c91b601cce8501ffc971f0dd" href="web_resources/Iconos/Icono recuadro Foro.svg">
+      <file href="web_resources/Iconos/Icono recuadro Foro.svg"/>
+    </resource>
+    <resource type="webcontent" identifier="g43f140d7e9310040739cdf3908597657" href="web_resources/Iconos/icono recuadro Mural.svg">
+      <file href="web_resources/Iconos/icono recuadro Mural.svg"/>
+    </resource>
+    <resource type="webcontent" identifier="gf231d495dc2eb9d0585be409568e0080" href="web_resources/Iconos/Icono recuadro imagen.svg">
+      <file href="web_resources/Iconos/Icono recuadro imagen.svg"/>
+    </resource>
+    <resource type="webcontent" identifier="g50159103ed207b437fd828919447fb93" href="web_resources/Iconos/Icono recuadro Podcast.svg">
+      <file href="web_resources/Iconos/Icono recuadro Podcast.svg"/>
+    </resource>
+  </resources>
+</manifest>

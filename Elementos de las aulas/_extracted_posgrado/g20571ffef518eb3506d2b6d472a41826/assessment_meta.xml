@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<quiz xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd" identifier="g20571ffef518eb3506d2b6d472a41826">
+  <title>Autoevaluaci&#xF3;n M2</title>
+  <description>&lt;p style="text-align: center;"&gt;&lt;img src="/courses/454/files/43311/preview?verifier=BkjJ8a3ngkbThnM364pCRLMTwmqFAs2BPDyDcRcw" alt="Autoevaluaci&#xF3;n del m&#xF3;dulo 2"&gt;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p class="space-letter-heading"&gt;&lt;span style="color: #003087;"&gt;&lt;strong&gt;&lt;span style="font-size: 18pt; font-family: lato, 'Helvetica Neue', Helvetica, Arial, sans-serif; letter-spacing: 2px;"&gt;&#xA1;Llegaste al final del contenido!&lt;/span&gt;&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p class="space-letter-heading"&gt;&lt;span style="font-size: 18pt; font-family: lato, 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #000000; letter-spacing: 2px;"&gt;Es momento de revisar lo aprendido.&lt;/span&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;Sigue estos TIPS para un proceso exitoso!&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;-Ten&#xE9;s &lt;strong&gt;tres&lt;/strong&gt; &lt;strong&gt;intentos&lt;/strong&gt; para completar esta evaluaci&#xF3;n hasta alcanzar el m&#xE1;ximo puntaje.&lt;br&gt;-No consultes &lt;strong&gt;material de referencia&lt;/strong&gt; externo durante la autoevaluaci&#xF3;n. El objetivo es que conf&#xED;es en tu conocimiento y comprensi&#xF3;n del contenido del m&#xF3;dulo.&lt;br&gt;&lt;strong&gt;-Los tipos de preguntas&lt;/strong&gt; pueden ser m&#xFA;ltiple opci&#xF3;n, verdadero o falso y/o elecci&#xF3;n m&#xFA;ltiple. Le&#xE9; cada pregunta atentamente y seleccion&#xE1; la respuesta que consideres correcta.&lt;br&gt;-Pod&#xE9;s &lt;strong&gt;navegar&lt;/strong&gt; libremente entre las preguntas utilizando los botones de "Siguiente" y "Anterior". Revis&#xE1; tus respuestas antes de finalizar.&lt;br&gt;-Cuando respondas todas las preguntas, hac&#xE9; clic en el bot&#xF3;n "Entregar" para &lt;strong&gt;finalizar&lt;/strong&gt; y obtener tus resultados.&lt;br&gt;-Tras completar Ia autoevaluaci&#xF3;n, podr&#xE1;s acceder a un &lt;strong&gt;an&#xE1;lisis de tus respuestas&lt;/strong&gt;. Ver&#xE1;s tus elecciones y las respuestas correctas para comparar y aprender de tus errores.&lt;br&gt;-La retroalimentaci&#xF3;n te ayudar&#xE1; a hacer un seguimiento de tu progreso a lo largo del curso. Comprender&#xE1;s la evoluci&#xF3;n de tu conocimiento y en qu&#xE9; &#xE1;reas est&#xE1;s mejorando.&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;</description>
+  <due_at/>
+  <lock_at/>
+  <unlock_at/>
+  <shuffle_questions>false</shuffle_questions>
+  <shuffle_answers>true</shuffle_answers>
+  <calculator_type>none</calculator_type>
+  <scoring_policy>keep_highest</scoring_policy>
+  <hide_results/>
+  <quiz_type>assignment</quiz_type>
+  <points_possible>10.0</points_possible>
+  <require_lockdown_browser>false</require_lockdown_browser>
+  <require_lockdown_browser_for_results>false</require_lockdown_browser_for_results>
+  <require_lockdown_browser_monitor>false</require_lockdown_browser_monitor>
+  <lockdown_browser_monitor_data/>
+  <show_correct_answers>false</show_correct_answers>
+  <anonymous_submissions>false</anonymous_submissions>
+  <could_be_locked>false</could_be_locked>
+  <disable_timer_autosubmission>false</disable_timer_autosubmission>
+  <allowed_attempts>3</allowed_attempts>
+  <build_on_last_attempt>false</build_on_last_attempt>
+  <one_question_at_a_time>true</one_question_at_a_time>
+  <cant_go_back>false</cant_go_back>
+  <available>false</available>
+  <one_time_results>false</one_time_results>
+  <show_correct_answers_last_attempt>false</show_correct_answers_last_attempt>
+  <only_visible_to_overrides>false</only_visible_to_overrides>
+  <module_locked>false</module_locked>
+  <allow_clear_mc_selection/>
+  <disable_document_access>false</disable_document_access>
+  <result_view_restricted>false</result_view_restricted>
+  <assignment identifier="f284c4b664ab7f6a489f1cb71224ccfb">
+    <title>Autoevaluaci&#xF3;n M2</title>
+    <due_at/>
+    <lock_at/>
+    <unlock_at/>
+    <module_locked>false</module_locked>
+    <workflow_state>published</workflow_state>
+    <assignment_overrides/>
+    <assignment_overrides/>
+    <quiz_identifierref>g20571ffef518eb3506d2b6d472a41826</quiz_identifierref>
+    <allowed_extensions/>
+    <has_group_category>false</has_group_category>
+    <points_possible>10.0</points_possible>
+    <grading_type>points</grading_type>
+    <all_day>false</all_day>
+    <submission_types>online_quiz</submission_types>
+    <position>1</position>
+    <turnitin_enabled>false</turnitin_enabled>
+    <vericite_enabled>false</vericite_enabled>
+    <peer_review_count>0</peer_review_count>
+    <peer_reviews>false</peer_reviews>
+    <automatic_peer_reviews>false</automatic_peer_reviews>
+    <anonymous_peer_reviews>false</anonymous_peer_reviews>
+    <grade_group_students_individually>false</grade_group_students_individually>
+    <freeze_on_copy>false</freeze_on_copy>
+    <omit_from_final_grade>false</omit_from_final_grade>
+    <intra_group_peer_reviews>false</intra_group_peer_reviews>
+    <only_visible_to_overrides>false</only_visible_to_overrides>
+    <post_to_sis>false</post_to_sis>
+    <moderated_grading>false</moderated_grading>
+    <grader_count>0</grader_count>
+    <grader_comments_visible_to_graders>true</grader_comments_visible_to_graders>
+    <anonymous_grading>false</anonymous_grading>
+    <graders_anonymous_to_graders>false</graders_anonymous_to_graders>
+    <grader_names_visible_to_final_grader>true</grader_names_visible_to_final_grader>
+    <anonymous_instructor_annotations>false</anonymous_instructor_annotations>
+    <post_policy>
+      <post_manually>false</post_manually>
+    </post_policy>
+    <assignment_group_identifierref>g0401473202deee63984d06c359d7a908</assignment_group_identifierref>
+    <assignment_overrides/>
+  </assignment>
+</quiz>

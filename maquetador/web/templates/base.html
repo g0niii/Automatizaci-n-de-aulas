@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquetador UCC</title>
+<style>
+  :root {
+    --azul: #003087; --rojo: #922E1F; --oscuro: #1b1e31;
+    --gris: #f4f5f7; --borde: #d8dce3; --ok: #1e7e34; --warn: #b8860b;
+    --err: #b02a37;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0;
+         background: var(--gris); color: #1a202c; }
+  header { background: var(--oscuro); color: #fff; padding: 14px 28px;
+           display: flex; align-items: baseline; gap: 14px; }
+  header h1 { font-size: 19px; margin: 0; font-weight: 600; }
+  header a { color: #cfd6e4; text-decoration: none; font-size: 14px; }
+  main { max-width: 1080px; margin: 26px auto; padding: 0 20px; }
+  .card { background: #fff; border: 1px solid var(--borde); border-radius: 10px;
+          padding: 20px 24px; margin-bottom: 18px; }
+  h2 { font-size: 17px; margin: 0 0 12px; color: var(--oscuro); }
+  h3 { font-size: 15px; margin: 18px 0 8px; color: var(--azul); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  td, th { padding: 7px 9px; border-bottom: 1px solid #eef0f4;
+           text-align: left; vertical-align: top; }
+  th { color: #5a6577; font-weight: 600; font-size: 12px;
+       text-transform: uppercase; letter-spacing: .4px; }
+  .badge { display: inline-block; border-radius: 20px; padding: 2px 10px;
+           font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+  .b-alta { background: #e2f3e6; color: var(--ok); }
+  .b-media { background: #fdf3d8; color: var(--warn); }
+  .b-baja { background: #fbe3e5; color: var(--err); }
+  .b-manual { background: #e8ebf2; color: #5a6577; }
+  .issue { font-size: 12.5px; margin-top: 3px; padding-left: 16px; }
+  .i-info { color: #4a6fa5; } .i-aviso { color: var(--warn); }
+  .i-bloqueante { color: var(--err); font-weight: 600; }
+  .flash { border-radius: 8px; padding: 11px 16px; margin-bottom: 14px;
+           font-size: 14px; }
+  .f-ok { background: #e2f3e6; color: var(--ok); }
+  .f-error { background: #fbe3e5; color: var(--err); }
+  .btn { display: inline-block; background: var(--azul); color: #fff;
+         border: 0; border-radius: 8px; padding: 10px 22px; font-size: 14px;
+         font-weight: 600; cursor: pointer; text-decoration: none; }
+  .btn:disabled { background: #aab3c2; cursor: not-allowed; }
+  .btn-sec { background: #fff; color: var(--azul); border: 1.5px solid var(--azul); }
+  .btn-tema { margin-right: 8px; }
+  .btn-tema.activo { background: var(--azul); color: #fff; }
+  .muted { color: #76808f; font-size: 13px; }
+  .resumen { display: flex; gap: 26px; flex-wrap: wrap; }
+  .resumen div { text-align: center; }
+  .resumen b { display: block; font-size: 26px; color: var(--oscuro); }
+  input[type=file] { font-size: 14px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🎓 Maquetador UCC</h1>
+  <a href="{{ url_for('index') }}">Cursos</a>
+</header>
+<main>
+  {% with mensajes = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in mensajes %}
+      <div class="flash f-{{ cat }}">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+  {% block contenido %}{% endblock %}
+</main>
+</body>
+</html>

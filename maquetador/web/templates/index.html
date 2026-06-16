@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block contenido %}
+<div class="card">
+  <h2>Subir un curso nuevo</h2>
+  <p class="muted">Subí el ZIP de la carpeta tal como llega de asesoría
+  (con sus etapas, materiales multimediales, actividades y la planilla de
+  estructura). El sistema la analiza y te muestra el plan de maquetación.</p>
+  <form action="{{ url_for('subir') }}" method="post" enctype="multipart/form-data">
+    <input type="file" name="zip" accept=".zip" required>
+    <button class="btn" type="submit">Subir y analizar</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Cursos disponibles</h2>
+  {% if cursos %}
+  <table>
+    <tr><th>Curso</th><th></th></tr>
+    {% for id, carpeta in cursos.items() %}
+    <tr>
+      <td>{{ carpeta.name }}</td>
+      <td style="text-align:right">
+        <a class="btn btn-sec" href="{{ url_for('ver_curso', curso_id=id) }}">
+          Ver plan</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p class="muted">Todavía no hay cursos cargados.</p>
+  {% endif %}
+</div>
+{% endblock %}

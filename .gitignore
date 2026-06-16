@@ -1,3 +1,4 @@
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -6,10 +7,19 @@ __pycache__/
 env/
 venv/
 ENV/
-env.bak/
-venv.bak/
+.DS_Store
+
+# Generado / pesado (no se versiona)
 output/
 input/
-*_extracted_*/
+casos/
 *.imscc
-.DS_Store
+.claude/
+_bib_tmp.py
+
+# 'Elementos de las aulas': SOLO las aulas base se versionan (necesarias para
+# generar). El resto (ZIPs de entrega, aulas hechas a mano, catálogos cidiplus)
+# es pesado y queda local.
+Elementos de las aulas/*
+!Elementos de las aulas/_extracted_educacion
+!Elementos de las aulas/_extracted_posgrado
