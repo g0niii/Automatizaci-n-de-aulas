@@ -24,7 +24,8 @@ from flask import (Flask, render_template, request, redirect, url_for,
 
 from maquetador.cli import analizar_curso
 from maquetador.extract.extractor import extraer_contenido
-from maquetador.models import Severidad, TipoItem
+from maquetador.models import (Severidad, TipoItem, CourseSpec, ModuloCurso,
+                               ItemCurso, FuenteContenido, Issue)
 from maquetador.plan import guardar_plan, TEMAS_DISPONIBLES
 from maquetador.web.api import guardar_cambios_plan
 
@@ -136,6 +137,148 @@ def _ultimo_paquete_de(spec):
     paquetes = sorted(OUTPUT_DIR.glob(f"{prefijo}_*.imscc"),
                       key=lambda p: p.stat().st_mtime, reverse=True)
     return paquetes[0].name if paquetes else None
+
+
+def _plan_dict_a_coursespec(plan_dict: dict) -> tuple[CourseSpec, list[str]]:
+    """Convierte un plan dict (del JSON) a un CourseSpec.
+
+    Args:
+        plan_dict: Dict con estructura del plan (de JSON)
+
+    Returns:
+        (spec, errores) donde errores es lista de mensajes de error (vacía si OK)
+    """
+    errores = []
+
+    # Validar campos obligatorios
+    requeridos = ["nombre", "modulos", "items_inicio", "afi"]
+    for campo in requeridos:
+        if campo not in plan_dict:
+            errores.append(f"Falta campo requerido: {campo}")
+
+    if errores:
+        return None, errores
+
+    try:
+        # Crear CourseSpec
+        spec = CourseSpec(
+            nombre=plan_dict.get("nombre", "Sin nombre"),
+            codigo=plan_dict.get("codigo", ""),
+            tema=plan_dict.get("tema", "educacion"),
+            docentes=plan_dict.get("docentes", []),
+        )
+
+        # Reconstructo módulos
+        for mod_dict in plan_dict.get("modulos", []):
+            items = []
+            for item_dict in mod_dict.get("items", []):
+                # Reconstruir FuenteContenido
+                fuente_dict = item_dict.get("fuente", {})
+                fuente = FuenteContenido(
+                    archivo=Path(fuente_dict.get("archivo"))
+                           if fuente_dict.get("archivo") else None,
+                    seccion=fuente_dict.get("seccion"),
+                    confianza=fuente_dict.get("confianza", 0.95)
+                )
+
+                # Reconstruir Issue list
+                issues = []
+                for issue_dict in item_dict.get("issues", []):
+                    sev = issue_dict.get("severidad", "info")
+                    try:
+                        sev = Severidad(sev)
+                    except ValueError:
+                        sev = Severidad.INFO
+                    issues.append(Issue(
+                        severidad=sev,
+                        mensaje=issue_dict.get("mensaje", ""),
+                        contexto=issue_dict.get("contexto", "")
+                    ))
+
+                # Reconstruir ItemCurso
+                tipo_str = item_dict.get("tipo", "pagina")
+                try:
+                    tipo = TipoItem(tipo_str)
+                except ValueError:
+                    tipo = TipoItem.PAGINA
+
+                item = ItemCurso(
+                    titulo=item_dict.get("titulo", ""),
+                    tipo=tipo,
+                    orden=item_dict.get("orden", 0),
+                    fuente=fuente,
+                    estado_planilla=item_dict.get("estado_planilla", ""),
+                    comentarios_asesor=item_dict.get("comentarios_asesor", ""),
+                    detalle=item_dict.get("detalle", {}),
+                    issues=issues
+                )
+                items.append(item)
+
+            # Crear ModuloCurso
+            modulo = ModuloCurso(
+                numero=mod_dict.get("numero", 0),
+                titulo=mod_dict.get("titulo", ""),
+                items=items
+            )
+            spec.modulos.append(modulo)
+
+        # Reconstruir items_inicio
+        for item_dict in plan_dict.get("items_inicio", []):
+            fuente_dict = item_dict.get("fuente", {})
+            fuente = FuenteContenido(
+                archivo=Path(fuente_dict.get("archivo"))
+                       if fuente_dict.get("archivo") else None,
+                seccion=fuente_dict.get("seccion"),
+                confianza=fuente_dict.get("confianza", 0.95)
+            )
+            tipo_str = item_dict.get("tipo", "pagina")
+            try:
+                tipo = TipoItem(tipo_str)
+            except ValueError:
+                tipo = TipoItem.PAGINA
+            item = ItemCurso(
+                titulo=item_dict.get("titulo", ""),
+                tipo=tipo,
+                orden=item_dict.get("orden", 0),
+                fuente=fuente,
+                estado_planilla=item_dict.get("estado_planilla", ""),
+                comentarios_asesor=item_dict.get("comentarios_asesor", ""),
+                detalle=item_dict.get("detalle", {}),
+                issues=[]
+            )
+            spec.items_inicio.append(item)
+
+        # Reconstruir afi (Actividad Final Integradora)
+        for item_dict in plan_dict.get("afi", []):
+            fuente_dict = item_dict.get("fuente", {})
+            fuente = FuenteContenido(
+                archivo=Path(fuente_dict.get("archivo"))
+                       if fuente_dict.get("archivo") else None,
+                seccion=fuente_dict.get("seccion"),
+                confianza=fuente_dict.get("confianza", 0.95)
+            )
+            tipo_str = item_dict.get("tipo", "pagina")
+            try:
+                tipo = TipoItem(tipo_str)
+            except ValueError:
+                tipo = TipoItem.PAGINA
+            item = ItemCurso(
+                titulo=item_dict.get("titulo", ""),
+                tipo=tipo,
+                orden=item_dict.get("orden", 0),
+                fuente=fuente,
+                estado_planilla=item_dict.get("estado_planilla", ""),
+                comentarios_asesor=item_dict.get("comentarios_asesor", ""),
+                detalle=item_dict.get("detalle", {}),
+                issues=[]
+            )
+            spec.afi.append(item)
+
+        return spec, []
+
+    except Exception as e:
+        errores.append(f"Error reconstruyendo CourseSpec: {str(e)}")
+        return None, errores
 
 
 @app.route("/curso/<curso_id>/generar", methods=["POST"])
@@ -295,6 +438,105 @@ def guardar_plan_editado(plan_id):
             return jsonify(resultado), 500
 
     return jsonify(resultado), 200
+
+
+@app.route("/plan/<plan_id>/generar", methods=["GET"])
+def generar_desde_plan_editado(plan_id):
+    """Genera IMSCC a partir de un plan editado.
+
+    Workflow:
+      1. Validar plan_id (contra traversal)
+      2. Cargar plan JSON desde OUTPUT_DIR/planes
+      3. Reconstruir CourseSpec desde plan dict
+      4. Extraer contenido
+      5. Generar IMSCC
+      6. Redirigir con descarga
+
+    Args:
+        plan_id: Identificador del plan (ej: plan_001, plan_EP00356)
+
+    Returns:
+        Redirige a /descargar/<archivo.imscc> con flash de éxito
+        o a index con flash de error.
+    """
+    # Validar plan_id contra traversal
+    if ".." in plan_id or "/" in plan_id:
+        flash("plan_id inválido.", "error")
+        return redirect(url_for("index"))
+
+    # Buscar plan
+    planes_dir = OUTPUT_DIR / "planes"
+    plan_path = (planes_dir / plan_id).with_suffix(".json")
+
+    # Validar que está dentro de OUTPUT_DIR
+    try:
+        plan_path = plan_path.resolve()
+        if not str(plan_path).startswith(str((OUTPUT_DIR / "planes").resolve())):
+            flash("Acceso denegado.", "error")
+            return redirect(url_for("index"))
+    except (OSError, ValueError):
+        flash("plan_id inválido.", "error")
+        return redirect(url_for("index"))
+
+    if not plan_path.exists():
+        flash("Plan no encontrado.", "error")
+        return redirect(url_for("index"))
+
+    # Leer plan editado
+    try:
+        with open(plan_path, "r", encoding="utf-8") as f:
+            plan_dict = json.load(f)
+    except (json.JSONDecodeError, IOError) as e:
+        flash(f"Error leyendo plan: {e}", "error")
+        return redirect(url_for("index"))
+
+    # Reconstruir CourseSpec
+    spec, errores = _plan_dict_a_coursespec(plan_dict)
+    if errores:
+        flash("Error reconstruyendo especificación: " + "; ".join(errores),
+              "error")
+        return redirect(url_for("index"))
+
+    # Validar que no hay bloqueantes
+    bloqueantes = [s for i in spec.todos_los_items() for s in i.issues
+                   if s.severidad == Severidad.BLOQUEANTE]
+    bloqueantes += [s for s in spec.issues
+                    if s.severidad == Severidad.BLOQUEANTE]
+
+    if bloqueantes:
+        flash(f"No se generó el paquete: hay {len(bloqueantes)} problemas "
+              "bloqueantes.", "error")
+        # Redirigir a editar para que vea los problemas
+        return redirect(url_for("editar_plan", plan_id=plan_id))
+
+    # Extraer contenido (buscar archivos originales si existen)
+    # Nota: El plan editado no cambia las rutas de archivos fuente,
+    # así que buscamos media en los directorios conocidos.
+    try:
+        media = {}
+        # Intentar extraer si hay carpeta_origen en el plan
+        if plan_dict.get("carpeta_origen"):
+            carpeta = Path(plan_dict["carpeta_origen"])
+            if carpeta.exists():
+                media = extraer_contenido(spec)
+    except Exception as e:
+        # Si no hay media, continuamos igual (puede ser plan solo con cambios)
+        media = {}
+
+    # Generar IMSCC
+    try:
+        from maquetador.build.imscc_builder import generar_imscc
+        salida = generar_imscc(spec, media, OUTPUT_DIR)
+    except Exception as e:
+        flash(f"Error generando el paquete: {e}", "error")
+        return redirect(url_for("index"))
+
+    # Guardar plan nuevamente (por si acaso)
+    guardar_plan(spec, OUTPUT_DIR / "planes")
+
+    flash(f"✅ Paquete regenerado: {salida.name} — descargalo con el botón de abajo.",
+          "ok")
+    return redirect(url_for("descargar", nombre=salida.name))
 
 
 if __name__ == "__main__":
