@@ -76,75 +76,7 @@
   </div>
 </form>
 
-<script>
-document.getElementById('form-edit-plan').addEventListener('submit', async function(e) {
-  e.preventDefault();
-
-  // Construir plan editado desde el formulario
-  const planEditado = {
-    nombre: document.getElementById('nombre').value,
-    codigo: document.getElementById('codigo').value,
-    tema: document.getElementById('tema').value,
-    docentes: [],
-    items_inicio: [],
-    modulos: [],
-    afi: [],
-    issues: []
-  };
-
-  // Recorrer módulos
-  document.querySelectorAll('.modulo-block').forEach((modBlock, modIdx) => {
-    const modulo = {
-      numero: modIdx + 1,
-      titulo: modBlock.querySelector('.modulo-header h4').textContent.replace(/Módulo \d+: /, ''),
-      items: []
-    };
-
-    // Recorrer items del módulo
-    modBlock.querySelectorAll('.item-block').forEach((itemBlock, itemIdx) => {
-      const item = {
-        titulo: itemBlock.querySelector('.item-titulo').value,
-        tipo: itemBlock.querySelector('.item-tipo').value,
-        orden: itemIdx + 1,
-        fuente: {
-          archivo: itemBlock.querySelector('.item-archivo').value || null,
-          seccion: itemBlock.querySelector('.item-seccion').value || null,
-          confianza: 0.95,
-          tiene_html: false
-        },
-        estado_planilla: 'Obligatorio',
-        comentarios_asesor: '',
-        detalle: {},
-        issues: []
-      };
-      modulo.items.push(item);
-    });
-
-    planEditado.modulos.push(modulo);
-  });
-
-  // Enviar al servidor
-  try {
-    const response = await fetch('{{ url_for("guardar_plan_editado", plan_id=plan_id) }}', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan: planEditado })
-    });
-
-    const resultado = await response.json();
-
-    if (resultado.exito) {
-      alert('✅ Cambios guardados exitosamente');
-      // Redirigir de vuelta al plan
-      window.location.href = '{{ url_for("ver_curso", curso_id=curso_id, tema=plan.tema) }}';
-    } else {
-      alert('❌ Error al guardar: ' + resultado.errores.join(', '));
-    }
-  } catch (error) {
-    alert('Error de red: ' + error.message);
-  }
-});
-</script>
+<script src="{{ url_for('static', filename='js/edit_plan.js') }}"></script>
 
 <style>
   .form-group {
