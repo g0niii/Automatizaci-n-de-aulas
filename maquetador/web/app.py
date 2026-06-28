@@ -179,6 +179,54 @@ def descargar(nombre):
     return send_file(path, as_attachment=True)
 
 
+@app.route("/plan/<plan_id>/edit", methods=["GET"])
+def editar_plan(plan_id):
+    """Muestra el formulario para editar un plan.
+
+    Args:
+        plan_id: Identificador del plan (ej: plan_001, plan_EP00356)
+
+    Returns:
+        Página HTML con formulario de edición del plan.
+    """
+    # Validar plan_id contra traversal
+    if ".." in plan_id or "/" in plan_id:
+        flash("plan_id inválido.", "error")
+        return redirect(url_for("index"))
+
+    # Buscar plan original
+    planes_dir = OUTPUT_DIR / "planes"
+    plan_path = (planes_dir / plan_id).with_suffix(".json")
+
+    # Validar que está dentro de OUTPUT_DIR
+    try:
+        plan_path = plan_path.resolve()
+        if not str(plan_path).startswith(str((OUTPUT_DIR / "planes").resolve())):
+            flash("Acceso denegado.", "error")
+            return redirect(url_for("index"))
+    except (OSError, ValueError):
+        flash("plan_id inválido.", "error")
+        return redirect(url_for("index"))
+
+    if not plan_path.exists():
+        flash("Plan no encontrado.", "error")
+        return redirect(url_for("index"))
+
+    # Leer plan original
+    try:
+        with open(plan_path, "r", encoding="utf-8") as f:
+            plan = json.load(f)
+    except (json.JSONDecodeError, IOError) as e:
+        flash(f"Error leyendo plan: {e}", "error")
+        return redirect(url_for("index"))
+
+    # Extraer curso_id desde el plan o usar uno por defecto
+    curso_id = plan.get("curso_id", "")
+
+    return render_template("edit_plan.html", plan=plan, plan_id=plan_id,
+                           curso_id=curso_id)
+
+
 @app.route("/api/plan/<plan_id>/guardar", methods=["POST"])
 def guardar_plan_editado(plan_id):
     """API para guardar cambios en un plan.

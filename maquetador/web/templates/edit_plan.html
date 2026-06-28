@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+<div class="card">
+  <h2>Editar plan: {{ plan.nombre }}</h2>
+  <p class="muted">
+    {% if plan.codigo %}Código: <b>{{ plan.codigo }}</b> · {% endif %}
+    Aula base: <b>{{ 'Educación a Distancia' if plan.tema == 'educacion' else 'Posgrado' }}</b>
+  </p>
+</div>
+
+<form id="form-edit-plan" method="post" action="{{ url_for('guardar_plan_editado', plan_id=plan_id) }}">
+  <div class="card">
+    <h3>Datos generales</h3>
+    <div class="form-group">
+      <label for="nombre">Nombre del curso:</label>
+      <input type="text" id="nombre" name="nombre" value="{{ plan.nombre }}" required>
+    </div>
+    <div class="form-group">
+      <label for="codigo">Código:</label>
+      <input type="text" id="codigo" name="codigo" value="{{ plan.codigo or '' }}">
+    </div>
+    <div class="form-group">
+      <label for="tema">Aula base:</label>
+      <select id="tema" name="tema" required>
+        <option value="educacion" {% if plan.tema == 'educacion' %}selected{% endif %}>Educación a Distancia</option>
+        <option value="posgrado" {% if plan.tema == 'posgrado' %}selected{% endif %}>Posgrado</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Módulos e ítems</h3>
+    <div id="modulos-container">
+      {% for mod in plan['modulos'] %}
+      <div class="modulo-block" data-modulo-idx="{{ loop.index0 }}">
+        <div class="modulo-header">
+          <h4>Módulo {{ mod['numero'] }}: {{ mod['titulo'] }}</h4>
+        </div>
+        <div class="items-container">
+          {% for item in mod['items'] %}
+          <div class="item-block" data-item-idx="{{ loop.index0 }}">
+            <div class="item-field">
+              <label>Título:</label>
+              <input type="text" class="item-titulo" value="{{ item['titulo'] }}" required>
+            </div>
+            <div class="item-field">
+              <label>Tipo:</label>
+              <select class="item-tipo">
+                <option value="pagina" {% if item['tipo'] == 'pagina' %}selected{% endif %}>Página</option>
+                <option value="video" {% if item['tipo'] == 'video' %}selected{% endif %}>Video</option>
+                <option value="foro" {% if item['tipo'] == 'foro' %}selected{% endif %}>Foro</option>
+                <option value="tarea" {% if item['tipo'] == 'tarea' %}selected{% endif %}>Tarea</option>
+                <option value="evaluacion" {% if item['tipo'] == 'evaluacion' %}selected{% endif %}>Evaluación</option>
+              </select>
+            </div>
+            <div class="item-field">
+              <label>Archivo fuente:</label>
+              <input type="text" class="item-archivo" value="{{ item['fuente']['archivo'] or '' }}">
+            </div>
+            <div class="item-field">
+              <label>Sección:</label>
+              <input type="text" class="item-seccion" value="{{ item['fuente']['seccion'] or '' }}">
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card form-actions">
+    <button type="submit" class="btn" id="btn-guardar">💾 Guardar cambios</button>
+    <a href="{{ url_for('ver_curso', curso_id=curso_id, tema=plan.tema) }}" class="btn btn-sec">← Volver</a>
+  </div>
+</form>
+
+<script>
+document.getElementById('form-edit-plan').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  // Construir plan editado desde el formulario
+  const planEditado = {
+    nombre: document.getElementById('nombre').value,
+    codigo: document.getElementById('codigo').value,
+    tema: document.getElementById('tema').value,
+    docentes: [],
+    items_inicio: [],
+    modulos: [],
+    afi: [],
+    issues: []
+  };
+
+  // Recorrer módulos
+  document.querySelectorAll('.modulo-block').forEach((modBlock, modIdx) => {
+    const modulo = {
+      numero: modIdx + 1,
+      titulo: modBlock.querySelector('.modulo-header h4').textContent.replace(/Módulo \d+: /, ''),
+      items: []
+    };
+
+    // Recorrer items del módulo
+    modBlock.querySelectorAll('.item-block').forEach((itemBlock, itemIdx) => {
+      const item = {
+        titulo: itemBlock.querySelector('.item-titulo').value,
+        tipo: itemBlock.querySelector('.item-tipo').value,
+        orden: itemIdx + 1,
+        fuente: {
+          archivo: itemBlock.querySelector('.item-archivo').value || null,
+          seccion: itemBlock.querySelector('.item-seccion').value || null,
+          confianza: 0.95,
+          tiene_html: false
+        },
+        estado_planilla: 'Obligatorio',
+        comentarios_asesor: '',
+        detalle: {},
+        issues: []
+      };
+      modulo.items.push(item);
+    });
+
+    planEditado.modulos.push(modulo);
+  });
+
+  // Enviar al servidor
+  try {
+    const response = await fetch('{{ url_for("guardar_plan_editado", plan_id=plan_id) }}', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan: planEditado })
+    });
+
+    const resultado = await response.json();
+
+    if (resultado.exito) {
+      alert('✅ Cambios guardados exitosamente');
+      // Redirigir de vuelta al plan
+      window.location.href = '{{ url_for("ver_curso", curso_id=curso_id, tema=plan.tema) }}';
+    } else {
+      alert('❌ Error al guardar: ' + resultado.errores.join(', '));
+    }
+  } catch (error) {
+    alert('Error de red: ' + error.message);
+  }
+});
+</script>
+
+<style>
+  .form-group {
+    margin-bottom: 14px;
+  }
+
+  .form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--oscuro);
+    font-size: 14px;
+  }
+
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+
+  .modulo-block {
+    background: #f9fafb;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+
+  .modulo-header h4 {
+    margin: 0 0 12px;
+    color: var(--azul);
+    font-size: 15px;
+  }
+
+  .item-block {
+    background: #fff;
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+
+  .item-field {
+    margin-bottom: 10px;
+  }
+
+  .item-field:last-child {
+    margin-bottom: 0;
+  }
+
+  .item-field label {
+    display: block;
+    font-weight: 500;
+    font-size: 13px;
+    margin-bottom: 4px;
+    color: #5a6577;
+  }
+
+  .item-field input,
+  .item-field select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--borde);
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+
+  .form-actions {
+    text-align: center;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .form-actions .btn {
+    margin: 0;
+  }
+</style>
+{% endblock %}
