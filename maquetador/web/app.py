@@ -9,6 +9,7 @@ Ejecutar:  python -m maquetador.web.app   (luego abrir http://localhost:5000)
 """
 
 import io
+import json
 import re
 import shutil
 import sys
@@ -19,12 +20,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 from flask import (Flask, render_template, request, redirect, url_for,
-                   send_file, flash)
+                   send_file, flash, jsonify)
 
 from maquetador.cli import analizar_curso
 from maquetador.extract.extractor import extraer_contenido
 from maquetador.models import Severidad, TipoItem
 from maquetador.plan import guardar_plan, TEMAS_DISPONIBLES
+from maquetador.web.api import guardar_cambios_plan
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 CURSOS_DIRS = [BASE_DIR / "cursos_subidos", BASE_DIR / "casos"]
@@ -175,6 +177,76 @@ def descargar(nombre):
         flash("Archivo no encontrado.", "error")
         return redirect(url_for("index"))
     return send_file(path, as_attachment=True)
+
+
+@app.route("/api/plan/<plan_id>/guardar", methods=["POST"])
+def guardar_plan_editado(plan_id):
+    """API para guardar cambios en un plan.
+
+    POST body:
+    {
+      "plan": { plan editado como dict }
+    }
+
+    Returns:
+    {
+      "exito": bool,
+      "cambios": [...],
+      "errores": [...],
+      "ruta_guardada": "planes/plan_XXX.json" (si exito=True)
+    }
+    """
+    # Validar plan_id contra traversal
+    if ".." in plan_id or "/" in plan_id:
+        return jsonify({"exito": False, "cambios": [], "errores": ["plan_id inválido"]}), 400
+
+    # Buscar plan original
+    planes_dir = OUTPUT_DIR / "planes"
+    plan_path = (planes_dir / plan_id).with_suffix(".json")
+
+    # Validar que está dentro de OUTPUT_DIR
+    try:
+        plan_path = plan_path.resolve()
+        if not str(plan_path).startswith(str((OUTPUT_DIR / "planes").resolve())):
+            return jsonify({"exito": False, "cambios": [], "errores": ["Acceso denegado"]}), 403
+    except (OSError, ValueError):
+        return jsonify({"exito": False, "cambios": [], "errores": ["plan_id inválido"]}), 400
+
+    if not plan_path.exists():
+        return jsonify({"exito": False, "cambios": [], "errores": ["Plan no encontrado"]}), 404
+
+    # Leer plan original
+    try:
+        with open(plan_path, "r", encoding="utf-8") as f:
+            plan_original = json.load(f)
+    except (json.JSONDecodeError, IOError) as e:
+        return jsonify({"exito": False, "cambios": [], "errores": [f"Error leyendo plan: {e}"]}), 500
+
+    # Obtener plan editado del request
+    try:
+        data = request.get_json()
+        if not data or "plan" not in data:
+            return jsonify({"exito": False, "cambios": [], "errores": ["Request debe incluir 'plan'"]}), 400
+        plan_editado = data["plan"]
+    except Exception as e:
+        return jsonify({"exito": False, "cambios": [], "errores": [f"Error parseando request: {e}"]}), 400
+
+    # Comparar y validar cambios
+    resultado = guardar_cambios_plan(plan_original, plan_editado)
+
+    # Si no hay errores, guardar
+    if resultado["exito"]:
+        try:
+            planes_dir.mkdir(parents=True, exist_ok=True)
+            with open(plan_path, "w", encoding="utf-8") as f:
+                json.dump(plan_editado, f, indent=2, ensure_ascii=False)
+            resultado["ruta_guardada"] = f"planes/{plan_path.name}"
+        except IOError as e:
+            resultado["exito"] = False
+            resultado["errores"].append(f"Error guardando: {e}")
+            return jsonify(resultado), 500
+
+    return jsonify(resultado), 200
 
 
 if __name__ == "__main__":
