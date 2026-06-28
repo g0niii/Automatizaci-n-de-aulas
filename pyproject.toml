@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "maquetador"
+version = "1.0.0"
+description = "Generador IMSCC para Canvas LMS - UCC"
+authors = [{name = "SIED UCC", email = "tecnologia.sied@ucc.edu.ar"}]
+requires-python = ">=3.11"
+license = {text = "MIT"}
+dependencies = [
+    "python-docx>=1.1.0",
+    "openpyxl>=3.1.0",
+    "Pillow>=10.0.0",
+    "Jinja2>=3.1.0",
+    "lxml>=5.0.0",
+    "mammoth>=1.8.0",
+    "beautifulsoup4>=4.12.0",
+    "Flask>=3.0.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "--cov=maquetador --cov-report=term-missing --cov-report=html --tb=short -v"
+minversion = "7.0"
+norecursedirs = [".git", ".pytest_cache", "__pycache__", "output", "casos"]
+
+[tool.coverage.run]
+source = ["maquetador"]
+omit = ["*/tests/*", "*/test_*.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+precision = 2
