@@ -63,8 +63,8 @@ class TestEstructuraIMSCC:
         with zipfile.ZipFile(imscc_path, 'r') as z:
             manifest_content = z.read('imsmanifest.xml')
             root = ET.fromstring(manifest_content)
-            # Namespace IMS
-            ns = {'imscc': 'http://www.imsglobal.org/xsd/imscp_v1p1'}
+            # Namespace IMS (versión v1p1)
+            ns = {'imscc': 'http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1'}
             organizations = root.findall('.//imscc:organizations', ns)
             assert len(organizations) > 0, "No organizations encontrada"
 
@@ -80,7 +80,7 @@ class TestEstructuraIMSCC:
             root = ET.fromstring(manifest_content)
 
             # Extrae todos los identifiers de resources
-            ns = {'imscc': 'http://www.imsglobal.org/xsd/imscp_v1p1'}
+            ns = {'imscc': 'http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1'}
             resources = root.findall('.//imscc:resource', ns)
             resource_ids = {r.get('identifier') for r in resources if r.get('identifier')}
 
