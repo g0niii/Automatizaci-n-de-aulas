@@ -72,15 +72,28 @@ body {
 .header-logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   font-size: 18px;
   font-weight: 700;
   flex-shrink: 0;
 }
 
-.header-logo img {
-  height: 40px;
+.header-logo .logo-img {
+  height: 38px;
   width: auto;
+  background: var(--color-white);
+  padding: 6px 10px;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.header-logo .logo-text {
+  color: var(--color-white);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  border-left: 2px solid rgba(255, 255, 255, 0.3);
+  padding-left: 14px;
 }
 
 /* Navegación Central */
@@ -414,10 +427,16 @@ body {
 
   .header-logo {
     font-size: 14px;
+    gap: 0;
   }
 
-  .header-logo img {
-    height: 32px;
+  .header-logo .logo-img {
+    height: 30px;
+    padding: 4px 7px;
+  }
+
+  .header-logo .logo-text {
+    display: none;
   }
 
   .header-nav {
