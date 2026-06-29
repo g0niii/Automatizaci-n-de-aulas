@@ -3,42 +3,68 @@
 {% block contenido %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
 
-<div class="sidebar">
-  <h1>🔧 Maquetador</h1>
+<!-- HEADER HORIZONTAL -->
+<header class="header">
+  <div class="header-container">
+    <!-- Logo + Brand -->
+    <div class="header-logo">
+      <span>🎓 Maquetador UCC</span>
+    </div>
 
-  <div class="nav-items">
-    <div class="nav-item">📊 Dashboard</div>
-    <a href="#" style="color: #cfd6e4; text-decoration: none;">
-      <div class="nav-item">📦 Todos los cursos</div>
-    </a>
+    <!-- Nav Items (Desktop) -->
+    <nav class="header-nav">
+      <a href="#" class="nav-item active">Dashboard</a>
+      <a href="#" class="nav-item">Cursos</a>
+      <a href="#" class="nav-item">Configuración</a>
+    </nav>
+
+    <!-- Right: Theme + Profile -->
+    <div class="header-right">
+      <select id="tema-selector" class="theme-select">
+        <option value="educacion" {% if session.get('tema') == 'educacion' %}selected{% endif %}>Educación</option>
+        <option value="posgrado" {% if session.get('tema') == 'posgrado' %}selected{% endif %}>Posgrado</option>
+      </select>
+
+      <div class="profile-dropdown">
+        <button class="profile-btn">👤 Perfil</button>
+      </div>
+    </div>
+
+    <!-- Hamburger Menu (Mobile) -->
+    <button class="hamburger-menu" id="hamburger-btn">☰</button>
   </div>
 
-  <div class="theme-selector">
-    <label>🎨 Tema:</label>
-    <select id="tema-selector">
-      <option value="educacion" {% if session.get('tema') == 'educacion' %}selected{% endif %}>Educación a Distancia</option>
-      <option value="posgrado" {% if session.get('tema') == 'posgrado' %}selected{% endif %}>Posgrado</option>
-    </select>
-    <div class="muted" style="margin-top: 8px; font-size: 11px;">Cambiar tema → aplica a nuevas cargas</div>
+  <!-- Mobile Menu (Hidden) -->
+  <div class="mobile-menu" id="mobile-menu">
+    <nav class="mobile-nav">
+      <a href="#" class="mobile-nav-item">Dashboard</a>
+      <a href="#" class="mobile-nav-item">Cursos</a>
+      <a href="#" class="mobile-nav-item">Configuración</a>
+    </nav>
   </div>
-</div>
+</header>
 
-<div class="main-area">
+<!-- MAIN CONTENT -->
+<main class="main-area">
   <div class="main-header">
     <h2>Maquetador UCC - Cursos</h2>
   </div>
 
+  <!-- DRAG ZONE -->
   <div class="drag-zone" id="drag-zone">
     <div class="drag-zone-icon">📁</div>
     <div class="drag-zone-text">Arrastra tu ZIP aquí</div>
     <div class="drag-zone-subtext">O haz click para seleccionar archivo</div>
     <button class="drag-zone-button" onclick="document.getElementById('file-input').click();">Seleccionar archivo</button>
     <input type="file" id="file-input" accept=".zip,.rar">
-    <div class="current-theme">Tema actual: <strong id="tema-display">{{ 'Educación a Distancia' if session.get('tema') == 'educacion' else 'Posgrado' }}</strong></div>
+    <div class="current-theme">
+      Tema actual: <strong id="tema-display">{{ 'Educación' if session.get('tema') == 'educacion' else 'Posgrado' }}</strong>
+    </div>
   </div>
 
-  <div class="courses-section">
-    <div class="courses-title">Cursos disponibles</div>
+  <!-- COURSES SECTION -->
+  <section class="courses-section">
+    <h2 class="courses-title">Cursos disponibles</h2>
     <div class="courses-grid" id="courses-grid">
       {% for course in courses %}
       <div class="course-card">
@@ -46,11 +72,16 @@
           <div class="course-name">{{ course.nombre }}</div>
           <div class="course-theme">{{ 'Educación' if course.tema == 'educacion' else 'Posgrado' }}</div>
         </div>
+
         <div class="course-info">
           <span>{{ course.modulos|length if course.modulos else 0 }} módulos</span>
           <span>{{ course.items_count or 0 }} items</span>
         </div>
-        <div class="course-status">✅ Listo</div>
+
+        <div class="course-status">
+          ✅ Listo
+        </div>
+
         <div class="course-actions">
           <a href="{{ url_for('editar_plan', plan_id=course.plan_id or course.nombre) }}" class="course-action">Ver plan</a>
           <button class="course-action" onclick="editarPlan('{{ course.plan_id or course.nombre }}')">Editar</button>
@@ -59,8 +90,23 @@
       </div>
       {% endfor %}
     </div>
-  </div>
-</div>
+  </section>
+</main>
 
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+<!-- Hamburger menu toggle (Mobile) -->
+<script>
+  document.getElementById('hamburger-btn').addEventListener('click', function() {
+    const menu = document.getElementById('mobile-menu');
+    menu.classList.toggle('active');
+  });
+
+  // Cerrar menu al hacer click en un item
+  document.querySelectorAll('.mobile-nav-item').forEach(item => {
+    item.addEventListener('click', function() {
+      document.getElementById('mobile-menu').classList.remove('active');
+    });
+  });
+</script>
 {% endblock %}
