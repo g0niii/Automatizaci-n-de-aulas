@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+<div class="sidebar">
+  <h1>🔧 Maquetador</h1>
+
+  <div class="nav-items">
+    <div class="nav-item">📊 Dashboard</div>
+    <a href="#" style="color: #cfd6e4; text-decoration: none;">
+      <div class="nav-item">📦 Todos los cursos</div>
+    </a>
+  </div>
+
+  <div class="theme-selector">
+    <label>🎨 Tema:</label>
+    <select id="tema-selector">
+      <option value="educacion" {% if session.get('tema') == 'educacion' %}selected{% endif %}>Educación a Distancia</option>
+      <option value="posgrado" {% if session.get('tema') == 'posgrado' %}selected{% endif %}>Posgrado</option>
+    </select>
+    <div class="muted" style="margin-top: 8px; font-size: 11px;">Cambiar tema → aplica a nuevas cargas</div>
+  </div>
+</div>
+
+<div class="main-area">
+  <div class="main-header">
+    <h2>Maquetador UCC - Cursos</h2>
+  </div>
+
+  <div class="drag-zone" id="drag-zone">
+    <div class="drag-zone-icon">📁</div>
+    <div class="drag-zone-text">Arrastra tu ZIP aquí</div>
+    <div class="drag-zone-subtext">O haz click para seleccionar archivo</div>
+    <button class="drag-zone-button" onclick="document.getElementById('file-input').click();">Seleccionar archivo</button>
+    <input type="file" id="file-input" accept=".zip,.rar">
+    <div class="current-theme">Tema actual: <strong id="tema-display">{{ 'Educación a Distancia' if session.get('tema') == 'educacion' else 'Posgrado' }}</strong></div>
+  </div>
+
+  <div class="courses-section">
+    <div class="courses-title">Cursos disponibles</div>
+    <div class="courses-grid" id="courses-grid">
+      {% for course in courses %}
+      <div class="course-card">
+        <div class="course-header">
+          <div class="course-name">{{ course.nombre }}</div>
+          <div class="course-theme">{{ 'Educación' if course.tema == 'educacion' else 'Posgrado' }}</div>
+        </div>
+        <div class="course-info">
+          <span>{{ course.modulos|length if course.modulos else 0 }} módulos</span>
+          <span>{{ course.items_count or 0 }} items</span>
+        </div>
+        <div class="course-status">✅ Listo</div>
+        <div class="course-actions">
+          <a href="{{ url_for('ver_plan', plan_id=course.plan_id or course.nombre) }}" class="course-action">Ver plan</a>
+          <button class="course-action" onclick="editarPlan('{{ course.plan_id or course.nombre }}')">Editar</button>
+          <button class="course-action danger" onclick="eliminarCurso('{{ course.codigo or course.nombre }}')">Eliminar</button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
