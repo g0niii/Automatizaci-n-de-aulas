@@ -293,6 +293,74 @@ body {
   margin-bottom: 20px;
 }
 
+/* === BARRA DE BÚSQUEDA Y FILTROS (página Cursos) === */
+.filtros-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filtros-input {
+  flex: 1;
+  min-width: 220px;
+  padding: 11px 14px;
+  border: 1px solid var(--color-gray-border);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--color-gray-text);
+}
+
+.filtros-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(0, 191, 165, 0.15);
+}
+
+.filtros-tema {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.filtro-btn {
+  padding: 9px 16px;
+  border: 1px solid var(--color-gray-border);
+  background: var(--color-white);
+  color: var(--color-gray-muted);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filtro-btn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-primary);
+}
+
+.filtro-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.filtros-resultado {
+  font-size: 13px;
+  color: var(--color-gray-muted);
+  margin-bottom: 20px;
+}
+
+.sin-resultados {
+  text-align: center;
+  padding: 50px 20px;
+  color: var(--color-gray-muted);
+  font-size: 15px;
+}
+
 .courses-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

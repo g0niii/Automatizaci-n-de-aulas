@@ -19,47 +19,8 @@
   {% endif %}
 {% endwith %}
 
-<!-- HEADER HORIZONTAL -->
-<header class="header">
-  <div class="header-container">
-    <!-- Logo + Brand -->
-    <div class="header-logo">
-      <img src="{{ url_for('static', filename='img/logo-ucc-white.svg') }}" alt="Universidad Católica de Córdoba" class="logo-img">
-      <span class="logo-text">Maquetador</span>
-    </div>
-
-    <!-- Nav Items (Desktop) -->
-    <nav class="header-nav">
-      <a href="#" class="nav-item active">Dashboard</a>
-      <a href="#" class="nav-item">Cursos</a>
-      <a href="#" class="nav-item">Configuración</a>
-    </nav>
-
-    <!-- Right: Theme + Profile -->
-    <div class="header-right">
-      <select id="tema-selector" class="theme-select">
-        <option value="educacion" {% if session.get('tema') == 'educacion' %}selected{% endif %}>Educación</option>
-        <option value="posgrado" {% if session.get('tema') == 'posgrado' %}selected{% endif %}>Posgrado</option>
-      </select>
-
-      <div class="profile-dropdown">
-        <button class="profile-btn">👤 Perfil</button>
-      </div>
-    </div>
-
-    <!-- Hamburger Menu (Mobile) -->
-    <button class="hamburger-menu" id="hamburger-btn">☰</button>
-  </div>
-
-  <!-- Mobile Menu (Hidden) -->
-  <div class="mobile-menu" id="mobile-menu">
-    <nav class="mobile-nav">
-      <a href="#" class="mobile-nav-item">Dashboard</a>
-      <a href="#" class="mobile-nav-item">Cursos</a>
-      <a href="#" class="mobile-nav-item">Configuración</a>
-    </nav>
-  </div>
-</header>
+{% set pagina_activa = 'dashboard' %}
+{% include '_header.html' %}
 
 <!-- MAIN CONTENT -->
 <main class="main-area">
@@ -107,21 +68,6 @@
 </main>
 
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-
-<!-- Hamburger menu toggle (Mobile) -->
-<script>
-  document.getElementById('hamburger-btn').addEventListener('click', function() {
-    const menu = document.getElementById('mobile-menu');
-    menu.classList.toggle('active');
-  });
-
-  // Cerrar menu al hacer click en un item
-  document.querySelectorAll('.mobile-nav-item').forEach(item => {
-    item.addEventListener('click', function() {
-      document.getElementById('mobile-menu').classList.remove('active');
-    });
-  });
-</script>
 
 </body>
 </html>

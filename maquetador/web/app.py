@@ -77,12 +77,10 @@ def _extraer_zip_seguro(data: bytes, destino: Path):
 #  Rutas
 # ------------------------------------------------------------------ #
 
-@app.route('/')
-def index():
-    """Renderizar el nuevo dashboard moderno."""
+def _cargar_cursos() -> list:
+    """Lee todas las aulas procesadas desde output/planes/*.json."""
     planes_dir = OUTPUT_DIR / 'planes'
     cursos = []
-
     if planes_dir.exists():
         for archivo_plan in sorted(planes_dir.glob('plan_*.json')):
             try:
@@ -98,8 +96,19 @@ def index():
                     })
             except Exception as e:
                 app.logger.error(f"Error cargando {archivo_plan}: {e}")
+    return cursos
 
-    return render_template('dashboard.html', courses=cursos)
+
+@app.route('/')
+def index():
+    """Dashboard: subir aulas + ver las procesadas."""
+    return render_template('dashboard.html', courses=_cargar_cursos())
+
+
+@app.route('/cursos')
+def cursos():
+    """Registro completo de aulas con búsqueda y filtros."""
+    return render_template('cursos.html', courses=_cargar_cursos())
 
 
 @app.route('/api/set-tema', methods=['POST'])

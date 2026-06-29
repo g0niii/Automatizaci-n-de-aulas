@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cursos · Maquetador UCC</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+
+<!-- Mensajes flash -->
+{% with mensajes = get_flashed_messages(with_categories=true) %}
+  {% if mensajes %}
+  <div class="flash-container">
+    {% for cat, msg in mensajes %}
+      <div class="flash flash-{{ cat }}">{{ msg }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+{% endwith %}
+
+{% set pagina_activa = 'cursos' %}
+{% include '_header.html' %}
+
+<!-- MAIN CONTENT -->
+<main class="main-area">
+  <section class="courses-section" style="margin-top: 0;">
+    <h2 class="courses-title">Todas las aulas procesadas</h2>
+
+    <!-- Barra de búsqueda y filtros -->
+    <div class="filtros-bar">
+      <input type="text" id="buscador" class="filtros-input"
+             placeholder="🔍 Buscar por nombre o código...">
+      <div class="filtros-tema">
+        <button class="filtro-btn active" data-tema="todos">Todos</button>
+        <button class="filtro-btn" data-tema="educacion">Educación</button>
+        <button class="filtro-btn" data-tema="posgrado">Posgrado</button>
+      </div>
+    </div>
+
+    <div class="filtros-resultado" id="contador-resultado"></div>
+
+    <div class="courses-grid" id="courses-grid">
+      {% for course in courses %}
+      <div class="course-card"
+           data-nombre="{{ (course.nombre ~ ' ' ~ (course.codigo or '')) | lower }}"
+           data-tema="{{ course.tema }}">
+        <div class="course-header">
+          <div class="course-name">{{ course.nombre }}</div>
+          <div class="course-theme">{{ 'Educación' if course.tema == 'educacion' else 'Posgrado' }}</div>
+        </div>
+
+        <div class="course-info">
+          <span>{{ course.modulos|length if course.modulos else 0 }} módulos</span>
+          <span>{{ course.items_count or 0 }} items</span>
+        </div>
+
+        <div class="course-status">
+          ✅ Listo
+        </div>
+
+        <div class="course-actions">
+          <a href="{{ url_for('editar_plan', plan_id=course.plan_id or course.nombre) }}" class="course-action">Ver plan</a>
+          <button class="course-action" onclick="editarPlan('{{ course.plan_id or course.nombre }}')">Editar</button>
+          <button class="course-action danger" onclick="eliminarCurso('{{ course.codigo or course.nombre }}')">Eliminar</button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Mensaje cuando no hay resultados -->
+    <div class="sin-resultados" id="sin-resultados" style="display: none;">
+      No se encontraron aulas con esos criterios.
+    </div>
+  </section>
+</main>
+
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+<!-- Búsqueda y filtros (client-side) -->
+<script>
+  (function() {
+    const buscador = document.getElementById('buscador');
+    const botonesTema = document.querySelectorAll('.filtro-btn');
+    const tarjetas = Array.from(document.querySelectorAll('#courses-grid .course-card'));
+    const contador = document.getElementById('contador-resultado');
+    const sinResultados = document.getElementById('sin-resultados');
+    let temaActivo = 'todos';
+
+    // Quita tildes para que "etica" encuentre "Ética"
+    function normalizar(s) {
+      return s.normalize('NFD').replace(/[̀-ͯ]/g, '');
+    }
+
+    function aplicarFiltros() {
+      const texto = normalizar(buscador.value.trim().toLowerCase());
+      let visibles = 0;
+
+      tarjetas.forEach(function(card) {
+        const nombre = normalizar(card.getAttribute('data-nombre') || '');
+        const tema = card.getAttribute('data-tema') || '';
+        const coincideTexto = nombre.includes(texto);
+        const coincideTema = temaActivo === 'todos' || tema === temaActivo;
+
+        if (coincideTexto && coincideTema) {
+          card.style.display = '';
+          visibles++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      contador.textContent = visibles + ' de ' + tarjetas.length + ' aulas';
+      sinResultados.style.display = visibles === 0 ? 'block' : 'none';
+    }
+
+    buscador.addEventListener('input', aplicarFiltros);
+
+    botonesTema.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        botonesTema.forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        temaActivo = btn.getAttribute('data-tema');
+        aplicarFiltros();
+      });
+    });
+
+    aplicarFiltros();
+  })();
+</script>
+
+</body>
+</html>
