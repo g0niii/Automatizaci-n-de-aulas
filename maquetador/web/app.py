@@ -102,6 +102,36 @@ def index():
     return render_template('dashboard.html', courses=cursos)
 
 
+@app.route('/api/set-tema', methods=['POST'])
+def set_tema():
+    """Guardar preferencia de tema en la sesión."""
+    data = request.get_json()
+    session['tema'] = data.get('tema', 'educacion')
+    return jsonify({'success': True})
+
+
+@app.route('/api/course/<course_id>', methods=['DELETE'])
+def delete_course(course_id):
+    """Eliminar un curso y sus archivos generados."""
+    try:
+        planes_dir = OUTPUT_DIR / 'planes'
+
+        # Buscar y eliminar JSON del plan
+        archivo_plan = planes_dir / f"plan_{course_id}.json"
+        if archivo_plan.exists():
+            archivo_plan.unlink()
+
+        # Eliminar IMSCC si existe
+        archivo_imscc = OUTPUT_DIR / f"{course_id}.imscc"
+        if archivo_imscc.exists():
+            archivo_imscc.unlink()
+
+        return jsonify({'success': True, 'mensaje': 'Curso eliminado'})
+    except Exception as e:
+        app.logger.error(f"Error eliminando curso {course_id}: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 @app.route("/subir", methods=["POST"])
 def subir():
     archivo = request.files.get("zip")
