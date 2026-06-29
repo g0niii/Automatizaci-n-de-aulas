@@ -79,12 +79,9 @@ body {
 }
 
 .header-logo .logo-img {
-  height: 38px;
+  height: 52px;
   width: auto;
-  background: var(--color-white);
-  padding: 6px 10px;
-  border-radius: 6px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  display: block;
 }
 
 .header-logo .logo-text {
@@ -431,8 +428,7 @@ body {
   }
 
   .header-logo .logo-img {
-    height: 30px;
-    padding: 4px 7px;
+    height: 42px;
   }
 
   .header-logo .logo-text {
