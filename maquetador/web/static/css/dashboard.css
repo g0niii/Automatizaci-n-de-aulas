@@ -1,0 +1,256 @@
+/* ========================================
+   DASHBOARD CSS - SIDEBAR & MAIN AREA
+   ======================================== */
+
+/* SIDEBAR (Navegación) */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 220px;
+  height: 100vh;
+  background: #1b1e31;
+  color: white;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.sidebar h1 {
+  font-size: 18px;
+  margin: 0 0 30px 0;
+  font-weight: 600;
+}
+
+.nav-item {
+  display: flex;
+  padding: 12px 0;
+  color: #cfd6e4;
+  cursor: pointer;
+  font-size: 14px;
+  gap: 10px;
+  transition: color 0.2s;
+  align-items: center;
+}
+
+.nav-item:hover {
+  color: white;
+}
+
+.theme-selector {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #444;
+}
+
+.theme-selector label {
+  display: block;
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.theme-selector select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background: #2a2d42;
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* MAIN AREA */
+.main-area {
+  margin-left: 220px;
+  padding: 30px;
+  background: #f4f5f7;
+  min-height: 100vh;
+}
+
+.main-header h2 {
+  font-size: 24px;
+  margin: 0;
+  color: #1a202c;
+}
+
+/* DRAG ZONE */
+.drag-zone {
+  background: white;
+  border: 2px dashed #003087;
+  border-radius: 8px;
+  padding: 60px 20px;
+  text-align: center;
+  cursor: pointer;
+  margin-bottom: 40px;
+  transition: all 0.3s ease;
+}
+
+.drag-zone:hover {
+  background: #f9fafb;
+  border-color: #0047bf;
+}
+
+.drag-zone.dragover {
+  background: #e8f0ff;
+  border-color: #0047bf;
+}
+
+.drag-zone-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+.drag-zone-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 5px;
+}
+
+.drag-zone-subtext {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.drag-zone-button {
+  background: #003087;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.drag-zone-button:hover {
+  background: #0047bf;
+}
+
+.drag-zone input[type="file"] {
+  display: none;
+}
+
+.current-theme {
+  font-size: 12px;
+  color: #666;
+  margin-top: 10px;
+}
+
+/* TARJETAS DE CURSOS */
+.courses-section {
+  margin-top: 40px;
+}
+
+.courses-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 20px;
+}
+
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.course-card {
+  background: white;
+  border: 1px solid #d8dce3;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.course-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #b8860b;
+}
+
+.course-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.course-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a202c;
+  flex: 1;
+}
+
+.course-theme {
+  font-size: 11px;
+  background: #f0f1f3;
+  color: #666;
+  padding: 4px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.course-info {
+  display: flex;
+  gap: 15px;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.course-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #1e7e34;
+}
+
+.course-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.course-action {
+  flex: 1;
+  min-width: 70px;
+  padding: 8px 12px;
+  border: 1px solid #003087;
+  background: white;
+  color: #003087;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.course-action:hover {
+  background: #003087;
+  color: white;
+}
+
+.course-action.danger {
+  border-color: #b02a37;
+  color: #b02a37;
+}
+
+.course-action.danger:hover {
+  background: #b02a37;
+  color: white;
+}
+
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
