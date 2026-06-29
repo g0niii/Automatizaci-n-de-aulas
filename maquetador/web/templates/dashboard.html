@@ -1,7 +1,23 @@
-{% extends "base.html" %}
-
-{% block contenido %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquetador UCC</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+
+<!-- Mensajes flash -->
+{% with mensajes = get_flashed_messages(with_categories=true) %}
+  {% if mensajes %}
+  <div class="flash-container">
+    {% for cat, msg in mensajes %}
+      <div class="flash flash-{{ cat }}">{{ msg }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+{% endwith %}
 
 <!-- HEADER HORIZONTAL -->
 <header class="header">
@@ -109,4 +125,6 @@
     });
   });
 </script>
-{% endblock %}
+
+</body>
+</html>
