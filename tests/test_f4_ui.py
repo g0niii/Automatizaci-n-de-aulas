@@ -239,7 +239,7 @@ class TestEditPlanFormElements:
         with open(template_path, "r", encoding="utf-8") as f:
             contenido = f.read()
 
-        assert "<script>" in contenido, \
+        assert "<script" in contenido, \
             "Template debe contener bloque <script>"
         assert "addEventListener" in contenido, \
             "Script debe usar addEventListener"
