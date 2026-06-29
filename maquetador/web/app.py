@@ -20,7 +20,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 from flask import (Flask, render_template, request, redirect, url_for,
-                   send_file, flash, jsonify)
+                   send_file, flash, jsonify, session)
 
 from maquetador.cli import analizar_curso
 from maquetador.extract.extractor import extraer_contenido
@@ -105,9 +105,13 @@ def index():
 @app.route('/api/set-tema', methods=['POST'])
 def set_tema():
     """Guardar preferencia de tema en la sesión."""
-    data = request.get_json()
-    session['tema'] = data.get('tema', 'educacion')
-    return jsonify({'success': True})
+    try:
+        data = request.get_json() or {}
+        session['tema'] = data.get('tema', 'educacion')
+        return jsonify({'success': True})
+    except Exception as e:
+        app.logger.error(f"Error in set_tema: {e}", exc_info=True)
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/api/course/<course_id>', methods=['DELETE'])
