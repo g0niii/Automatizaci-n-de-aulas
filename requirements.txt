@@ -10,3 +10,7 @@ mammoth>=1.8.0            # Conversión DOCX → HTML limpio
 beautifulsoup4>=4.12.0     # Procesamiento y limpieza de HTML
 
 Flask>=3.0.0              # Web interna de maquetacion
+
+# Testing
+pytest>=7.0.0              # Test framework
+pytest-cov>=4.0.0          # Coverage reporting

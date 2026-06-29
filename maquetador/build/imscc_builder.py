@@ -509,7 +509,7 @@ class GeneradorAula:
             paginas = self.paginas_por_modulo.get(modulo.numero, [])
             if not paginas:
                 continue
-            titulo_mod = f"Módulo {modulo.numero}. {modulo.titulo}".strip(". ")
+            titulo_mod = xml_escape(f"Módulo {modulo.numero}. {modulo.titulo}".strip(". "))
             links = "\n".join(
                 f'<p><a class="dp-course-link" title="{t}" '
                 f'href="$WIKI_REFERENCE$/pages/{pid}">{t}</a></p>'
@@ -571,7 +571,7 @@ class GeneradorAula:
             cuerpo = construir_bibliografia(self._rutear_media(refs)) if refs else ""
             if not cuerpo:
                 continue
-            titulo_mod = f"Módulo {modulo.numero}: {modulo.titulo}".strip(": ")
+            titulo_mod = xml_escape(f"Módulo {modulo.numero}: {modulo.titulo}".strip(": "))
             secciones.append(
                 f'<h3{attr_clase} style="border-top: 0px; text-align: left;">'
                 f'<strong><span style="font-size: 18pt;">{titulo_mod}</span>'
