@@ -52,7 +52,7 @@
         </div>
         <div class="course-status">✅ Listo</div>
         <div class="course-actions">
-          <a href="{{ url_for('ver_plan', plan_id=course.plan_id or course.nombre) }}" class="course-action">Ver plan</a>
+          <a href="{{ url_for('editar_plan', plan_id=course.plan_id or course.nombre) }}" class="course-action">Ver plan</a>
           <button class="course-action" onclick="editarPlan('{{ course.plan_id or course.nombre }}')">Editar</button>
           <button class="course-action danger" onclick="eliminarCurso('{{ course.codigo or course.nombre }}')">Eliminar</button>
         </div>

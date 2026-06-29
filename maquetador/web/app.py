@@ -77,9 +77,29 @@ def _extraer_zip_seguro(data: bytes, destino: Path):
 #  Rutas
 # ------------------------------------------------------------------ #
 
-@app.route("/")
+@app.route('/')
 def index():
-    return render_template("index.html", cursos=_cursos_disponibles())
+    """Renderizar el nuevo dashboard moderno."""
+    planes_dir = OUTPUT_DIR / 'planes'
+    cursos = []
+
+    if planes_dir.exists():
+        for archivo_plan in sorted(planes_dir.glob('plan_*.json')):
+            try:
+                with open(archivo_plan, 'r', encoding='utf-8') as f:
+                    plan = json.load(f)
+                    cursos.append({
+                        'nombre': plan.get('nombre', 'Sin nombre'),
+                        'codigo': plan.get('codigo', ''),
+                        'tema': plan.get('tema', 'educacion'),
+                        'plan_id': archivo_plan.stem,
+                        'modulos': plan.get('modulos', []),
+                        'items_count': sum(len(m.get('items', [])) for m in plan.get('modulos', [])),
+                    })
+            except Exception as e:
+                app.logger.error(f"Error cargando {archivo_plan}: {e}")
+
+    return render_template('dashboard.html', courses=cursos)
 
 
 @app.route("/subir", methods=["POST"])
