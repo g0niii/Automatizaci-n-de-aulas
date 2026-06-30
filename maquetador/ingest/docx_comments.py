@@ -201,13 +201,18 @@ def aplicar_comentarios(soup, comentarios: list) -> None:
         if accion == "tooltip":
             contenido = _texto_tooltip(c["instruccion"])
             palabra = (c["anclado"] or "").strip()
-            if contenido and palabra:
+            nodo = el.find(string=lambda s: bool(s) and palabra in s) if (contenido and palabra) else None
+            if nodo is not None:
                 trigger, content = construir_popover(palabra, contenido, contador_popover)
                 contador_popover += 1
-                nuevo = BeautifulSoup(
-                    el.get_text(" ", strip=True).replace(palabra, trigger, 1)
-                    + content, "html.parser")
-                el.replace_with(nuevo)
+                antes, _, despues = nodo.partition(palabra)
+                a_tag = BeautifulSoup(trigger, "html.parser").find("a")
+                nodo.replace_with(a_tag)
+                if antes:
+                    a_tag.insert_before(antes)
+                if despues:
+                    a_tag.insert_after(despues)
+                el.insert_after(BeautifulSoup(content, "html.parser"))
                 c["_aplicado"] = True
             continue
         if accion == "cita":

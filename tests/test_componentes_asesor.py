@@ -140,3 +140,21 @@ class TestCableado:
         aplicar_comentarios(soup, comentarios)
         assert "margin-left: 40px" in str(soup)
         assert comentarios[0].get("_aplicado") is True
+
+    def test_tooltip_preserva_parrafo(self):
+        soup = BeautifulSoup("<div><p>Definición de stakeholders en proyectos ágiles.</p></div>", "html.parser")
+        comentarios = [{"instruccion": "al hacer clic aparezca: parte interesada",
+                        "anclado": "stakeholders", "accion": "tooltip", "autor": ""}]
+        aplicar_comentarios(soup, comentarios)
+        p = soup.find("p")
+        assert p is not None                          # el <p> sobrevive
+        assert "dp-popover-trigger" in str(p)         # el trigger queda DENTRO del <p>
+        assert comentarios[0].get("_aplicado") is True
+
+    def test_tooltip_palabra_ausente_no_aplica(self):
+        soup = BeautifulSoup("<div><p>Texto sin la palabra clave.</p></div>", "html.parser")
+        comentarios = [{"instruccion": "al hacer clic aparezca: X",
+                        "anclado": "inexistenteylargo", "accion": "tooltip", "autor": ""}]
+        aplicar_comentarios(soup, comentarios)
+        assert "dp-popover-trigger" not in str(soup)
+        assert comentarios[0].get("_aplicado") is not True
