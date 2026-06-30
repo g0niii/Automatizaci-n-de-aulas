@@ -47,23 +47,31 @@ def _clasificar(instruccion: str) -> str:
         return "subtitulo"
     if "acordeon" in n:
         return "acordeon"
-    if any(k in n for k in ("flip card", "flipcard", "flip-card", "tarjeta")):
+    if any(k in n for k in ("tab ", "tabs", "pestana", "pestanas", "solapa")):
+        return "tabs"
+    if any(k in n for k in ("expander", "expandible", "expandir", "acordeon-simple")):
+        return "expander"
+    if any(k in n for k in ("flip card", "flipcard", "flip-card", "tarjeta",
+                            "se dan vuelta", "se da vuelta")):
         return "flip_card"
+    if any(k in n for k in ("tooltip", "al hacer clic", "al hacer click",
+                            "emerja", "emerge", "aparezca", "popover", "globo")):
+        return "tooltip"
+    if any(k in n for k in ("es una cita", "esto es una cita", "es cita", "como cita")):
+        return "cita"
     if any(k in n for k in ("quitar", "sacar", "eliminar", "borrar")):
         return "quitar"
-    if "recuadro" in n or "resalta" in n:   # resaltar, resaltado, "resaltado simple"
+    if "recuadro" in n or "resalta" in n:
         return "recuadro_simple"
     if "lectura" in n:
         return "lectura"
     if re.search(r"\bvideo\b", n):
         return "video"
-    # Algo que FALTA o está pendiente (el comentario lo dice) → avisar.
     if any(k in n for k in ("falta", "faltante", "pendiente", "hace falta",
                             "no se pudo", "a definir", "queda pendiente",
                             "sin terminar", "incompleto", "no esta disponible",
                             "esperando")):
         return "faltante"
-    # Pedido de maquetación sin regla conocida → revisar a mano
     if n.startswith(("para maquetacion", "para el maquetado", "para diseno",
                      "para diseño", "maquetacion")):
         return "revisar"
