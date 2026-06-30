@@ -24,17 +24,17 @@
 
 <!-- MAIN CONTENT -->
 <main class="main-area">
-  <!-- DRAG ZONE -->
-  <div class="drag-zone" id="drag-zone">
+  <!-- DRAG ZONE (formulario nativo → /subir) -->
+  <form class="drag-zone" id="drag-zone" action="{{ url_for('subir') }}" method="post" enctype="multipart/form-data">
     <div class="drag-zone-icon">📁</div>
     <div class="drag-zone-text">Arrastra tu ZIP aquí</div>
     <div class="drag-zone-subtext">O haz click para seleccionar archivo</div>
-    <button class="drag-zone-button" onclick="document.getElementById('file-input').click();">Seleccionar archivo</button>
-    <input type="file" id="file-input" accept=".zip,.rar">
+    <button type="button" class="drag-zone-button" id="btn-seleccionar">Seleccionar archivo</button>
+    <input type="file" id="file-input" name="zip" accept=".zip">
     <div class="current-theme">
       Tema actual: <strong id="tema-display">{{ 'Educación' if session.get('tema') == 'educacion' else 'Posgrado' }}</strong>
     </div>
-  </div>
+  </form>
 
   <!-- COURSES SECTION -->
   <section class="courses-section">

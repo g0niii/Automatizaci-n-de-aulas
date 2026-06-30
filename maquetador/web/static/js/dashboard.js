@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Drag-and-drop: solo en páginas que tienen la zona de carga (Dashboard)
   if (dragZone) {
-    const dragZoneButton = dragZone.querySelector('.drag-zone-button');
+    const dragZoneButton = document.getElementById('btn-seleccionar');
 
     dragZone.addEventListener('dragover', function(e) {
       e.preventDefault();
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
       dragZone.classList.remove('dragover');
       const files = e.dataTransfer.files;
       if (files.length > 0) {
-        procesarArchivo(files[0]);
+        enviarArchivo(files[0]);
       }
     });
 
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     fileInput.addEventListener('change', function() {
       if (fileInput.files.length > 0) {
-        procesarArchivo(fileInput.files[0]);
+        enviarArchivo(fileInput.files[0]);
       }
     });
   }
@@ -70,45 +70,20 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Process uploaded file
-  function procesarArchivo(file) {
-    // Validate file type
-    const extension = file.name.split('.').pop().toLowerCase();
-    if (extension !== 'zip' && extension !== 'rar') {
-      alert('Por favor, sube un archivo .zip o .rar');
+  // Carga el archivo en el input y envía el formulario nativo a /subir.
+  // El backend redirige a la página del plan (flujo server-side existente).
+  function enviarArchivo(file) {
+    if (!file.name.toLowerCase().endsWith('.zip')) {
+      alert('Subí un archivo .zip con la carpeta del curso.');
       return;
     }
+    // Para drag-and-drop: meter el archivo soltado en el input antes de enviar.
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    fileInput.files = dt.files;
 
-    // Add loading state
     dragZone.classList.add('loading');
-
-    // Create FormData and upload
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('tema', temaSelector.value);
-
-    fetch('/upload', {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => {
-      if (!response.ok) {
-        return response.json().then(data => {
-          throw new Error(data.error || 'Error uploading file');
-        });
-      }
-      return response.json();
-    })
-    .then(data => {
-      alert('Archivo procesado exitosamente');
-      location.reload();
-    })
-    .catch(error => {
-      alert('Error: ' + error.message);
-    })
-    .finally(() => {
-      dragZone.classList.remove('loading');
-    });
+    dragZone.submit();
   }
 });
 
