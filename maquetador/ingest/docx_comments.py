@@ -49,13 +49,14 @@ def _clasificar(instruccion: str) -> str:
         return "acordeon"
     if any(k in n for k in ("tab ", "tabs", "pestana", "pestanas", "solapa")):
         return "tabs"
-    if any(k in n for k in ("expander", "expandible", "expandir", "acordeon-simple")):
+    if any(k in n for k in ("expander", "expandible", "expandir")):
         return "expander"
     if any(k in n for k in ("flip card", "flipcard", "flip-card", "tarjeta",
                             "se dan vuelta", "se da vuelta")):
         return "flip_card"
-    if any(k in n for k in ("tooltip", "al hacer clic", "al hacer click",
-                            "emerja", "emerge", "aparezca", "popover", "globo")):
+    if ("tooltip" in n or "popover" in n or "globo" in n
+            or (("clic" in n or "click" in n)
+                and ("emerj" in n or "emerge" in n or "aparezca" in n))):
         return "tooltip"
     if any(k in n for k in ("es una cita", "esto es una cita", "es cita", "como cita")):
         return "cita"

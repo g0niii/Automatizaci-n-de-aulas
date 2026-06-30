@@ -22,3 +22,18 @@ class TestClasificarComponentes:
     def test_acordeon_flip_siguen(self):
         assert _clasificar("Maquetación: acordeón") == "acordeon"
         assert _clasificar("tarjetas que se dan vuelta") == "flip_card"
+
+    def test_regresion_tooltip_aparezca_clic(self):
+        """Regresión: 'aparezca' sin clic debe auto-aplicar (no ser tooltip)."""
+        # "que aparezca como recuadro" → recuadro_simple (no tooltip)
+        assert _clasificar("que aparezca como recuadro") == "recuadro_simple"
+        # "que aparezca el video de la clase" → video (no tooltip)
+        assert _clasificar("que aparezca el video de la clase") == "video"
+        # "al hacer clic que aparezca la definicion" → tooltip (CON clic)
+        assert _clasificar("al hacer clic que aparezca la definicion") == "tooltip"
+
+    def test_dead_code_acordeon_simple_eliminado(self):
+        """Dead code: 'acordeon-simple' era inalcanzable (acordeon lo captura)."""
+        # 'acordeon-simple' debe ser capturado por la rama 'acordeon', no 'expander'
+        assert _clasificar("acordeon-simple") == "acordeon"
+        assert _clasificar("expander") == "expander"
