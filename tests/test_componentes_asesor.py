@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
 from maquetador.build.componentes_asesor import (
-    pares_de_tabla, pares_de_texto, extraer_pares,
+    pares_de_tabla, pares_de_texto, extraer_pares, construir_panels,
 )
 
 
@@ -56,3 +56,16 @@ class TestExtraerPares:
         pares, consumidos = extraer_pares(el)
         assert len(pares) == 2
         assert len(consumidos) == 2          # ambos párrafos se consumen
+
+
+class TestConstruirPanels:
+    def test_acordeon_estructura_cidilabs(self):
+        html = construir_panels([("T1", "<p>C1</p>"), ("T2", "<p>C2</p>")])
+        assert "dp-panels-wrapper dp-expander-default" in html
+        assert html.count('class="dp-panel-group"') == 2
+        assert '<h3 class="dp-panel-heading">T1</h3>' in html
+        assert '<div class="dp-panel-content"><p>C1</p></div>' in html
+
+    def test_tabs_variante(self):
+        html = construir_panels([("T1", "x"), ("T2", "y")], variante="dp-tabs")
+        assert "dp-panels-wrapper dp-tabs" in html

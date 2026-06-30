@@ -73,3 +73,16 @@ def extraer_pares(el):
                       if _RE_NOMBRE_CONTENIDO.match(p.get_text(" ", strip=True))]
         return pares, consumidos
     return [], []
+
+
+def construir_panels(pares: list, variante: str = "dp-expander-default") -> str:
+    """Acordeón (dp-expander-default) / tabs (dp-tabs) / expander. Misma
+    estructura; cambia la clase del wrapper."""
+    grupos = "\n".join(
+        '<div class="dp-panel-group">\n'
+        f'<h3 class="dp-panel-heading">{t}</h3>\n'
+        f'<div class="dp-panel-content">{c}</div>\n</div>'
+        for t, c in pares)
+    return (f'<div class="dp-panels-wrapper {variante} '
+            'dp-panel-color-dp-secondary dp-panel-active-color-dp-primary" '
+            f'title="contenido insertado">\n{grupos}\n</div>')
