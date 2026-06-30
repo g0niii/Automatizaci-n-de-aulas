@@ -119,6 +119,26 @@ class TestCableado:
         assert "dp-panels-wrapper dp-expander-default" in str(soup)
         assert comentarios[0].get("_aplicado") is True
 
+    def test_acordeon_desde_tabla_se_arma(self):
+        soup = BeautifulSoup(
+            "<div><p>Acordeón:</p>"
+            "<table><tr><td><p>Título A</p></td></tr>"
+            "<tr><td><p>Contenido de A</p></td></tr>"
+            "<tr><td><p>Título B</p></td></tr>"
+            "<tr><td><p>Contenido de B</p></td></tr></table></div>",
+            "html.parser")
+        comentarios = [{
+            "instruccion": "Maquetación: acordeón",
+            "anclado": "Acordeón:",
+            "accion": "acordeon", "autor": "",
+        }]
+        aplicar_comentarios(soup, comentarios)
+        assert "dp-panels-wrapper dp-expander-default" in str(soup)
+        assert str(soup).count('class="dp-panel-group"') == 2
+        assert comentarios[0].get("_aplicado") is True
+        # la tabla original NO debe quedar duplicada
+        assert soup.find("table") is None
+
     def test_sin_estructura_no_se_aplica(self):
         soup = BeautifulSoup("<div><p>Un párrafo cualquiera.</p></div>", "html.parser")
         comentarios = [{

@@ -23,3 +23,8 @@ _bib_tmp.py
 Elementos de las aulas/*
 !Elementos de las aulas/_extracted_educacion
 !Elementos de las aulas/_extracted_posgrado
+
+# Scratch del proceso SDD / subidas / coverage (no se versiona)
+.superpowers/
+cursos_subidos/
+.coverage

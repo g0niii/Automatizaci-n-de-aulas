@@ -24,7 +24,7 @@ import re
 import unicodedata
 
 from bs4 import BeautifulSoup
-from maquetador.build.componentes_asesor import construir_flipcards
+from maquetador.build.componentes_asesor import construir_flipcards, construir_panels
 
 ACCENT = "#1b1e31"
 ICONOS_BASE = "$IMS-CC-FILEBASE$/Iconos"
@@ -636,14 +636,7 @@ def _tabla_a_acordeon(tabla):
             grupos.append((heading, cuerpo or "&nbsp;"))
     if len(grupos) < 2:        # un acordeón necesita al menos 2 paneles
         return None
-    paneles = "\n".join(
-        f'<div class="dp-panel-group">\n'
-        f'<h3 class="dp-panel-heading"><strong>{h}</strong></h3>\n'
-        f'<div class="dp-panel-content"><p>{c}</p></div>\n</div>'
-        for h, c in grupos)
-    return ('<div class="dp-panels-wrapper dp-expander-default '
-            'dp-panel-color-dp-primary dp-panel-active-color-dp-secondary" '
-            f'title="contenido insertado">\n{paneles}\n</div>')
+    return construir_panels(grupos)
 
 
 def _procesar_genially(soup):
