@@ -24,6 +24,7 @@ import re
 import unicodedata
 
 from bs4 import BeautifulSoup
+from maquetador.build.componentes_asesor import construir_flipcards
 
 ACCENT = "#1b1e31"
 ICONOS_BASE = "$IMS-CC-FILEBASE$/Iconos"
@@ -609,15 +610,7 @@ def _tabla_a_flipcards(tabla):
         i = j
     if len(items) < 2:
         return None
-    tarjetas = "\n".join(
-        '<div class="dp-flip-card">\n<div class="dp-flip-card-inner">\n'
-        f'<div class="dp-flip-card-front card"><div class="card-body">'
-        f'<p class="card-title"><strong>{f}</strong></p></div></div>\n'
-        f'<div class="dp-flip-card-back card"><div class="card-body">'
-        f'<p class="card-text">{b}</p></div></div>\n</div>\n</div>'
-        for f, b in items)
-    return ('<div class="dp-content-block">\n<div class="dp-flip-card-deck row" '
-            f'title="contenido insertado">\n{tarjetas}\n</div>\n</div>')
+    return construir_flipcards(items)
 
 
 def _tabla_a_acordeon(tabla):

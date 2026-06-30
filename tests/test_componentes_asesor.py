@@ -5,6 +5,7 @@ from maquetador.build.componentes_asesor import (
     construir_flipcards, construir_popover, aplicar_cita,
 )
 from maquetador.ingest.docx_comments import aplicar_comentarios
+from maquetador.build.snippets import _tabla_a_flipcards
 
 
 def _soup(html):
@@ -158,3 +159,16 @@ class TestCableado:
         aplicar_comentarios(soup, comentarios)
         assert "dp-popover-trigger" not in str(soup)
         assert comentarios[0].get("_aplicado") is not True
+
+
+class TestFlipcardViejoAlineado:
+    def test_usa_clases_cidilabs_reales(self):
+        html = ("<table><tr><td>"
+                "<p><strong>Frente A</strong> dorso A largo</p>"
+                "<p><strong>Frente B</strong> dorso B largo</p>"
+                "</td></tr></table>")
+        tabla = BeautifulSoup(html, "html.parser").find("table")
+        out = _tabla_a_flipcards(tabla)
+        assert out is not None
+        assert "dp-front-card" in out          # clase CidiLabs real
+        assert "dp-flip-card-front" not in out  # ya NO la clase vieja
