@@ -4,6 +4,7 @@ from maquetador.build.componentes_asesor import (
     pares_de_tabla, pares_de_texto, extraer_pares, construir_panels,
     construir_flipcards, construir_popover, aplicar_cita,
 )
+from maquetador.ingest.docx_comments import aplicar_comentarios
 
 
 def _soup(html):
@@ -100,3 +101,42 @@ class TestAplicarCita:
         el = BeautifulSoup("<p>Una cita textual.</p>", "html.parser").find("p")
         aplicar_cita(el)
         assert "margin-left: 40px" in el.get("style", "")
+
+
+class TestCableado:
+    def test_acordeon_desde_texto_se_arma(self):
+        soup = BeautifulSoup(
+            "<div><p>Autoevaluación: la persona valora su propio desempeño.</p>"
+            "<p>Evaluación por objetivos: mide el grado de cumplimiento.</p></div>",
+            "html.parser")
+        comentarios = [{
+            "instruccion": "Maquetación: acordeón",
+            "anclado": "Autoevaluación: la persona valora su propio desempeño.",
+            "accion": "acordeon", "autor": "",
+        }]
+        aplicar_comentarios(soup, comentarios)
+        assert "dp-panels-wrapper dp-expander-default" in str(soup)
+        assert comentarios[0].get("_aplicado") is True
+
+    def test_sin_estructura_no_se_aplica(self):
+        soup = BeautifulSoup("<div><p>Un párrafo cualquiera.</p></div>", "html.parser")
+        comentarios = [{
+            "instruccion": "Maquetación: acordeón",
+            "anclado": "Un párrafo cualquiera.",
+            "accion": "acordeon", "autor": "",
+        }]
+        aplicar_comentarios(soup, comentarios)
+        # No hay ≥2 pares → no se arma → queda como aviso (no _aplicado)
+        assert "dp-panels-wrapper" not in str(soup)
+        assert comentarios[0].get("_aplicado") is not True
+
+    def test_cita_sangra(self):
+        soup = BeautifulSoup("<div><p>La GT es una iniciativa estratégica.</p></div>", "html.parser")
+        comentarios = [{
+            "instruccion": "Maquetación: es una cita",
+            "anclado": "La GT es una iniciativa estratégica.",
+            "accion": "cita", "autor": "",
+        }]
+        aplicar_comentarios(soup, comentarios)
+        assert "margin-left: 40px" in str(soup)
+        assert comentarios[0].get("_aplicado") is True

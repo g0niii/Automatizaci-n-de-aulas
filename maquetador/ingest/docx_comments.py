@@ -24,6 +24,10 @@ from bs4 import BeautifulSoup
 
 from maquetador.ingest.folder_scanner import normalizar
 from maquetador.build.snippets import resaltado_simple, cta_titulo, ICONOS
+from maquetador.build.componentes_asesor import (
+    extraer_pares, construir_panels, construir_flipcards,
+    construir_popover, aplicar_cita,
+)
 
 _W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 
@@ -31,6 +35,11 @@ _W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 # "quitar" NO se automatiza: a veces es un micro-pedido ("quitar los dos puntos")
 # y borrar el párrafo entero sería un error; se avisa para hacerlo a mano.
 _AUTO = {"subtitulo", "recuadro_simple", "lectura", "video", "sin_recuadro"}
+
+_COMPONENTES = {"acordeon", "tabs", "expander", "flip_card", "tooltip", "cita"}
+_VARIANTE_PANEL = {"acordeon": "dp-expander-default",
+                   "tabs": "dp-tabs",
+                   "expander": "dp-expander-default"}
 
 
 def _clasificar(instruccion: str) -> str:
@@ -141,18 +150,72 @@ def _buscar_elemento(soup, anclado: str):
     return None
 
 
+def _texto_tooltip(instruccion: str) -> str:
+    """Saca el contenido del popover del comentario: lo que va después de
+    'emerja:'/'aparezca:'/'tooltip-->'. Si no hay marcador claro, '' (→ fallback)."""
+    for sep in ("emerja lo siguiente:", "emerja:", "aparezca:", "emerge:",
+                "tooltip-->", "tooltip -->", "tooltip:", "globo:"):
+        if sep in instruccion.lower():
+            idx = instruccion.lower().index(sep) + len(sep)
+            return instruccion[idx:].strip(" .–-")
+    return ""
+
+
 def aplicar_comentarios(soup, comentarios: list) -> None:
     """Aplica al soup las acciones automáticas cuyo texto anclado aparezca en
-    él. Marca c['_aplicado']=True en los que aplica. Se llama una vez por cada
-    sección ya cortada (así un comentario se aplica en la sección que lo
-    contiene y nunca rompe los límites de sección)."""
+    él, y arma los componentes de pedido del asesor (acordeon/tabs/expander/
+    flip_card/tooltip/cita) cuando hay estructura suficiente. Marca
+    c['_aplicado']=True solo en los que efectivamente se aplican. Se llama una
+    vez por cada sección ya cortada (así un comentario se aplica en la sección
+    que lo contiene y nunca rompe los límites de sección)."""
+    contador_popover = 0
     for c in comentarios:
         accion = c["accion"]
-        if accion not in _AUTO or c.get("_aplicado"):
-            continue                        # no-auto, o ya aplicado en otra sección
+        if c.get("_aplicado"):
+            continue
+        if accion not in _AUTO and accion not in _COMPONENTES:
+            continue
         el = _buscar_elemento(soup, c["anclado"])
         if el is None:
             continue
+
+        # --- Componentes de pedido del asesor ---
+        if accion in _VARIANTE_PANEL:                 # acordeon / tabs / expander
+            pares, consumidos = extraer_pares(el)
+            if len(pares) >= 2:
+                html = construir_panels(pares, _VARIANTE_PANEL[accion])
+                consumidos[0].replace_with(BeautifulSoup(html, "html.parser"))
+                for extra in consumidos[1:]:
+                    extra.decompose()
+                c["_aplicado"] = True
+            continue
+        if accion == "flip_card":
+            pares, consumidos = extraer_pares(el)
+            if len(pares) >= 2:
+                html = construir_flipcards(pares)
+                consumidos[0].replace_with(BeautifulSoup(html, "html.parser"))
+                for extra in consumidos[1:]:
+                    extra.decompose()
+                c["_aplicado"] = True
+            continue
+        if accion == "tooltip":
+            contenido = _texto_tooltip(c["instruccion"])
+            palabra = (c["anclado"] or "").strip()
+            if contenido and palabra:
+                trigger, content = construir_popover(palabra, contenido, contador_popover)
+                contador_popover += 1
+                nuevo = BeautifulSoup(
+                    el.get_text(" ", strip=True).replace(palabra, trigger, 1)
+                    + content, "html.parser")
+                el.replace_with(nuevo)
+                c["_aplicado"] = True
+            continue
+        if accion == "cita":
+            aplicar_cita(el)
+            c["_aplicado"] = True
+            continue
+
+        # --- Acciones simples existentes ---
         c["_aplicado"] = True
         inner = "".join(str(x) for x in el.children).strip()
         if accion == "subtitulo":
