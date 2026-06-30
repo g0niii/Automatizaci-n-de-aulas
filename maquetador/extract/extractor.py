@@ -56,6 +56,10 @@ def extraer_contenido(spec: CourseSpec) -> dict:
             for c in comentarios:
                 etiqueta = {"acordeon": "armar un ACORDEÓN",
                             "flip_card": "armar una FLIP CARD",
+                            "tabs": "armar TABS",
+                            "expander": "armar un EXPANDER",
+                            "tooltip": "armar un TOOLTIP",
+                            "cita": "marcar como CITA",
                             "quitar": "QUITAR contenido",
                             "faltante": "⚠ FALTA algo"}.get(
                                 c["accion"], "revisar pedido")

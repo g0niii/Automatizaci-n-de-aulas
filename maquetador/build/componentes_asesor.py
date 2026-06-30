@@ -8,8 +8,6 @@ expander y flip card. Dos fuentes: una tabla de 1 columna con celdas alternadas
 
 import re
 
-from bs4 import BeautifulSoup
-
 _RE_NOMBRE_CONTENIDO = re.compile(r"^(.{2,60}?):\s+(.+)$", re.DOTALL)
 
 
