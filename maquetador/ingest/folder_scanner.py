@@ -37,12 +37,33 @@ _CARPETAS_DESCARTAR = ("borrador", "borradores", "devoluciones")
 _PAT_MODULO_NUM = re.compile(
     r"(?:m[óo]dulo[\s_]*(\d+)|[-_\s]m[\s_]?(\d+)\b|\bm(\d+)\b)", re.I)
 
+# Romanos SOLO pegados a "módulo"/"modular" (así "Material multimedial modular
+# III" → 3, pero "modular video" no toma la v/i como número).
+_PAT_MODULO_ROMANO = re.compile(
+    r"(?:m[óo]dulo|modular)[\s_]+([ivxl]+)(?![a-z])", re.I)
+
+_ROMANO = {"i": 1, "v": 5, "x": 10, "l": 50}
+
+
+def _romano_a_int(r: str) -> int:
+    total, prev = 0, 0
+    for c in reversed(r.lower()):
+        v = _ROMANO.get(c, 0)
+        total += -v if v < prev else v
+        prev = max(prev, v)
+    return total
+
 
 def _numero_modulo(nombre: str) -> Optional[int]:
     m = _PAT_MODULO_NUM.search(nombre)
-    if not m:
-        return None
-    return int(next(g for g in m.groups() if g))
+    if m:
+        return int(next(g for g in m.groups() if g))
+    mr = _PAT_MODULO_ROMANO.search(nombre)
+    if mr:
+        n = _romano_a_int(mr.group(1))
+        if 1 <= n <= 20:
+            return n
+    return None
 
 
 @dataclass

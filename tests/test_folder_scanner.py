@@ -15,7 +15,30 @@ from maquetador.ingest.folder_scanner import (
     escanear,
     normalizar,
     InventarioCurso,
+    _numero_modulo,
 )
+
+
+class TestNumeroModuloRomano:
+    """El número de módulo puede venir en romanos (modular I/II/III)."""
+
+    def test_romanos_en_material_modular(self):
+        assert _numero_modulo("Material multimedial modular I (X).docx") == 1
+        assert _numero_modulo("Material multimedial modular II (X).docx") == 2
+        assert _numero_modulo("Material multimedial modular III (X).docx") == 3
+
+    def test_romano_con_modulo(self):
+        assert _numero_modulo("Módulo IV - desarrollo.docx") == 4
+
+    def test_arabigos_siguen_funcionando(self):
+        assert _numero_modulo("Módulo 1.docx") == 1
+        assert _numero_modulo("contenido-m2.docx") == 2
+
+    def test_no_falsos_positivos(self):
+        # "video" empieza con V/I pero no es un romano de módulo
+        assert _numero_modulo("modular video.docx") is None
+        # Sin contexto de módulo, una I suelta no es número
+        assert _numero_modulo("Introducción general.docx") is None
 
 
 class TestNormalizar:
