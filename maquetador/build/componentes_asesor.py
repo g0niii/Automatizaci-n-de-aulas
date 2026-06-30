@@ -86,3 +86,35 @@ def construir_panels(pares: list, variante: str = "dp-expander-default") -> str:
     return (f'<div class="dp-panels-wrapper {variante} '
             'dp-panel-color-dp-secondary dp-panel-active-color-dp-primary" '
             f'title="contenido insertado">\n{grupos}\n</div>')
+
+
+def construir_flipcards(pares: list) -> str:
+    """Flip cards CidiLabs: frente = título (negrita), dorso = contenido."""
+    cards = "\n".join(
+        '<div class="dp-flip-card">\n<div class="dp-flip-card-inner">\n'
+        '<div class="dp-front-card">'
+        '<div class="dp-card card h-100 dp-shadow-b3 text-center">'
+        f'<p><strong>{t}</strong></p></div></div>\n'
+        '<div class="dp-back-card">'
+        '<div class="dp-card card h-100 text-center dp-shadow-b3" style="padding: 16px;">'
+        f'<p style="text-align: left;">{c}</p></div></div>\n'
+        '</div>\n</div>'
+        for t, c in pares)
+    return f'<div class="row justify-content-center">\n{cards}\n</div>'
+
+
+def construir_popover(palabra: str, contenido: str, n: int) -> tuple:
+    """Popover CidiLabs: trigger (la palabra) + content (lo que emerge)."""
+    trigger = (f'<a class="dp-popover-trigger" href="#dpPopup{n}Content" '
+               f'id="dpPopup{n}" aria-describedby="dpPopup{n}Content">{palabra}</a>')
+    content = (f'<div class="dp-popover-content dp-popup-content" id="dpPopup{n}Content" '
+               'style="border: 1px solid #A9A9A9; background: #f7f7f7; padding: 10px; '
+               'width: 600px; max-width: 100%; margin: auto; border-radius: 3px;">'
+               f'<p>{contenido}</p></div>')
+    return trigger, content
+
+
+def aplicar_cita(el) -> None:
+    """Sangra el párrafo anclado (sin caja, pedido del usuario)."""
+    estilo = el.get("style", "").rstrip("; ")
+    el["style"] = (estilo + "; " if estilo else "") + "margin-left: 40px;"

@@ -2,6 +2,7 @@
 from bs4 import BeautifulSoup
 from maquetador.build.componentes_asesor import (
     pares_de_tabla, pares_de_texto, extraer_pares, construir_panels,
+    construir_flipcards, construir_popover, aplicar_cita,
 )
 
 
@@ -69,3 +70,33 @@ class TestConstruirPanels:
     def test_tabs_variante(self):
         html = construir_panels([("T1", "x"), ("T2", "y")], variante="dp-tabs")
         assert "dp-panels-wrapper dp-tabs" in html
+
+
+class TestConstruirFlipcards:
+    def test_estructura_cidilabs(self):
+        html = construir_flipcards([("Frente1", "Dorso1"), ("Frente2", "Dorso2")])
+        assert 'class="row justify-content-center"' in html
+        assert html.count('class="dp-flip-card"') == 2
+        assert '<div class="dp-front-card">' in html
+        assert '<div class="dp-back-card">' in html
+        assert "<strong>Frente1</strong>" in html
+        assert "Dorso1" in html
+
+
+class TestConstruirPopover:
+    def test_trigger_y_content_enlazados(self):
+        trigger, content = construir_popover("stakeholders", "Toda parte interesada", 0)
+        assert 'class="dp-popover-trigger"' in trigger
+        assert 'href="#dpPopup0Content"' in trigger
+        assert 'id="dpPopup0"' in trigger
+        assert ">stakeholders</a>" in trigger
+        assert 'id="dpPopup0Content"' in content
+        assert "dp-popover-content dp-popup-content" in content
+        assert "Toda parte interesada" in content
+
+
+class TestAplicarCita:
+    def test_agrega_sangria(self):
+        el = BeautifulSoup("<p>Una cita textual.</p>", "html.parser").find("p")
+        aplicar_cita(el)
+        assert "margin-left: 40px" in el.get("style", "")
