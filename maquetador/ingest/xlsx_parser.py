@@ -110,6 +110,21 @@ _SECCIONES = {
     "contenidos": "contenidos",
 }
 
+_PREFIJOS_TEXTO_INLINE = ("texto del foro", "texto de la actividad",
+                          "texto de la consigna", "consigna:")
+
+
+def _texto_inline(fila) -> str:
+    """Algunos asesores escriben la consigna del foro/actividad directamente en
+    una columna de la planilla ('Texto del foro: …') en vez de adjuntar un DOCX.
+    Devuelve ese texto (sin la etiqueta), buscándolo en las columnas de texto
+    libre de la fila; '' si no hay."""
+    for v in (fila.modalidad, fila.titulo_actividad, fila.tipo_entrega,
+              fila.referencia):
+        if v and normalizar(v).startswith(_PREFIJOS_TEXTO_INLINE):
+            return v.split(":", 1)[1].strip() if ":" in v else v.strip()
+    return ""
+
 
 def _es_separador_seccion(texto: str) -> str:
     """Devuelve el nombre de sección si la celda B es un separador (INTRODUCCIÓN,
@@ -189,6 +204,7 @@ def parsear_estructura(path: Path) -> CourseSpec:
                         detalle={k: v for k, v in {
                             "item_planilla": fila.bloque.strip(),
                             "referencia": fila.referencia,
+                            "texto_planilla": _texto_inline(fila),
                         }.items() if v}))
                     continue
             else:
@@ -217,6 +233,7 @@ def parsear_estructura(path: Path) -> CourseSpec:
                 "modalidad": fila.modalidad,
                 "tipo_entrega": fila.tipo_entrega,
                 "referencia": fila.referencia,
+                "texto_planilla": _texto_inline(fila),
                 "seccion": seccion_actual or bloque_actual,
             }.items() if v},
         )

@@ -192,3 +192,35 @@ class TestFlipcardViejoAlineado:
         assert out is not None
         assert "dp-front-card" in out          # clase CidiLabs real
         assert "dp-flip-card-front" not in out  # ya NO la clase vieja
+
+
+class TestParesDeTablaGrilla:
+    """Tabla-grilla de N columnas: fila de títulos + fila de descripciones. Cada
+    título debe emparejarse con la descripción de ABAJO (por columna), no con el
+    título de al lado (regresión: pares cruzados '1. IDENTIFICACIÓN'/'2. PROPÓSITO')."""
+
+    def test_grilla_titulos_arriba_descripciones_abajo(self):
+        html = (
+            "<table>"
+            "<tr><td><p>1. Identificación</p></td><td><p>2. Propósito</p></td></tr>"
+            "<tr><td><p>Nombre del puesto, área o negocio y fecha de descripcion del rol completo.</p></td>"
+            "<td><p>Define en forma resumida para qué existe el puesto dentro de la organización y qué valor aporta.</p></td></tr>"
+            "<tr><td><p>3. Organización</p></td><td><p>4. Magnitudes</p></td></tr>"
+            "<tr><td><p>Estructura organizativa completa a la que pertenece el puesto dentro del organigrama.</p></td>"
+            "<td><p>Medida cuantificable financiera o no sobre la que el puesto tiene impacto directo y relevante.</p></td></tr>"
+            "</table>")
+        tabla = _soup(html).find("table")
+        pares = pares_de_tabla(tabla)
+        titulos = [t for t, _ in pares]
+        # Ningún par debe tener dos títulos numerados enfrentados
+        for titulo, cuerpo in pares:
+            assert not cuerpo.strip().lstrip("<p>").strip()[:2].rstrip(".").isdigit() \
+                or "puesto" in cuerpo.lower() or "existe" in cuerpo.lower() \
+                or "estructura" in cuerpo.lower() or "medida" in cuerpo.lower(), \
+                f"Par cruzado título/título: {titulo!r} -> {cuerpo!r}"
+        # El frente '1. Identificación' debe llevar SU descripción, no '2. Propósito'
+        d = dict(pares)
+        assert "1. Identificación" in d
+        assert "Nombre del puesto" in d["1. Identificación"]
+        assert "2. Propósito" in d
+        assert "existe el puesto" in d["2. Propósito"]

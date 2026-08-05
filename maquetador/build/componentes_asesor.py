@@ -11,21 +11,50 @@ import re
 _RE_NOMBRE_CONTENIDO = re.compile(r"^(.{2,60}?):\s+(.+)$", re.DOTALL)
 
 
+def _celda(c) -> tuple:
+    return (c.get_text(" ", strip=True), "".join(str(x) for x in c.children).strip())
+
+
+def _es_titulo_corto(texto: str) -> bool:
+    """Heurística de 'celda de título': texto breve (rótulo, no párrafo)."""
+    return 0 < len(texto) <= 60
+
+
 def pares_de_tabla(tabla) -> list:
-    """Tabla de 1 columna con celdas alternadas → [(titulo, contenido_html)]."""
-    celdas = tabla.find_all(["td", "th"])
-    plano = []
-    for c in celdas:
-        texto = c.get_text(" ", strip=True)
-        inner = "".join(str(x) for x in c.children).strip()
-        if texto:
-            plano.append((texto, inner))
-    pares = []
-    for i in range(0, len(plano) - 1, 2):
-        titulo = plano[i][0]
-        contenido = plano[i + 1][1] or "&nbsp;"
-        pares.append((titulo, contenido))
-    return pares
+    """Tabla de pares título/contenido → [(titulo, contenido_html)].
+
+    Dos geometrías:
+      · 1 columna con celdas alternadas (título / contenido / título / …).
+      · Grilla de N columnas donde las filas alternan una fila de TÍTULOS y una
+        fila de DESCRIPCIONES: cada título se empareja con la descripción de su
+        misma columna (abajo), no con el título de al lado.
+    """
+    filas = [[_celda(c) for c in f.find_all(["td", "th"])]
+             for f in tabla.find_all("tr")]
+    filas = [f for f in filas if any(t for t, _ in f)]   # descartar filas vacías
+    if not filas:
+        return []
+    ncols = max(len(f) for f in filas)
+
+    # Grilla multi-columna con filas alternando títulos / descripciones.
+    def _largo_medio(fila):
+        return sum(len(t) for t, _ in fila) / max(1, len(fila))
+    if ncols >= 2 and len(filas) >= 2 and len(filas) % 2 == 0 \
+            and all(len(f) == ncols for f in filas):
+        # Fila 0 = rótulos cortos; fila 1 = descripciones, claramente más largas.
+        fila_titulos = all(_es_titulo_corto(t) for t, _ in filas[0])
+        fila_desc = _largo_medio(filas[1]) > _largo_medio(filas[0]) * 1.5
+        if fila_titulos and fila_desc:
+            pares = []
+            for r in range(0, len(filas), 2):
+                for c in range(ncols):
+                    pares.append((filas[r][c][0], filas[r + 1][c][1] or "&nbsp;"))
+            return pares
+
+    # Caso clásico: celdas en orden, alternando título / contenido.
+    plano = [c for f in filas for c in f]
+    return [(plano[i][0], plano[i + 1][1] or "&nbsp;")
+            for i in range(0, len(plano) - 1, 2)]
 
 
 def pares_de_texto(parrafos: list) -> list:
@@ -47,7 +76,8 @@ def extraer_pares(el):
     párrafos duplicados cuando el componente se arma desde varios párrafos).
 
     1) Tabla asociada (el mismo, o su hermano <table> siguiente).
-    2) Si no, el elemento + hermanos <p>/<li> consecutivos con 'Nombre: contenido'.
+    2) Lista <ul>/<ol> cuyos <li> son 'Nombre: contenido'.
+    3) Si no, el elemento + hermanos <p>/<li> consecutivos con 'Nombre: contenido'.
     """
     # 1) Tabla
     if el.name == "table":
@@ -60,7 +90,23 @@ def extraer_pares(el):
         if len(pares) >= 2:
             return pares, consumidos_tabla
 
-    # 2) Texto
+    # 2) Lista <ul>/<ol> con ítems 'Nombre: contenido' cuando el asesor ancla el
+    #    comentario SOBRE la lista misma o sobre uno de sus <li>. No se salta a
+    #    una lista siguiente no relacionada (sería contenido explicativo, no
+    #    pares frente/dorso).
+    lista = None
+    if el.name in ("ul", "ol"):
+        lista = el
+    elif el.name == "li" and getattr(el.parent, "name", None) in ("ul", "ol"):
+        lista = el.parent
+    if lista is not None:
+        items = lista.find_all("li", recursive=False)
+        pares = pares_de_texto(items)
+        if len(pares) >= 2:
+            consumidos = [lista] if el in (lista, *lista.contents) else [el, lista]
+            return pares, consumidos
+
+    # 3) Texto
     parrafos, actual = [], el
     while actual is not None and getattr(actual, "name", None) in ("p", "li"):
         parrafos.append(actual)

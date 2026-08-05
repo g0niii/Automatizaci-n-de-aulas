@@ -234,8 +234,23 @@ class GeneradorAula:
         foros_emb = [(t, b) for tipo, t, b in consignas if tipo == "foro"]
         if foros_emb:
             self._inyectar_consigna_foro(n, foros_emb, ctx)
+        # Un DOCX dedicado de actividad (p.ej. "Actividad obligatoria I.docx")
+        # manda sobre un puntero embebido en el texto ("te invito a realizar la
+        # actividad obligatoria…"): si el módulo trae el archivo, se deja el slot
+        # para él y no se vuelca la consigna embebida, que suele ser solo un
+        # anuncio de un par de líneas y pisaría al contenido real.
+        hay_docx_actividad = any(
+            it.tipo == TipoItem.TAREA and it.fuente.archivo
+            and it.fuente.archivo.suffix.lower() == ".docx"
+            for it in modulo.items)
         for tipo, titulo, body in consignas:
             if tipo == "actividad":
+                if hay_docx_actividad:
+                    self.spec.issues.append(Issue(Severidad.INFO,
+                        f"El puntero embebido '{titulo[:50]}' no se volcó: el "
+                        f"módulo {n} trae la actividad como DOCX dedicado, que "
+                        "es el que se carga.", ctx))
+                    continue
                 self._inyectar_consigna_actividad(n, titulo, body, ctx)
             elif tipo == "autoevaluacion":
                 extras = getattr(modulo, "extras", {})
@@ -245,6 +260,9 @@ class GeneradorAula:
                     f"Autoevaluación '{titulo[:50]}' extraída del contenido del "
                     f"módulo {n}: los quizzes se cargan a mano en Canvas "
                     "(la consigna quedó en el plan JSON).", ctx))
+
+        # --- foros con la consigna escrita en la planilla (no como DOCX) ---
+        self._inyectar_foros_de_planilla(modulo, ctx)
 
         # --- foros y actividades que llegan como DOCX separados ---
         self._inyectar_foros_y_actividades(modulo, ctx)
@@ -740,6 +758,45 @@ class GeneradorAula:
                 f"cargó en {destino}.", ctx))
             logger.info(f"  [M{n}] {destino} ← consigna embebida")
 
+    def _inyectar_foros_de_planilla(self, modulo, ctx: str):
+        """Foros cuya consigna el asesor escribió directo en la planilla de
+        montaje ('Texto del foro: …') en vez de adjuntar un DOCX: se vuelca ese
+        texto en el topic del aula base (apertura o foro del módulo). Corre antes
+        que la carga por DOCX y marca el topic como escrito, así el fallback por
+        nombre de archivo no lo pisa con contenido equivocado."""
+        n = modulo.numero
+        for item in modulo.items:
+            if item.tipo != TipoItem.FORO:
+                continue
+            texto = item.detalle.get("texto_planilla")
+            if not texto:
+                continue
+            titulo_n = normalizar(item.detalle.get("item_planilla", "") + " "
+                                  + item.titulo)
+            if "apertura" in titulo_n or "presentacion" in titulo_n:
+                rid = self._rid_en_meta("DiscussionTopic",
+                                        r"[^<]*[Ff]oro de apertura[^<]*")
+                destino = "Foro de apertura"
+            else:
+                rid = self._rid_en_meta("DiscussionTopic",
+                                        rf"[^<]*[Ff]oro[^<]*M{n}[^<]*")
+                destino = f"Foro del módulo {n}"
+            if not rid:
+                self.spec.issues.append(Issue(Severidad.AVISO,
+                    f"El foro '{item.titulo[:50]}' trae su consigna en la "
+                    f"planilla pero no encontré un foro destino en el aula base "
+                    f"para el módulo {n}: cargar a mano.", ctx))
+                continue
+            if rid in self.topics_escritos:
+                continue
+            html = "".join(f"<p>{xml_escape(linea.strip())}</p>"
+                           for linea in texto.splitlines() if linea.strip())
+            if self._escribir_topic(rid, html, ctx):
+                item.issues.append(Issue(Severidad.INFO,
+                    f"Consigna del foro (escrita en la planilla) cargada en "
+                    f"{destino}.", item.titulo))
+                logger.info(f"  [M{n}] {destino} ← consigna de la planilla")
+
     def _inyectar_foros_y_actividades(self, modulo, ctx: str):
         """Vuelca los DOCX de foros y actividades en los topics/assignments
         que el aula base ya trae para el módulo."""
@@ -797,6 +854,16 @@ class GeneradorAula:
                     logger.info(f"  [M{n}] Actividad obligatoria ← {archivo.name}")
 
     def _inyectar_afi(self):
+        # Foro de consultas de la AFI con la consigna escrita en la planilla:
+        # el aula base no trae un foro de AFI, así que se avisa para crearlo a
+        # mano en Canvas con ese texto (queda además en el plan JSON).
+        for foro in self.spec.afi:
+            if foro.tipo == TipoItem.FORO and foro.detalle.get("texto_planilla"):
+                self.spec.issues.append(Issue(Severidad.AVISO,
+                    f"El '{foro.titulo[:50]}' trae su consigna en la planilla, "
+                    "pero el aula base no tiene un foro de AFI: crearlo a mano en "
+                    "Canvas con ese texto.", "AFI"))
+
         item = next((i for i in self.spec.afi
                      if i.fuente.archivo
                      and i.fuente.archivo.suffix.lower() == ".docx"), None)
@@ -928,16 +995,18 @@ class GeneradorAula:
         texto = re.sub(rf"\b{t}\.1\.", f"{n}.1.", texto)
         return texto
 
-    def _copiar_archivo_clonado(self, old_href: str, new_href: str, idmap: dict):
+    def _copiar_archivo_clonado(self, old_href: str, new_href: str, idmap: dict,
+                                t: int, n: int):
         src = self.working / old_href
         dst = self.working / new_href
         if not src.exists() or dst.exists():
             return
         dst.parent.mkdir(parents=True, exist_ok=True)
         if src.suffix.lower() in (".xml", ".html"):
-            txt = src.read_text(encoding="utf-8")
-            for old, new in idmap.items():
-                txt = txt.replace(old, new)
+            # No solo remapear ids: también renombrar el número de módulo en el
+            # contenido (p.ej. el <title> del assignment 'Actividad obligatoria
+            # M{t}' → 'M{n}'), igual que en los bloques meta/org.
+            txt = self._remap_texto(src.read_text(encoding="utf-8"), idmap, t, n)
             dst.write_text(txt, encoding="utf-8")
         else:
             shutil.copy2(src, dst)
@@ -980,7 +1049,8 @@ class GeneradorAula:
                 continue
             for href in re.findall(r'href="([^"]+)"', bloque_res):
                 self._copiar_archivo_clonado(
-                    href, self._remap_texto(href, idmap, template, nuevo), idmap)
+                    href, self._remap_texto(href, idmap, template, nuevo),
+                    idmap, template, nuevo)
             nuevos_res.append(self._remap_texto(bloque_res, idmap, template, nuevo))
 
         # Clonar bloques meta y org (con remap + retitulado) e insertarlos
@@ -1294,6 +1364,17 @@ class GeneradorAula:
             return re.sub(r"<position>\d+</position>", _pos, bloque)
         self.meta = re.sub(r"<items>.*?</items>", _renum, self.meta,
                            flags=re.DOTALL)
+
+        # Posición DE cada módulo (la que va tras <workflow_state>, antes de
+        # <items>): tras clonar un módulo, el clon hereda la posición del
+        # template. Se renumeran en orden de documento (1, 2, 3, …).
+        contador = [0]
+        def _pos_modulo(_):
+            contador[0] += 1
+            return f"</workflow_state>\n    <position>{contador[0]}</position>"
+        self.meta = re.sub(
+            r"</workflow_state>\s*<position>\d+</position>",
+            _pos_modulo, self.meta, count=0)
 
 
 def generar_imscc(spec: CourseSpec, media: dict, output_dir: Path) -> Path:

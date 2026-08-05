@@ -108,18 +108,47 @@ def extraer_comentarios(docx_path) -> list:
 
     # Texto anclado: lo que está entre commentRangeStart/End (en orden de doc).
     droot = ET.fromstring(document_xml)
+    padres = {hijo: padre for padre in droot.iter() for hijo in padre}
     activos = set()
     anclado = {cid: [] for cid in textos}
+    inicio_el = {}
     for el in droot.iter():
         tag = el.tag
         if tag == f"{_W}commentRangeStart":
-            activos.add(el.get(f"{_W}id"))
+            cid = el.get(f"{_W}id")
+            activos.add(cid)
+            inicio_el.setdefault(cid, el)
         elif tag == f"{_W}commentRangeEnd":
             activos.discard(el.get(f"{_W}id"))
         elif tag == f"{_W}t" and activos:
             for cid in activos:
                 if cid in anclado:
                     anclado[cid].append(el.text or "")
+
+    def _bloque_contenedor(el):
+        """Párrafo o tabla que contiene el elemento (subiendo por el árbol)."""
+        cur = padres.get(el)
+        while cur is not None:
+            if cur.tag in (f"{_W}p", f"{_W}tbl"):
+                return cur
+            cur = padres.get(cur)
+        return None
+
+    def _ancla(cid):
+        """Texto anclado; si es demasiado corto para ubicarlo (p.ej. Google Docs
+        ancla el comentario a un fragmento invisible dentro de una tabla), se usa
+        el texto del bloque que lo contiene: la celda/párrafo real."""
+        crudo = "".join(anclado.get(cid, [])).strip()
+        if len(normalizar(crudo)) >= 6 or cid not in inicio_el:
+            return crudo
+        cont = _bloque_contenedor(inicio_el[cid])
+        if cont is None:
+            return crudo
+        # Los <w:t> de un mismo párrafo/celda se concatenan sin espacio (los
+        # espacios ya vienen dentro del texto): unir con "" reconstruye la
+        # palabra partida por Google Docs ('subyace' + 'nte' → 'subyacente').
+        texto = "".join(t.text or "" for t in cont.iter(f"{_W}t")).strip()
+        return texto or crudo
 
     out = []
     for cid, instr in textos.items():
@@ -128,24 +157,30 @@ def extraer_comentarios(docx_path) -> list:
             continue   # charla interna, no es instrucción de maquetación
         out.append({
             "instruccion": re.sub(r"\s+", " ", instr).strip(),
-            "anclado": "".join(anclado.get(cid, [])).strip(),
+            "anclado": _ancla(cid),
             "accion": accion,
             "autor": autores.get(cid, ""),
         })
     return out
 
 
+def _squash(texto: str) -> str:
+    """Forma canónica para comparar: solo letras y números. Inmune a los espacios
+    que mammoth mete alrededor de la puntuación ('especular :' vs 'especular:')."""
+    return re.sub(r"[^a-z0-9]+", "", normalizar(texto))
+
+
 def _buscar_elemento(soup, anclado: str):
     """Encuentra el <p>/<li> cuyo texto corresponde al texto anclado."""
-    objetivo = normalizar(anclado)
+    objetivo = _squash(anclado)
     if len(objetivo) < 6:
         return None
-    clave = objetivo[:45]
+    clave = objetivo[:40]
     for el in soup.find_all(["p", "li"]):
-        t = normalizar(el.get_text(" ", strip=True))
+        t = _squash(el.get_text(" ", strip=True))
         if not t:
             continue
-        if t.startswith(clave) or objetivo.startswith(t[:45]) or clave in t:
+        if t.startswith(clave) or objetivo.startswith(t[:40]) or clave in t:
             return el
     return None
 
@@ -178,6 +213,15 @@ def aplicar_comentarios(soup, comentarios: list) -> None:
         el = _buscar_elemento(soup, c["anclado"])
         if el is None:
             continue
+
+        # El comentario del asesor suele anclar sobre una tabla de pares
+        # título/contenido (o un fragmento dentro de ella): el componente se
+        # arma desde esa tabla, así que se sube al <table> contenedor.
+        if accion in _VARIANTE_PANEL or accion == "flip_card":
+            if el.name != "table":
+                tabla_cont = el.find_parent("table")
+                if tabla_cont is not None:
+                    el = tabla_cont
 
         # --- Componentes de pedido del asesor ---
         if accion in _VARIANTE_PANEL:                 # acordeon / tabs / expander

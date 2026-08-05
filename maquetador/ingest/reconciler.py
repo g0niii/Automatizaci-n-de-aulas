@@ -228,6 +228,33 @@ def reconciliar(spec: CourseSpec, inv: InventarioCurso) -> CourseSpec:
                 cand = _por_modulo(inv.foros, modulo.numero) or inv.foros
                 ref = item.detalle.get("referencia") or item.detalle.get("item_planilla", item.titulo)
                 archivo, score = _match_archivo(ref, cand)
+                # Un foro de apertura/presentación matchea con un DOCX de foro
+                # cuyo nombre lo indica, aunque la 'referencia' de la planilla
+                # sea una URL de Google Docs (inútil para matchear por nombre) y
+                # el nombre del archivo traiga el sufijo del docente que baja el
+                # parecido textual por debajo del umbral del generador.
+                titulo_foro = normalizar(
+                    item.titulo + " " + item.detalle.get("item_planilla", ""))
+                _KW_APERTURA = ("apertura", "presentacion", "bienvenida",
+                               "introductorio", "introduccion")
+                if any(k in titulo_foro for k in _KW_APERTURA):
+                    # El foro de apertura/introductorio es de curso (sin número
+                    # de módulo), así que se busca en TODOS los foros, no solo
+                    # en los del módulo actual.
+                    dedicado = next(
+                        (p for _n, p in inv.foros
+                         if any(k in normalizar(p.stem) for k in _KW_APERTURA)), None)
+                    if dedicado:
+                        archivo, score = dedicado, max(score, 0.9)
+                # Si el título del foro (una frase con entidad, p.ej. "Akio
+                # Toyoda y la crisis Toyota") aparece dentro del nombre del DOCX,
+                # es el foro dedicado a ese tema aunque el parecido global no
+                # llegue al umbral (el archivo trae prefijos como "Foro
+                # Participativo - ").
+                titulo_item = normalizar(item.titulo)
+                if archivo is not None and len(titulo_item) >= 12 \
+                        and titulo_item in normalizar(archivo.stem):
+                    score = max(score, 0.9)
                 if archivo:
                     item.fuente = FuenteContenido(archivo=archivo,
                                                   confianza=round(max(score, 0.5), 2))
