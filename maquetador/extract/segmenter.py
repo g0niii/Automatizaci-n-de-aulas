@@ -51,11 +51,16 @@ def _texto_norm(el) -> str:
     return normalizar(el.get_text(" ", strip=True))
 
 
+_PAT_NOTA = re.compile(r"\[\d+\]")
+
+
 def _squash(texto: str) -> str:
     """Forma canónica para comparar títulos: minúsculas, sin acentos, solo
     letras y números. Inmune a los espacios que mammoth mete alrededor de
-    los signos de puntuación ('endobranding :' vs 'endobranding:')."""
-    return re.sub(r"[^a-z0-9]+", "", normalizar(texto))
+    los signos de puntuación ('endobranding :' vs 'endobranding:') y a las
+    referencias de nota al pie que mammoth pega al título ('… Final [26]'),
+    que la planilla no trae."""
+    return re.sub(r"[^a-z0-9]+", "", normalizar(_PAT_NOTA.sub("", texto)))
 
 
 def _clave_de_titulo(texto: str, marcadores: dict) -> str:
@@ -133,6 +138,12 @@ _MARCAS_ESPECIALES = (
     ("referencias", re.compile(r"^referencias?\b|^bibliograf[íi]a")),
 )
 
+# Marcadores que solo abren el módulo (van ANTES de la primera sección numerada).
+# Una vez que empezó una página real, un texto como "Objetivo financiero" es un
+# sub-título del cuerpo, no el bloque "Objetivos" del módulo: no debe cambiar de
+# sección. (Conclusión/referencias sí aparecen después de las secciones.)
+_MARCAS_APERTURA = {"intro", "objetivos", "agenda"}
+
 
 def segmentar_docx(docx_path: Path, marcadores: dict) -> tuple:
     """Corta el DOCX en secciones HTML.
@@ -156,6 +167,7 @@ def segmentar_docx(docx_path: Path, marcadores: dict) -> tuple:
     secciones = {}
     clave_actual = None
     acumulado = []
+    en_seccion_real = False   # ¿ya empezó una página numerada de la planilla?
 
     def _guardar():
         if clave_actual is not None and acumulado:
@@ -175,10 +187,14 @@ def segmentar_docx(docx_path: Path, marcadores: dict) -> tuple:
                 _guardar()
                 clave_actual = clave
                 acumulado = []   # el título no va dentro del cuerpo
+                en_seccion_real = True
                 continue
             # ¿Es un marcador especial (intro/objetivos/conclusión/refs)?
             especial = next((nombre for nombre, pat in _MARCAS_ESPECIALES
                              if pat.match(tn)), "")
+            # Los marcadores de apertura no valen una vez dentro de una página.
+            if especial in _MARCAS_APERTURA and en_seccion_real:
+                especial = ""
             if especial and len(tn) < 60:
                 _guardar()
                 clave_actual = especial
