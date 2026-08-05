@@ -352,3 +352,63 @@ class TestMultiplesCasos:
         assert len(inv1.actividades) == len(inv2.actividades)
         # Mismo nombre de curso
         assert inv1.nombre_curso == inv2.nombre_curso
+
+
+class TestAfiConGuionBajo:
+    """El AFI a veces llega como 'AFI_ Nombre.docx'; el guion bajo no debe
+    impedir que se clasifique como actividad (regresión: '\bafi\b' no matchea
+    'afi_' porque '_' es carácter de palabra)."""
+
+    def _curso(self, tmp_path):
+        raiz = tmp_path / "Seminario X"
+        (raiz / "Etapa 2" / "Actividades y AFI").mkdir(parents=True)
+        (raiz / "Etapa 2" / "Actividades y AFI" /
+         "AFI_ El liderazgo desde mi mirada .docx").write_text("x", encoding="utf-8")
+        return raiz
+
+    def test_afi_con_guion_bajo_es_actividad(self, tmp_path):
+        inv = escanear(self._curso(tmp_path))
+        nombres = [p.name for _n, p in inv.actividades]
+        assert any("AFI_" in n for n in nombres), \
+            f"El AFI con guion bajo no se clasificó como actividad: {nombres}"
+
+
+class TestModuloConPrefijoM:
+    """Los DOCX modulares a veces vienen como 'M1_Material multimedial…': el
+    guion bajo tras el número no debe impedir extraer el módulo (regresión:
+    '\bm1\b' no matchea 'm1_')."""
+
+    def test_m1_guion_bajo(self):
+        assert _numero_modulo("M1_Material multimedial modular (Granja).docx") == 1
+        assert _numero_modulo("M2_Material multimedial modular.docx") == 2
+        assert _numero_modulo("M3_Material multimedial modular.docx") == 3
+
+    def test_no_rompe_material_sin_numero(self):
+        assert _numero_modulo("Material multimedial modular.docx") is None
+
+
+class TestDescartables:
+    """Versiones anteriores y archivos marcados para eliminar no son fuente."""
+
+    def _curso(self, tmp_path):
+        raiz = tmp_path / "Curso X"
+        (raiz / "Material").mkdir(parents=True)
+        (raiz / "Material" / "(versión anterior)M1_Material multimedial modular.docx").write_text("x", encoding="utf-8")
+        (raiz / "Material" / "ELIMINAR. Módulo 1 - FORO.docx").write_text("x", encoding="utf-8")
+        (raiz / "Material" / "M1_Material multimedial modular.docx").write_text("x", encoding="utf-8")
+        (raiz / "Versiones anteriores").mkdir()
+        (raiz / "Versiones anteriores" / "Video introductorio.docx").write_text("x", encoding="utf-8")
+        return raiz
+
+    def test_descarta_version_anterior_y_eliminar(self, tmp_path):
+        inv = escanear(self._curso(tmp_path))
+        todos = [p.name for p in
+                 list(inv.docx_modulos.values())
+                 + [p for _n, p in inv.actividades]
+                 + [p for _n, p in inv.foros]
+                 + [p for _n, p in inv.guiones_video]
+                 + inv.otros]
+        assert not any("versión anterior" in n or "versi\u00f3n anterior" in n for n in todos), todos
+        assert not any(n.startswith("ELIMINAR") for n in todos), todos
+        assert not any(n == "Video introductorio.docx" for n in todos), \
+            "No se descartó la carpeta 'Versiones anteriores'"

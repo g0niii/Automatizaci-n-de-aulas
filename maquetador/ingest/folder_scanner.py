@@ -29,13 +29,16 @@ def normalizar(texto: str) -> str:
 
 # Archivos que son borradores o material descartado: nunca son fuente.
 _DESCARTAR = re.compile(
-    r"(borrador|copia de|eliminada|despues se borra|devoluci|^no_|^~\$)", re.I)
+    r"(borrador|copia de|elimina(r|da)|despues se borra|devoluci|"
+    r"versi[óo]n anterior|^no_|^~\$)", re.I)
 
 # Carpeta(s) en la ruta que marcan material no usable
-_CARPETAS_DESCARTAR = ("borrador", "borradores", "devoluciones")
+_CARPETAS_DESCARTAR = ("borrador", "borradores", "devoluciones",
+                       "version anterior", "versiones anterior")
 
 _PAT_MODULO_NUM = re.compile(
-    r"(?:m[óo]dulo[\s_]*(\d+)|[-_\s]m[\s_]?(\d+)\b|\bm(\d+)\b)", re.I)
+    r"(?:m[óo]dulo[\s_]*(\d+)|[-_\s]m[\s_]?(\d+)(?![a-z0-9])|"
+    r"\bm(\d+)(?![a-z0-9]))", re.I)
 
 # Romanos SOLO pegados a "módulo"/"modular" (así "Material multimedial modular
 # III" → 3, pero "modular video" no toma la v/i como número).
@@ -161,7 +164,7 @@ def escanear(carpeta: Path) -> InventarioCurso:
         if ext == ".docx":
             if "foro" in nombre:
                 inv.foros.append((num, path))
-            elif "actividad" in nombre or re.search(r"\bafi\b", nombre):
+            elif "actividad" in nombre or re.search(r"(?<![a-z])afi(?![a-z])", nombre):
                 inv.actividades.append((num, path))
             elif "video" in nombre or "guion" in nombre or "audiovisual" in nombre \
                     or ("grabaci" in carpeta_padre and "biograf" not in nombre):
@@ -184,10 +187,22 @@ def escanear(carpeta: Path) -> InventarioCurso:
                 if num is None:
                     num = _numero_modulo(carpeta_padre) or 0
                 if num in inv.docx_modulos:
-                    inv.issues.append(Issue(Severidad.AVISO,
-                        f"Más de un DOCX para el módulo {num}: ya tenía "
-                        f"'{inv.docx_modulos[num].name}', apareció '{path.name}'. "
-                        "Verificar cuál es la versión final.", f"Módulo {num}"))
+                    # Ante conflicto, gana el "material multimedial modular" (el
+                    # desarrollo teórico canónico) sobre guías/organizadores/
+                    # anexos que solo mencionan "módulo N".
+                    actual = inv.docx_modulos[num]
+                    nuevo_es_mm = "material multimedial" in nombre
+                    actual_es_mm = "material multimedial" in normalizar(actual.name)
+                    if nuevo_es_mm and not actual_es_mm:
+                        inv.otros.append(actual)
+                        inv.docx_modulos[num] = path
+                    elif not nuevo_es_mm and actual_es_mm:
+                        inv.otros.append(path)
+                    else:
+                        inv.issues.append(Issue(Severidad.AVISO,
+                            f"Más de un DOCX para el módulo {num}: ya tenía "
+                            f"'{actual.name}', apareció '{path.name}'. "
+                            "Verificar cuál es la versión final.", f"Módulo {num}"))
                 else:
                     inv.docx_modulos[num] = path
             else:
