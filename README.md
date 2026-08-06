@@ -77,8 +77,10 @@ maquetador/
   web/          app Flask interna
   models.py     modelo canónico (CourseSpec, ModuloCurso, ItemCurso, Issue)
   cli.py        entrada por consola
-processors/     utilidades de diseño CidiLabs (dp-wrapper) reutilizadas
-auditar_fidelidad.py   regresión: valida XML + compara vs aulas a mano
+processors/     cidilabs_builder.py: utilidades de diseño CidiLabs (dp-wrapper)
+scripts/        auditar_fidelidad.py: valida XML + compara fidelidad vs aulas a mano
+tests/          suite pytest
+legacy/         código de la versión anterior (no lo usa el tool; archivado)
 Elementos de las aulas/_extracted_educacion , _extracted_posgrado   aulas base
 ```
 
@@ -105,7 +107,7 @@ Elementos de las aulas/_extracted_educacion , _extracted_posgrado   aulas base
 
 ## Calidad
 
-`python auditar_fidelidad.py` valida el XML de cada paquete (un `&` sin escapar
+`python scripts/auditar_fidelidad.py` valida el XML de cada paquete (un `&` sin escapar
 rompe la importación en Canvas) y compara la fidelidad de las páginas contra las
 aulas hechas a mano. Suite de 6 cursos de referencia (~88% de páginas idénticas;
 el resto son decisiones editoriales que se resuelven en revisión).
