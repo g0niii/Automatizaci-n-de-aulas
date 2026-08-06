@@ -1,0 +1,583 @@
+# Plan de Implementación: Dashboard Rediseño UCC Corporativo
+
+> **Para trabajadores autónomos:** REQUERIDO: Usar superpowers:subagent-driven-development (recomendado) o superpowers:executing-plans para implementar tarea por tarea. Los pasos usan sintaxis checkbox (`- [ ]`) para tracking.
+
+**Objetivo:** Rediseñar el dashboard con identidad visual corporativa UCC, header horizontal responsivo, y mantener toda la funcionalidad existente.
+
+**Arquitectura:** Reemplazamos el sidebar fijo con un header horizontal tipo UCC que contiene logo, nav items, selector de tema y perfil. El contenido principal (drag-zone + grid de tarjetas) se mantiene pero con estilos mejorados. El diseño es completamente responsive con breakpoints en 768px y 1024px.
+
+**Tech Stack:** Flask (existente), Jinja2 (existente), CSS vanilla (reescrito), JavaScript vanilla (sin cambios).
+
+## Restricciones Globales
+
+- Colores UCC exactos: #003087 (azul marino), #00BFA5 (turquesa), #ffffff (blanco), #f5f5f5 (gris claro), #333333 (gris texto)
+- Responsive: mobile (<768px), tablet (768-1024px), desktop (>1024px)
+- Mantener toda funcionalidad: drag-and-drop, selector tema, acciones cursos
+- Header sticky (fijo al scroll)
+- Hamburger menu en mobile (nav items colapsado)
+
+---
+
+## Estructura de Archivos
+
+**Modificar:**
+- `maquetador/web/static/css/dashboard.css` — Reescribir completamente con estilos corporativos
+- `maquetador/web/templates/dashboard.html` — Actualizar estructura: header horizontal + contenido
+
+**No tocar:**
+- `maquetador/web/app.py` — Rutas y endpoints (sin cambios)
+- `maquetador/web/static/js/dashboard.js` — Funcionalidad (sin cambios)
+
+---
+
+### Tarea 1: Reescribir CSS con Estilos UCC
+
+**Archivos:**
+- Modificar: `maquetador/web/static/css/dashboard.css`
+
+**Qué consume:** Nada (archivo será reescrito completamente)
+**Qué produce:** CSS con header horizontal, colores UCC, responsive layout
+
+- [ ] **Paso 1: Reescribir CSS completo**
+
+Reemplazar COMPLETAMENTE el contenido de `maquetador/web/static/css/dashboard.css` con:
+
+```css
+/* === VARIABLES DE COLOR (UCC) === */
+:root {
+  --color-primary: #003087;      /* Azul UCC */
+  --color-accent: #00BFA5;       /* Turquesa UCC */
+  --color-white: #ffffff;
+  --color-gray-light: #f5f5f5;
+  --color-gray-text: #333333;
+  --color-gray-muted: #666666;
+  --color-gray-border: #e0e0e0;
+  --color-danger: #d32f2f;
+}
+
+/* === RESET === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: var(--color-gray-light);
+  color: var(--color-gray-text);
+  line-height: 1.6;
+}
+
+/* === HEADER (Navegación Horizontal) === */
+.header {
+  background: var(--color-primary);
+  color: var(--color-white);
+  padding: 16px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1400px;
+  margin: 0 auto;
+  gap: 40px;
+}
+
+/* Logo + Brand */
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.header-logo img {
+  height: 40px;
+  width: auto;
+}
+
+/* Navegación Central */
+.header-nav {
+  display: flex;
+  gap: 0;
+  flex: 1;
+  justify-content: center;
+}
+
+.header-nav .nav-item {
+  color: var(--color-white);
+  text-decoration: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  transition: color 0.2s;
+  position: relative;
+}
+
+.header-nav .nav-item:hover {
+  color: var(--color-accent);
+}
+
+.header-nav .nav-item.active {
+  color: var(--color-accent);
+  border-bottom: 2px solid var(--color-accent);
+}
+
+/* Right: Tema + Profile */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.theme-select {
+  background: var(--color-white);
+  border: 1px solid var(--color-accent);
+  color: var(--color-primary);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.profile-dropdown {
+  position: relative;
+}
+
+.profile-btn {
+  background: var(--color-white);
+  color: var(--color-primary);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.profile-btn:hover {
+  background: var(--color-accent);
+  color: var(--color-white);
+}
+
+/* Hamburger Menu (Mobile) */
+.hamburger-menu {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--color-white);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+  flex-shrink: 0;
+}
+
+/* Mobile Menu (Hidden by default) */
+.mobile-menu {
+  display: none;
+  position: absolute;
+  top: 60px;
+  left: 0;
+  right: 0;
+  background: var(--color-primary);
+  flex-direction: column;
+  z-index: 999;
+}
+
+.mobile-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-nav-item {
+  color: var(--color-white);
+  text-decoration: none;
+  padding: 12px 24px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background 0.2s;
+}
+
+.mobile-nav-item:hover {
+  background: rgba(0, 191, 165, 0.2);
+}
+
+/* === MAIN CONTENT === */
+.main-area {
+  padding: 40px 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.main-header h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 30px;
+}
+
+/* === DRAG ZONE === */
+.drag-zone {
+  background: var(--color-white);
+  border: 2px dashed var(--color-accent);
+  border-radius: 8px;
+  padding: 60px 20px;
+  text-align: center;
+  cursor: pointer;
+  margin-bottom: 40px;
+  transition: all 0.2s;
+}
+
+.drag-zone:hover {
+  background: #f0f8ff;
+  border-color: var(--color-accent);
+}
+
+.drag-zone.dragover {
+  background: #e0f7ff;
+  border-color: var(--color-accent);
+  border-style: solid;
+}
+
+.drag-zone-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+.drag-zone-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 5px;
+}
+
+.drag-zone-subtext {
+  font-size: 13px;
+  color: var(--color-gray-muted);
+  margin-bottom: 15px;
+}
+
+.drag-zone-button {
+  background: var(--color-accent);
+  color: var(--color-white);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.drag-zone-button:hover {
+  background: #0099a1;
+}
+
+.drag-zone input[type="file"] {
+  display: none;
+}
+
+.current-theme {
+  font-size: 12px;
+  color: var(--color-gray-muted);
+  margin-top: 10px;
+}
+
+/* === COURSES SECTION === */
+.courses-section {
+  margin-top: 40px;
+}
+
+.courses-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 20px;
+}
+
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.course-card {
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-border);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s;
+}
+
+.course-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 48, 135, 0.15);
+  border-color: var(--color-accent);
+}
+
+.course-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.course-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-gray-text);
+  flex: 1;
+}
+
+.course-theme {
+  font-size: 11px;
+  background: var(--color-gray-light);
+  color: var(--color-gray-muted);
+  padding: 4px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.course-info {
+  display: flex;
+  gap: 15px;
+  font-size: 12px;
+  color: var(--color-gray-muted);
+  margin-bottom: 15px;
+}
+
+.course-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--color-accent);
+  margin-bottom: 15px;
+}
+
+.course-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.course-action {
+  flex: 1;
+  min-width: 70px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-accent);
+  background: var(--color-white);
+  color: var(--color-accent);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  text-decoration: none;
+}
+
+.course-action:hover {
+  background: var(--color-accent);
+  color: var(--color-white);
+}
+
+.course-action.danger {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.course-action.danger:hover {
+  background: var(--color-danger);
+  color: var(--color-white);
+}
+
+/* Loading state */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* === RESPONSIVE: TABLET (768px - 1024px) === */
+@media (max-width: 1024px) {
+  .main-header h2 {
+    font-size: 28px;
+  }
+
+  .courses-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .header-container {
+    gap: 24px;
+  }
+
+  .header-nav .nav-item {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
+
+/* === RESPONSIVE: MOBILE (<768px) === */
+@media (max-width: 768px) {
+  .header-container {
+    gap: 12px;
+  }
+
+  .header-logo {
+    font-size: 14px;
+  }
+
+  .header-logo img {
+    height: 32px;
+  }
+
+  .header-nav {
+    display: none;
+  }
+
+  .hamburger-menu {
+    display: block;
+  }
+
+  .mobile-menu.active {
+    display: flex;
+  }
+
+  .header-right {
+    gap: 8px;
+  }
+
+  .theme-select {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  .profile-btn {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .main-area {
+    padding: 20px 16px;
+  }
+
+  .main-header h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .drag-zone {
+    padding: 40px 16px;
+    margin-bottom: 30px;
+  }
+
+  .drag-zone-text {
+    font-size: 16px;
+  }
+
+  .drag-zone-button {
+    padding: 10px 20px;
+    font-size: 12px;
+  }
+
+  .courses-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .courses-title {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+
+  .course-card {
+    padding: 16px;
+  }
+
+  .course-name {
+    font-size: 14px;
+  }
+
+  .course-info {
+    font-size: 11px;
+    gap: 12px;
+  }
+
+  .course-actions {
+    gap: 6px;
+  }
+
+  .course-action {
+    padding: 6px 10px;
+    font-size: 11px;
+    min-width: 60px;
+  }
+}
+```
+
+- [ ] **Paso 2: Verificar que el archivo se guardó**
+
+- [ ] **Paso 3: Hacer commit**
+
+---
+
+### Tarea 2: Actualizar Template HTML con Header Horizontal
+
+**Archivos:**
+- Modificar: `maquetador/web/templates/dashboard.html`
+
+**Qué consume:** CSS completado en Tarea 1
+**Qué produce:** HTML con header horizontal, estructura responsive, IDs para JavaScript
+
+- [ ] **Paso 1: Reescribir template HTML con estructura de header + contenido**
+
+- [ ] **Paso 2: Verificar que el archivo se guardó**
+
+- [ ] **Paso 3: Hacer commit**
+
+---
+
+### Tarea 3: Verificación e Integración
+
+**Archivos:**
+- Test: Navegador en http://localhost:5000
+
+**Qué consume:** Tasks 1-2 completadas
+**Qué produce:** Dashboard funcionando con nuevo estilo
+
+- [ ] **Paso 1: Reiniciar servidor Flask y verificar que carga**
+
+- [ ] **Paso 2: Probar responsive (mobile, tablet, desktop)**
+
+- [ ] **Paso 3: Probar funcionalidad (drag-drop, selector tema, botones)**
+
+- [ ] **Paso 4: Hacer commit final**
+
+---
+
+## Resumen
+
+**Total:** 3 tareas
+- Tarea 1: CSS completo con estilos UCC
+- Tarea 2: HTML actualizado con header horizontal
+- Tarea 3: Testing e integración
+
+**Commits atómicos:** 3 commits (uno por tarea)
+
+**Resultado esperado:**
+✅ Dashboard con estilo corporativo UCC
+✅ Header horizontal responsivo
+✅ Hamburger menu en mobile
+✅ Colores UCC exactos (#003087, #00BFA5)
+✅ Toda funcionalidad funcionando
+✅ Responsive en mobile/tablet/desktop

@@ -28,3 +28,6 @@ Elementos de las aulas/*
 .superpowers/
 cursos_subidos/
 .coverage
+
+# Skills de terceros instaladas con `npx skills add` (no se versionan)
+.agents/
