@@ -117,7 +117,7 @@ Cada fase queda usable por sí sola.
 
 ## 11. Supuestos y pendientes a confirmar
 
-- **Supuesto**: Educación sigue un plan por cohorte estable (fechas predefinidas) y Posgrado es donde el orden se reordena período a período. El sistema soporta ambos modos; confirmar con el equipo.
+- **Confirmado**: Posgrado y Educación funcionan igual — los períodos tienen fechas predefinidas, y en ambos casos la unidad académica (directores) debe decirle al SIED **qué abre en cada período**. Ese es exactamente el flujo que el planificador de carrera resuelve: la decisión se toma dentro del sistema en vez de por mail.
 - **Pendiente**: extraer de las planillas las reglas exactas de desplazamiento de fechas por tipo de período (se hará al construir F3; los datos ya están en los exports).
 - **Pendiente**: definir con el jefe el momento de migración/congelamiento de su tablero.
 - **Pendiente**: lista definitiva de carreras/directores y sus mails institucionales para los accesos de F2.
