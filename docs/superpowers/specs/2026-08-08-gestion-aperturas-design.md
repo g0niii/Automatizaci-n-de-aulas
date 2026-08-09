@@ -96,6 +96,7 @@ Autenticación con cuenta Google institucional (`@ucc.edu.ar`), sin contraseñas
 - **Auth**: Google OAuth restringido al dominio `ucc.edu.ar`, roles en la base.
 - **Hosting**: Vercel (gratuito, URL estable, HTTPS). Si la UCC luego ofrece servidor institucional, la app se muda sin cambios de fondo.
 - **Migración**: script único que lee los exports de las dos planillas + el JSON de respaldo del tablero, normaliza (códigos como clave, resolución de duplicados y de inconsistencias de columnas) y carga la base. Se corre en un entorno de prueba primero, se valida contra las planillas, y recién ahí en producción.
+  - **Períodos de Educación**: la planilla de Posgrado ya tiene el período como dato (`Mensual_Agosto_2026`); la de Educación no — solo tiene fechas por fila (quedó pendiente hacerle esa hoja). La migración crea el calendario de períodos bimestrales/cuatrimestrales y asocia cada fila existente a su período por la fecha de inicio de cursado, dejando reporte de las que no encajen para revisarlas a mano.
 
 ## 9. Fases
 
