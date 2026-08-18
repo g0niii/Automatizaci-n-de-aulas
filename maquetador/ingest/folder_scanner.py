@@ -35,7 +35,7 @@ _DESCARTAR = re.compile(
 _CARPETAS_DESCARTAR = ("borrador", "borradores", "devoluciones")
 
 _PAT_MODULO_NUM = re.compile(
-    r"(?:m[óo]dulo[\s_]*(\d+)|[-_\s]m[\s_]?(\d+)\b|\bm(\d+)\b)", re.I)
+    r"(?:m[óo]dul[a-z]*[\s_]*(\d+)|[-_\s]m[\s_]?(\d+)\b|\bm(\d+)\b)", re.I)
 
 
 def _numero_modulo(nombre: str) -> Optional[int]:
@@ -140,7 +140,10 @@ def escanear(carpeta: Path) -> InventarioCurso:
         if ext == ".docx":
             if "foro" in nombre:
                 inv.foros.append((num, path))
-            elif "actividad" in nombre or re.search(r"\bafi\b", nombre):
+            elif "actividad" in nombre or re.search(r"(?<![a-z])afi(?![a-z])", nombre):
+                # "afi" como palabra aislada. Se usa lookaround de LETRAS (no \b)
+                # porque '_' es carácter de palabra y \bafi\b no matchea "AFI_…"
+                # (nombre real: "AFI_ El liderazgo desde mi mirada.docx").
                 inv.actividades.append((num, path))
             elif "video" in nombre or "guion" in nombre or "audiovisual" in nombre \
                     or ("grabaci" in carpeta_padre and "biograf" not in nombre):

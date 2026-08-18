@@ -54,8 +54,11 @@ def extraer_contenido(spec: CourseSpec) -> dict:
             # Pedidos de maquetación del asesor (comentarios del DOCX) que no se
             # aplicaron solos: se avisan para armarlos a mano en la revisión.
             for c in comentarios:
-                etiqueta = {"acordeon": "armar un ACORDEÓN",
-                            "flip_card": "armar una FLIP CARD",
+                etiqueta = {"acordeon": "armar un ACORDEÓN (editor DesignPLUS)",
+                            "flip_card": "armar una FLIP CARD (editor DesignPLUS)",
+                            "tabs": "armar TABS (editor DesignPLUS)",
+                            "quiz": "crear QUIZ/autoevaluación en Canvas (manual)",
+                            "video": "insertar VIDEO desde Canvas Studio (manual)",
                             "quitar": "QUITAR contenido",
                             "faltante": "⚠ FALTA algo"}.get(
                                 c["accion"], "revisar pedido")

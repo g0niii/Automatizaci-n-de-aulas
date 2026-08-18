@@ -104,6 +104,65 @@ def _buscar_archivo_wiki(working: Path, patron: str) -> Path:
     return cand[0] if cand else None
 
 
+def _copytree_longpath(src: Path, dst: Path) -> None:
+    """shutil.copytree con soporte de rutas largas en Windows (prefijo \\?\)."""
+    import os
+    src_s = str(src.resolve())
+    dst_s = str(dst.resolve())
+    lp_src = "\\\\?\\" + src_s if not src_s.startswith("\\\\") else src_s
+    lp_dst = "\\\\?\\" + dst_s if not dst_s.startswith("\\\\") else dst_s
+    import ctypes
+    kernel32 = ctypes.windll.kernel32 if hasattr(ctypes, "windll") else None
+
+    for root, dirs, files in os.walk(lp_src):
+        rel = root[len(lp_src):].lstrip("\\")
+        dest_dir = os.path.join(lp_dst, rel) if rel else lp_dst
+        os.makedirs(dest_dir, exist_ok=True)
+        for f in files:
+            src_file = os.path.join(root, f)
+            dst_file = os.path.join(dest_dir, f)
+            try:
+                import shutil as _shutil
+                _shutil.copy2(src_file, dst_file)
+            except Exception:
+                # último recurso: lectura/escritura binaria
+                with open(src_file, "rb") as fin, open(dst_file, "wb") as fout:
+                    fout.write(fin.read())
+
+
+def _rmtree_longpath(path: Path) -> None:
+    """shutil.rmtree con soporte de rutas largas en Windows (prefijo \\?\).
+
+    Los nombres de página del aula base pueden superar los 260 caracteres de
+    MAX_PATH; shutil.rmtree normal falla al recorrerlos (WinError 3) y deja el
+    working dir a medio borrar, rompiendo la siguiente generación."""
+    import os
+    if not path.exists():
+        return
+    p = str(path.resolve())
+    lp = "\\\\?\\" + p if os.name == "nt" and not p.startswith("\\\\") else p
+    # Borrado bottom-up: primero archivos, después carpetas ya vacías.
+    for root, dirs, files in os.walk(lp, topdown=False):
+        for f in files:
+            try:
+                os.chmod(os.path.join(root, f), 0o777)
+            except OSError:
+                pass
+            try:
+                os.remove(os.path.join(root, f))
+            except OSError:
+                pass
+        for d in dirs:
+            try:
+                os.rmdir(os.path.join(root, d))
+            except OSError:
+                pass
+    try:
+        os.rmdir(lp)
+    except OSError:
+        pass
+
+
 class GeneradorAula:
     def __init__(self, spec: CourseSpec, media: dict, output_dir: Path):
         self.spec = spec
@@ -131,8 +190,8 @@ class GeneradorAula:
                                               spec.nombre)[:40]).strip("_")
         self.working = self.output_dir / f"working_{nombre_corto}"
         if self.working.exists():
-            shutil.rmtree(self.working)
-        shutil.copytree(base, self.working)
+            _rmtree_longpath(self.working)
+        _copytree_longpath(base, self.working)
         logger.info(f"Aula base '{spec.tema}' clonada en {self.working}")
 
         self.manifest = _leer(self.working / "imsmanifest.xml")
