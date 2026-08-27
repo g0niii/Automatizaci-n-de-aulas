@@ -34,7 +34,8 @@ _W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 # Acciones que se aplican solas vs. las que solo se avisan.
 # "quitar" NO se automatiza: a veces es un micro-pedido ("quitar los dos puntos")
 # y borrar el párrafo entero sería un error; se avisa para hacerlo a mano.
-_AUTO = {"subtitulo", "recuadro_simple", "lectura", "video", "sin_recuadro"}
+_AUTO = {"subtitulo", "recuadro_simple", "lectura", "video", "podcast",
+         "sin_recuadro"}
 
 _COMPONENTES = {"acordeon", "tabs", "expander", "flip_card", "tooltip", "cita"}
 _VARIANTE_PANEL = {"acordeon": "dp-expander-default",
@@ -42,11 +43,24 @@ _VARIANTE_PANEL = {"acordeon": "dp-expander-default",
                    "expander": "dp-expander-default"}
 
 
-def _clasificar(instruccion: str) -> str:
+def _clasificar(instruccion: str, anclado: str = "") -> str:
     """Mapea el texto del comentario a una acción de maquetación (o None si es
-    charla interna del equipo, no una instrucción)."""
+    charla interna del equipo / una confirmación de "dejar como está", no una
+    instrucción). `anclado` es el texto del documento al que apunta el globo:
+    se usa para desambiguar pedidos genéricos ("CTA", "Recursos") por su
+    contenido."""
     n = normalizar(instruccion)
+    na = normalizar(anclado)
     if not n:
+        return None
+    # Charla interna del equipo (menciones @correo de Word/GDocs, asignaciones):
+    # no es una instrucción de maquetación. Sin esto, un "podés avanzar en la
+    # lectura del módulo…" se clasificaría por error como CTA Lectura.
+    if instruccion.strip().startswith("@") or "assigned to" in n:
+        return None
+    # Confirmación de "queda como está" (no hay nada que maquetar): no se avisa.
+    if "queda ok" in n or ("ok" in n and "original" in n) \
+            or "queda bien" in n or "sin cambios" in n:
         return None
     # Señales negativas primero (NO encuadrar)
     if any(k in n for k in ("sin recuadro", "sin cuadro", "no resaltar",
@@ -56,7 +70,10 @@ def _clasificar(instruccion: str) -> str:
         return "subtitulo"
     if "acordeon" in n:
         return "acordeon"
-    if any(k in n for k in ("tab ", "tabs", "pestana", "pestanas", "solapa")):
+    # "Tabs"/"solapas"/"pestañas" — componente de DesignPLUS. Palabra completa:
+    # no confundir con "tabla" ni con "texto alternativo".
+    if re.search(r"\btabs?\b", n) or "solapa" in n or "pestaña" in n \
+            or "pestana" in n:
         return "tabs"
     if any(k in n for k in ("expander", "expandible", "expandir")):
         return "expander"
@@ -69,9 +86,20 @@ def _clasificar(instruccion: str) -> str:
         return "tooltip"
     if any(k in n for k in ("es una cita", "esto es una cita", "es cita", "como cita")):
         return "cita"
+    # Quiz / autoevaluación (Quick check, verdadero o falso): se crean a mano en
+    # Canvas; nunca se auto-maquetan como recuadro.
+    if any(k in n for k in ("quic check", "quick check", "autoevaluacion",
+                            "verdadero o falso", "checklist de autoevaluacion")):
+        return "quiz"
     if any(k in n for k in ("quitar", "sacar", "eliminar", "borrar")):
         return "quitar"
-    if "recuadro" in n or "resalta" in n:
+    # Podcast/audio: el asesor lo dice explícito, o pide un "CTA/Recursos"
+    # sobre un texto que habla de un podcast.
+    if "podcast" in n or re.search(r"\baudio\b", n):
+        return "podcast"
+    if ("cta" in n or "recursos" in n) and ("podcast" in na or "audio" in na):
+        return "podcast"
+    if "recuadro" in n or "resalta" in n:   # resaltar, resaltado, "resaltado simple"
         return "recuadro_simple"
     if "lectura" in n:
         return "lectura"
@@ -152,9 +180,10 @@ def extraer_comentarios(docx_path) -> list:
 
     out = []
     for cid, instr in textos.items():
-        accion = _clasificar(instr)
+        anc = "".join(anclado.get(cid, [])).strip()
+        accion = _clasificar(instr, anc)
         if not accion:
-            continue   # charla interna, no es instrucción de maquetación
+            continue   # charla interna / confirmación, no es instrucción
         out.append({
             "instruccion": re.sub(r"\s+", " ", instr).strip(),
             "anclado": _ancla(cid),
@@ -282,6 +311,10 @@ def aplicar_comentarios(soup, comentarios: list) -> None:
         elif accion == "video":
             el.replace_with(BeautifulSoup(
                 cta_titulo("Video", f"<p>{inner}</p>", ICONOS["video"]),
+                "html.parser"))
+        elif accion == "podcast":
+            el.replace_with(BeautifulSoup(
+                cta_titulo("Podcast", f"<p>{inner}</p>", ICONOS["podcast"]),
                 "html.parser"))
         elif accion == "sin_recuadro":
             # El asesor pide NO encuadrar: se marca para que procesar_contenido
