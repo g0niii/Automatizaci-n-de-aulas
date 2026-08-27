@@ -77,8 +77,19 @@ def _separar_url(p) -> tuple:
     a = p.find("a", href=_PAT_URL)
     if a:
         url = a["href"].rstrip(".,;")
+        contenido_link = "".join(str(x) for x in a.children).strip()
         a.extract()
         ref = "".join(str(x) for x in p.children).strip()
+        if not ref and contenido_link:
+            # Word aplicó el hipervínculo a la cita ENTERA (autor, título y
+            # todo), no solo a la URL al final: el texto de la cita vive
+            # dentro del propio <a>, que acabamos de extraer completo. Se
+            # recupera de ahí, quitando la URL que queda repetida al final
+            # como texto plano.
+            ref = contenido_link
+            m = _PAT_URL.search(ref)
+            if m and m.group(1).rstrip(".,;") == url:
+                ref = ref[:m.start()].strip()
         ref = re.sub(r"\s+(disponible en|recuperado de)\s*:?\s*$", "",
                      ref, flags=re.I).strip(" .,:;–-")
         return ref, url

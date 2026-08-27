@@ -88,6 +88,7 @@ def pagina_contenido(titulo: str, body_html: str, banner_src: str,
 <div class="dp-content-block kl_readings2" style="background-color: #ffffff; color: #000000;">
 <h2 class="dp-has-icon"><i class="fa-book fas" aria-hidden="true"><span class="dp-icon-content" style="display: none;">&nbsp;</span></i></h2>
 {procesar_contenido(body_html)}
+<p>&nbsp;</p>
 </div>
 </div>
 </body>

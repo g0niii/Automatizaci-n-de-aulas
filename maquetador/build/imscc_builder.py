@@ -22,10 +22,10 @@ import re
 import shutil
 import uuid
 import zipfile
-from datetime import datetime
 from pathlib import Path
 
 from xml.sax.saxutils import escape as xml_escape, unescape as xml_unescape
+import xml.etree.ElementTree as ET
 
 import warnings
 
@@ -143,6 +143,7 @@ class GeneradorAula:
         for modulo in spec.modulos:
             self._procesar_modulo(modulo)
         self._eliminar_modulos_sobrantes()
+        self._eliminar_encuesta_valoracion()
         self._limpiar_recursos_no_usados()
         self._inyectar_afi()
         self._avisar_recursos_vacios()
@@ -159,8 +160,13 @@ class GeneradorAula:
         _escribir(self.working / "imsmanifest.xml", self.manifest)
         _escribir(self.working / "course_settings" / "module_meta.xml", self.meta)
 
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        salida = self.output_dir / f"{nombre_corto}_{timestamp}.imscc"
+        # Chequeos finales sobre el paquete YA armado: para que estos errores
+        # aparezcan en los avisos de esta misma corrida (los mismos que ya se
+        # leen siempre) en vez de descubrirse recién al importar en Canvas.
+        self._validar_xml_generado()
+        self._avisar_contenido_duplicado()
+
+        salida = self.output_dir / f"{nombre_corto}.imscc"
         with zipfile.ZipFile(salida, "w", zipfile.ZIP_DEFLATED) as zf:
             for f in sorted(self.working.rglob("*")):
                 if f.is_file():
@@ -197,21 +203,32 @@ class GeneradorAula:
             self.meta = patron.sub(lambda _: f"<title>{titulo_full}</title>", self.meta)
 
         # --- Introducción MN ---
+        # Preferí el ítem de planilla si existe (puede traer objetivos_html
+        # curados a mano); si la planilla no listó una fila de introducción
+        # para este módulo, la página se llena igual desde el respaldo en
+        # extras (el DOCX del módulo siempre trae Introducción/Objetivos al
+        # principio — es una página fija del aula base, no algo opcional).
         intro_item = next((i for i in modulo.items
                            if i.tipo == TipoItem.INTRO_MODULO and i.fuente.html), None)
+        extras_mod = getattr(modulo, "extras", {})
+        if intro_item:
+            intro_html = intro_item.fuente.html
+            objetivos_html = intro_item.detalle.get("objetivos_html", "")
+        else:
+            intro_html = extras_mod.get("intro", "")
+            objetivos_html = extras_mod.get("objetivos", "")
         archivo_intro = _buscar_archivo_wiki(self.working, f"introduccion-m{n}*.html")
-        if intro_item and archivo_intro:
+        if intro_html and archivo_intro:
             viejo = _leer(archivo_intro)
             nuevo = pagina_intro(
                 titulo=f"Introducción M{n}",
-                intro_html=self._rutear_media(intro_item.fuente.html),
-                objetivos_html=self._rutear_media(
-                    intro_item.detalle.get("objetivos_html", "")),
+                intro_html=self._rutear_media(intro_html),
+                objetivos_html=self._rutear_media(objetivos_html),
                 banner_src=_extraer_banner(viejo),
                 identifier=_extraer_identifier(viejo))
             _escribir(archivo_intro, nuevo)
             logger.info(f"  [M{n}] Introducción sobreescrita")
-        elif intro_item:
+        elif intro_html:
             self.spec.issues.append(Issue(Severidad.AVISO,
                 f"No encontré 'introduccion-m{n}*.html' en el aula base.", ctx))
 
@@ -840,7 +857,27 @@ class GeneradorAula:
                 tareas_modulo = [i for i in modulo.items
                                  if i.tipo == TipoItem.TAREA and i.fuente.archivo]
                 if not es_obligatoria and len(tareas_modulo) > 1:
-                    continue   # solo la obligatoria va al assignment del aula
+                    # Actividad sugerida/opcional con DOCX propio: el aula base
+                    # solo trae una Assignment por módulo (la obligatoria), así
+                    # que se clona como assignment nuevo en vez de perderla.
+                    rid_sug = self._clonar_actividad_sugerida(n)
+                    if not rid_sug:
+                        item.issues.append(Issue(Severidad.AVISO,
+                            f"'{archivo.name}' es una actividad sugerida/opcional "
+                            "con DOCX propio, pero no pude clonar un assignment "
+                            f"nuevo para cargarla en el módulo {n}: crearla a mano "
+                            "en Canvas (Completo/Incompleto, no cuenta para la "
+                            "nota final).", item.titulo))
+                        continue
+                    html = self._docx_a_html(archivo, f"act_sugerida_m{n}")
+                    if self._escribir_assignment(rid_sug, html, ctx):
+                        item.issues.append(Issue(Severidad.INFO,
+                            f"Contenido de '{archivo.name}' cargado en un "
+                            f"assignment nuevo 'Actividad sugerida M{n}' "
+                            "(Completo/Incompleto, no cuenta para la nota "
+                            "final). Verificar en Canvas.", item.titulo))
+                        logger.info(f"  [M{n}] Actividad sugerida (nueva) ← {archivo.name}")
+                    continue
                 rid = self._rid_en_meta(
                     "Assignment", rf"[^<]*[Aa]ctividad[^<]*M{n}[^<]*")
                 if not rid or rid in self.assignments_escritos:
@@ -1011,6 +1048,94 @@ class GeneradorAula:
         else:
             shutil.copy2(src, dst)
 
+    def _clonar_actividad_sugerida(self, n: int) -> str:
+        """Clona el assignment 'Actividad obligatoria M{n}' del aula base como
+        'Actividad sugerida M{n}': mismo diseño/wrapper, pero SIN calificar
+        (Complete/Incomplete, omitida de la nota final) — para actividades
+        opcionales que llegan como DOCX propio y no tienen slot propio en el
+        aula base (que solo trae una Assignment por módulo). Devuelve el rid
+        del nuevo assignment, o '' si no pudo clonarlo.
+
+        Hay dos árboles de <item> paralelos que comparten el mismo identifier:
+        el de module_meta.xml (rico: content_type/workflow_state/title/
+        identifierref/position, lo que usa Canvas) y el de imsmanifest.xml
+        <organizations> (simple: identifier+identifierref+title, el estándar
+        Common Cartridge). Hay que clonar los dos, más el <resource> y los
+        archivos de la carpeta del assignment."""
+        rid_base = self._rid_en_meta("Assignment", rf"[^<]*[Aa]ctividad[^<]*M{n}[^<]*")
+        if not rid_base:
+            return ""
+        bloque_res = self._resource_block(rid_base)
+        carpeta_base = self.working / rid_base
+        if not (bloque_res and carpeta_base.is_dir()):
+            return ""
+        # El <item> de module_meta.xml es una hoja (sin <item> anidados): se
+        # ubica por posición (ancla más cercana hacia atrás/adelante) en vez de
+        # con .*? DOTALL, que en un documento con varios módulos podía cruzar
+        # de un <item> a otro y capturar el identifier equivocado.
+        marca = f"<identifierref>{rid_base}</identifierref>"
+        idx = self.meta.find(marca)
+        ini = self.meta.rfind('<item identifier="', 0, idx) if idx != -1 else -1
+        fin = self.meta.find("</item>", idx) + len("</item>") if idx != -1 else -1
+        if idx == -1 or ini == -1 or fin < len("</item>"):
+            return ""
+        bloque_meta_item = self.meta[ini:fin]
+        m_id = re.match(r'<item identifier="([^"]+)">', bloque_meta_item)
+        if not m_id:
+            return ""
+        item_id_base = m_id.group(1)
+        m_org_item = re.search(
+            rf'<item identifier="{item_id_base}" identifierref="{rid_base}">.*?</item>',
+            self.manifest, re.DOTALL)
+        if not m_org_item:
+            return ""
+
+        nuevo_rid = _gen_id()
+        nuevo_item_id = _gen_id()
+        carpeta_nueva = self.working / nuevo_rid
+        if carpeta_nueva.exists():
+            shutil.rmtree(carpeta_nueva)
+        shutil.copytree(carpeta_base, carpeta_nueva)
+
+        settings = carpeta_nueva / "assignment_settings.xml"
+        if settings.exists():
+            xml = _leer(settings)
+            xml = xml.replace(f'identifier="{rid_base}"', f'identifier="{nuevo_rid}"', 1)
+            xml = re.sub(r"<title>[^<]*</title>",
+                        f"<title>Actividad sugerida M{n}</title>", xml, count=1)
+            xml = re.sub(r"<grading_type>[^<]*</grading_type>",
+                        "<grading_type>pass_fail</grading_type>", xml)
+            xml = re.sub(r"<points_possible>[^<]*</points_possible>",
+                        "<points_possible>0.0</points_possible>", xml)
+            xml = re.sub(r"<omit_from_final_grade>[^<]*</omit_from_final_grade>",
+                        "<omit_from_final_grade>true</omit_from_final_grade>", xml)
+            _escribir(settings, xml)
+
+        nuevo_res = bloque_res.replace(rid_base, nuevo_rid)
+        self.manifest = self.manifest.replace(
+            "</resources>", "    " + nuevo_res + "\n  </resources>", 1)
+
+        nuevo_meta_item = bloque_meta_item.replace(
+            f'identifier="{item_id_base}"', f'identifier="{nuevo_item_id}"', 1)
+        nuevo_meta_item = nuevo_meta_item.replace(
+            f"<identifierref>{rid_base}</identifierref>",
+            f"<identifierref>{nuevo_rid}</identifierref>")
+        nuevo_meta_item = re.sub(r"<title>[^<]*</title>",
+                                 f"<title>Actividad sugerida M{n}</title>",
+                                 nuevo_meta_item, count=1)
+        self.meta = self.meta.replace(
+            bloque_meta_item, bloque_meta_item + "\n      " + nuevo_meta_item, 1)
+
+        nuevo_org_item = m_org_item.group(0).replace(
+            f'identifier="{item_id_base}" identifierref="{rid_base}"',
+            f'identifier="{nuevo_item_id}" identifierref="{nuevo_rid}"', 1)
+        nuevo_org_item = re.sub(r"<title>[^<]*</title>",
+                                f"<title>Actividad sugerida M{n}</title>",
+                                nuevo_org_item, count=1)
+        self.manifest = self.manifest.replace(
+            m_org_item.group(0), m_org_item.group(0) + "\n            " + nuevo_org_item, 1)
+        return nuevo_rid
+
     def _clonar_modulo(self, template: int, nuevo: int):
         """Clona el módulo `template` del aula base como módulo `nuevo`:
         duplica su <module> (meta), su <item> (organizations), sus <resource>
@@ -1109,6 +1234,33 @@ class GeneradorAula:
             f"El módulo {num} del aula base no lo usa este curso "
             f"({len(self.spec.modulos)} módulos): se eliminó del paquete.",
             "Limpieza"))
+
+    def _eliminar_encuesta_valoracion(self):
+        """'Encuesta de valoración final' (aula base) es un Quiz clásico
+        (Quizzes::Quiz). El equipo usa New Quizzes, que el formato IMSCC no
+        puede generar, así que esa encuesta queda siempre vacía y hay que
+        rehacerla a mano en Canvas — se quita del paquete en vez de dejarla
+        como recurso muerto (pedido del usuario)."""
+        m = re.search(
+            r'<module identifier="([^"]+)">\s*<title>\s*Encuesta de valoraci[óo]n',
+            self.meta, re.IGNORECASE)
+        if not m:
+            return
+        mod_id = m.group(1)
+        pat = re.compile(rf'\s*<module identifier="{mod_id}">.*?</module>', re.DOTALL)
+        mm = pat.search(self.meta)
+        if not mm:
+            return
+        rrefs = re.findall(r'<identifierref>([^<]+)</identifierref>', mm.group(0))
+        self.meta = pat.sub("", self.meta, count=1)
+        self._quitar_item_organizations(mod_id)
+        for rref in rrefs:
+            self._eliminar_recurso(rref)
+        logger.info("  'Encuesta de valoración final' (Quiz clásico) eliminada")
+        self.spec.issues.append(Issue(Severidad.INFO,
+            "Se quitó 'Encuesta de valoración final' del aula base: es un "
+            "Quiz clásico y el equipo usa New Quizzes (el IMSCC no puede "
+            "generarlos) — crearla a mano en Canvas.", "Limpieza"))
 
     def _eliminar_huerfanos_modulo(self, num: int):
         """Borra recursos del aula base que nombran al módulo `num` y que NO
@@ -1245,6 +1397,64 @@ class GeneradorAula:
                     "entrega un enlace (Google Docs) en vez de un archivo: "
                     "completar a mano en Canvas.", "Recursos a completar"))
 
+    def _validar_xml_generado(self):
+        """Cualquier XML mal formado en el paquete (p.ej. un '&' sin escapar
+        en un título) hace fallar la importación en Canvas. Se chequea acá,
+        sobre el paquete ya armado, para que aparezca en los avisos de ESTA
+        corrida en vez de descubrirse recién al importar."""
+        rotos = []
+        for xml_path in self.working.rglob("*.xml"):
+            try:
+                ET.fromstring(xml_path.read_text(encoding="utf-8"))
+            except Exception as e:
+                rotos.append(f"{xml_path.relative_to(self.working)}: {e}")
+        if rotos:
+            detalle = " | ".join(rotos[:5])
+            if len(rotos) > 5:
+                detalle += f" | (+{len(rotos) - 5} más)"
+            self.spec.issues.append(Issue(Severidad.BLOQUEANTE,
+                f"{len(rotos)} archivo(s) XML mal formado(s) — el paquete NO "
+                f"va a importar bien en Canvas: {detalle}", "Validación XML"))
+
+    # Títulos oficiales de los CTA/recuadros estandarizados: se REPITEN a
+    # propósito cuando una página trae más de una caja del mismo tipo (p.ej.
+    # dos "Una pausa para reflexionar"), no es un duplicado accidental.
+    _TITULOS_ESTANDARIZADOS = {
+        "una pausa para reflexionar", "no pases de largo",
+        "ejemplo que iluminan", "descubri leyendo", "auriculares on",
+        "miralo con lupa", "voces que construyen",
+        "¿como vengo hasta aca?", "caja de herramientas para usar",
+    }
+
+    def _avisar_contenido_duplicado(self):
+        """Un título que se arma como caja (CTA/recuadro) y ADEMÁS queda
+        repetido como texto suelto en la misma página suele ser el mismo bug:
+        la etiqueta no se sacó del cuerpo al armar el recuadro. Se avisa por
+        página para revisar visualmente, sin tener que abrir cada una."""
+        carpeta = self.working / "wiki_content"
+        if not carpeta.is_dir():
+            return
+        for html_path in sorted(carpeta.glob("*.html")):
+            soup = BeautifulSoup(html_path.read_text(encoding="utf-8"),
+                                 "html.parser")
+            conteo = {}
+            # Los títulos de panel de un acordeón/expander armado desde una
+            # tabla (class="dp-panel-heading") repiten a propósito el mismo
+            # encabezado de columna en cada fila/grupo — no es un duplicado.
+            titulos = [t for t in soup.find_all(["h2", "h3"])
+                       if "dp-panel-heading" not in t.get("class", [])]
+            for tag in titulos + soup.select(".card-title"):
+                t = tag.get_text(" ", strip=True)
+                if len(t) >= 15 and normalizar(t) not in self._TITULOS_ESTANDARIZADOS:
+                    conteo[t] = conteo.get(t, 0) + 1
+            repetidos = [t for t, n in conteo.items() if n > 1]
+            if repetidos:
+                self.spec.issues.append(Issue(Severidad.AVISO,
+                    "Texto de título repetido dentro de la página (puede "
+                    "haber quedado duplicado al armar un recuadro): "
+                    + "; ".join(f"'{t}'" for t in repetidos[:3]),
+                    html_path.stem))
+
     def _texto_de_recurso(self, rid: str):
         """Largo del texto del archivo de un recurso (topic XML / assignment
         HTML). None si no se ubica."""
@@ -1285,13 +1495,26 @@ class GeneradorAula:
                 else:
                     quedan.add(f"Foro obligatorio M{n}")
             elif item.tipo == TipoItem.EVALUACION:
-                quedan.add(f"Autoevaluación M{n}")
+                self._avisar_autoevaluacion_clasica(n, item.titulo)
             elif item.tipo == TipoItem.TAREA:
                 if "autoeval" in txt:
-                    quedan.add(f"Autoevaluación M{n}")
+                    self._avisar_autoevaluacion_clasica(n, item.titulo)
                 else:
                     quedan.add(f"Actividad obligatoria M{n}")
         return quedan
+
+    def _avisar_autoevaluacion_clasica(self, n: int, titulo: str):
+        """La planilla pide una autoevaluación, pero el 'Autoevaluación MN'
+        del aula base es un Quiz clásico (Quizzes::Quiz) y el equipo usa New
+        Quizzes — el IMSCC no puede llevarlos, así que ese recurso siempre
+        queda vacío y hay que rehacerlo a mano. Se avisa y NO se agrega a
+        `quedan`, así _limpiar_recursos_no_usados lo elimina del paquete
+        (pedido del usuario: no dejar quizzes/encuestas clásicos inútiles)."""
+        self.spec.issues.append(Issue(Severidad.AVISO,
+            f"'{titulo[:60]}' pide una autoevaluación — no se incluye el "
+            f"Quiz clásico del aula base (Módulo {n}): el equipo usa New "
+            "Quizzes, que el formato IMSCC no puede generar. Crear a mano "
+            "en Canvas.", f"Módulo {n}"))
 
     def _eliminar_item_por_rref(self, rref: str):
         """Quita un ítem (no un módulo entero) de organizations + module_meta y

@@ -26,7 +26,7 @@ class TestPerfilarDocxBasico:
         # Buscar un DOCX de módulo real
         docx_files = list(casos_dir.rglob("*Módulo*.docx"))
         if not docx_files:
-            pytest.skip("No se encontraron archivos Módulo*.docx en casos/")
+            pytest.skip("No se encontraron archivos Módulo*.docx en 'Aulas a generar/'")
 
         path = docx_files[0]
         perfil = perfilar_docx(path)
@@ -41,7 +41,7 @@ class TestPerfilarDocxBasico:
         """Verifica que detecta secciones con formato N.N o N.N.N."""
         docx_files = list(casos_dir.rglob("*Módulo*.docx"))
         if not docx_files:
-            pytest.skip("No se encontraron archivos Módulo*.docx en casos/")
+            pytest.skip("No se encontraron archivos Módulo*.docx en 'Aulas a generar/'")
 
         for path in docx_files[:3]:  # Probar con los primeros 3
             perfil = perfilar_docx(path)
@@ -59,7 +59,7 @@ class TestPerfilarDocxBasico:
         """Verifica que detecta cuando hay Introducción."""
         docx_files = list(casos_dir.rglob("*Módulo*.docx"))
         if not docx_files:
-            pytest.skip("No se encontraron archivos Módulo*.docx en casos/")
+            pytest.skip("No se encontraron archivos Módulo*.docx en 'Aulas a generar/'")
 
         for path in docx_files[:2]:
             perfil = perfilar_docx(path)
@@ -70,7 +70,7 @@ class TestPerfilarDocxBasico:
         """Verifica que detecta Conclusión, Cierre o Reflexión final."""
         docx_files = list(casos_dir.rglob("*Módulo*.docx"))
         if not docx_files:
-            pytest.skip("No se encontraron archivos Módulo*.docx en casos/")
+            pytest.skip("No se encontraron archivos Módulo*.docx en 'Aulas a generar/'")
 
         perfil = perfilar_docx(docx_files[0])
         assert isinstance(perfil.tiene_conclusion, bool)
@@ -79,7 +79,7 @@ class TestPerfilarDocxBasico:
         """Verifica que detecta Referencias o Bibliografía."""
         docx_files = list(casos_dir.rglob("*Módulo*.docx"))
         if not docx_files:
-            pytest.skip("No se encontraron archivos Módulo*.docx en casos/")
+            pytest.skip("No se encontraron archivos Módulo*.docx en 'Aulas a generar/'")
 
         perfil = perfilar_docx(docx_files[0])
         assert isinstance(perfil.tiene_referencias, bool)
@@ -88,7 +88,7 @@ class TestPerfilarDocxBasico:
         """Verifica que el perfil puede convertirse a dict."""
         docx_files = list(casos_dir.rglob("*Módulo*.docx"))
         if not docx_files:
-            pytest.skip("No se encontraron archivos Módulo*.docx en casos/")
+            pytest.skip("No se encontraron archivos Módulo*.docx en 'Aulas a generar/'")
 
         perfil = perfilar_docx(docx_files[0])
         d = perfil.to_dict()
@@ -107,7 +107,7 @@ class TestDeteccionSecciones:
         """Verifica que cada sección tiene su índice de párrafo."""
         docx_files = list(casos_dir.rglob("*Módulo*.docx"))
         if not docx_files:
-            pytest.skip("No se encontraron archivos Módulo*.docx en casos/")
+            pytest.skip("No se encontraron archivos Módulo*.docx en 'Aulas a generar/'")
 
         perfil = perfilar_docx(docx_files[0])
         for seccion in perfil.secciones:
@@ -117,7 +117,7 @@ class TestDeteccionSecciones:
         """Verifica que los candidatos sin número cumplen criterios."""
         docx_files = list(casos_dir.rglob("*Módulo*.docx"))
         if not docx_files:
-            pytest.skip("No se encontraron archivos Módulo*.docx en casos/")
+            pytest.skip("No se encontraron archivos Módulo*.docx en 'Aulas a generar/'")
 
         perfil = perfilar_docx(docx_files[0])
         for candidato in perfil.candidatos:
@@ -129,7 +129,7 @@ class TestDeteccionSecciones:
         """Verifica que la estrategia elegida es una de las esperadas."""
         docx_files = list(casos_dir.rglob("*Módulo*.docx"))
         if not docx_files:
-            pytest.skip("No se encontraron archivos Módulo*.docx en casos/")
+            pytest.skip("No se encontraron archivos Módulo*.docx en 'Aulas a generar/'")
 
         estrategias_conocidas = {"heading_styles", "bold_numbered", "plain_numbered", "ninguna"}
 
@@ -142,7 +142,7 @@ class TestDeteccionSecciones:
         """Verifica que detalle_estrategias contiene resultados de todas."""
         docx_files = list(casos_dir.rglob("*Módulo*.docx"))
         if not docx_files:
-            pytest.skip("No se encontraron archivos Módulo*.docx en casos/")
+            pytest.skip("No se encontraron archivos Módulo*.docx en 'Aulas a generar/'")
 
         perfil = perfilar_docx(docx_files[0])
         assert "heading_styles" in perfil.detalle_estrategias
@@ -157,7 +157,7 @@ class TestMetadatos:
         """Verifica que metadatos es un diccionario."""
         docx_files = list(casos_dir.rglob("*Módulo*.docx"))
         if not docx_files:
-            pytest.skip("No se encontraron archivos Módulo*.docx en casos/")
+            pytest.skip("No se encontraron archivos Módulo*.docx en 'Aulas a generar/'")
 
         perfil = perfilar_docx(docx_files[0])
         assert isinstance(perfil.metadatos, dict)
@@ -170,7 +170,7 @@ class TestMultiplesCasos:
         """Corre perfilar_docx contra todos los Módulo*.docx disponibles."""
         docx_files = sorted(casos_dir.rglob("*Módulo*.docx"))
         if not docx_files:
-            pytest.skip("No se encontraron archivos Módulo*.docx en casos/")
+            pytest.skip("No se encontraron archivos Módulo*.docx en 'Aulas a generar/'")
 
         resultados = []
         for path in docx_files[:10]:  # Limitar a 10 para no tardar demasiado
@@ -187,7 +187,7 @@ class TestMultiplesCasos:
         """Verifica que los resultados son consistentes entre múltiples ejecuciones."""
         docx_files = list(casos_dir.rglob("*Módulo*.docx"))
         if not docx_files:
-            pytest.skip("No se encontraron archivos Módulo*.docx en casos/")
+            pytest.skip("No se encontraron archivos Módulo*.docx en 'Aulas a generar/'")
 
         path = docx_files[0]
         perfil1 = perfilar_docx(path)

@@ -12,7 +12,7 @@ ENV/
 # Generado / pesado (no se versiona)
 output/
 input/
-casos/
+Aulas a generar/
 *.imscc
 .claude/
 _bib_tmp.py
@@ -24,9 +24,8 @@ Elementos de las aulas/*
 !Elementos de las aulas/_extracted_educacion
 !Elementos de las aulas/_extracted_posgrado
 
-# Scratch del proceso SDD / subidas / coverage (no se versiona)
+# Scratch del proceso SDD / coverage (no se versiona)
 .superpowers/
-cursos_subidos/
 .coverage
 
 # Skills de terceros instaladas con `npx skills add` (no se versionan)

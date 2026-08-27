@@ -74,7 +74,7 @@ class TestEscanearBasico:
         # Buscar cualquier subcarpeta de curso
         cursos = [c for c in casos_dir.iterdir() if c.is_dir() and not c.name.startswith(".")]
         if not cursos:
-            pytest.skip("No se encontraron carpetas de curso en casos/")
+            pytest.skip("No se encontraron carpetas de curso en 'Aulas a generar/'")
 
         inv = escanear(cursos[0])
         assert isinstance(inv, InventarioCurso)
@@ -85,7 +85,7 @@ class TestEscanearBasico:
         """Verifica la estructura básica del inventario."""
         cursos = [c for c in casos_dir.iterdir() if c.is_dir() and not c.name.startswith(".")]
         if not cursos:
-            pytest.skip("No se encontraron carpetas de curso en casos/")
+            pytest.skip("No se encontraron carpetas de curso en 'Aulas a generar/'")
 
         inv = escanear(cursos[0])
 
@@ -107,7 +107,7 @@ class TestEscanearBasico:
         """Verifica que el inventario puede convertirse a dict."""
         cursos = [c for c in casos_dir.iterdir() if c.is_dir() and not c.name.startswith(".")]
         if not cursos:
-            pytest.skip("No se encontraron carpetas de curso en casos/")
+            pytest.skip("No se encontraron carpetas de curso en 'Aulas a generar/'")
 
         inv = escanear(cursos[0])
         d = inv.to_dict()
@@ -127,7 +127,7 @@ class TestClasificacionDocx:
         """Verifica que encuentra archivos de módulos."""
         cursos = [c for c in casos_dir.iterdir() if c.is_dir() and not c.name.startswith(".")]
         if not cursos:
-            pytest.skip("No se encontraron carpetas de curso en casos/")
+            pytest.skip("No se encontraron carpetas de curso en 'Aulas a generar/'")
 
         inv = escanear(cursos[0])
         # Al menos uno debe encontrar módulos
@@ -139,7 +139,7 @@ class TestClasificacionDocx:
         """Verifica que detecta archivos de actividades."""
         cursos = [c for c in casos_dir.iterdir() if c.is_dir() and not c.name.startswith(".")]
         if not cursos:
-            pytest.skip("No se encontraron carpetas de curso en casos/")
+            pytest.skip("No se encontraron carpetas de curso en 'Aulas a generar/'")
 
         inv = escanear(cursos[0])
         # Las actividades pueden estar vacías, solo verificar estructura
@@ -152,7 +152,7 @@ class TestClasificacionDocx:
         """Verifica que detecta archivos de foros."""
         cursos = [c for c in casos_dir.iterdir() if c.is_dir() and not c.name.startswith(".")]
         if not cursos:
-            pytest.skip("No se encontraron carpetas de curso en casos/")
+            pytest.skip("No se encontraron carpetas de curso en 'Aulas a generar/'")
 
         inv = escanear(cursos[0])
         assert isinstance(inv.foros, list)
@@ -161,7 +161,7 @@ class TestClasificacionDocx:
         """Verifica que detecta guiones de video."""
         cursos = [c for c in casos_dir.iterdir() if c.is_dir() and not c.name.startswith(".")]
         if not cursos:
-            pytest.skip("No se encontraron carpetas de curso en casos/")
+            pytest.skip("No se encontraron carpetas de curso en 'Aulas a generar/'")
 
         inv = escanear(cursos[0])
         assert isinstance(inv.guiones_video, list)
@@ -170,7 +170,7 @@ class TestClasificacionDocx:
         """Verifica que detecta el programa del curso."""
         cursos = [c for c in casos_dir.iterdir() if c.is_dir() and not c.name.startswith(".")]
         if not cursos:
-            pytest.skip("No se encontraron carpetas de curso en casos/")
+            pytest.skip("No se encontraron carpetas de curso en 'Aulas a generar/'")
 
         inv = escanear(cursos[0])
         assert isinstance(inv.programa, list)
@@ -183,7 +183,7 @@ class TestClasificacionImagenes:
         """Verifica que clasifica imágenes de figuras/tablas."""
         cursos = [c for c in casos_dir.iterdir() if c.is_dir() and not c.name.startswith(".")]
         if not cursos:
-            pytest.skip("No se encontraron carpetas de curso en casos/")
+            pytest.skip("No se encontraron carpetas de curso en 'Aulas a generar/'")
 
         inv = escanear(cursos[0])
         assert isinstance(inv.imagenes_diseno, list)
@@ -192,7 +192,7 @@ class TestClasificacionImagenes:
         """Verifica que detecta esquemas."""
         cursos = [c for c in casos_dir.iterdir() if c.is_dir() and not c.name.startswith(".")]
         if not cursos:
-            pytest.skip("No se encontraron carpetas de curso en casos/")
+            pytest.skip("No se encontraron carpetas de curso en 'Aulas a generar/'")
 
         inv = escanear(cursos[0])
         assert isinstance(inv.esquema, list)
@@ -206,7 +206,7 @@ class TestDescarte:
         # Buscar una carpeta que tenga Devoluciones
         cursos = [c for c in casos_dir.iterdir() if c.is_dir() and not c.name.startswith(".")]
         if not cursos:
-            pytest.skip("No se encontraron carpetas de curso en casos/")
+            pytest.skip("No se encontraron carpetas de curso en 'Aulas a generar/'")
 
         inv = escanear(cursos[0])
         # Verificar que no hay rutas que contengan "devoluciones" o "Devoluciones"
@@ -221,7 +221,7 @@ class TestDescarte:
         """Verifica que descarta archivos con 'borrador', 'copia de', etc."""
         cursos = [c for c in casos_dir.iterdir() if c.is_dir() and not c.name.startswith(".")]
         if not cursos:
-            pytest.skip("No se encontraron carpetas de curso en casos/")
+            pytest.skip("No se encontraron carpetas de curso en 'Aulas a generar/'")
 
         inv = escanear(cursos[0])
         prohibidas = ["borrador", "copia de", "eliminada"]
@@ -251,7 +251,7 @@ class TestExtraerNumeroModulo:
         """Verifica que los números de módulo se extraen correctamente."""
         cursos = [c for c in casos_dir.iterdir() if c.is_dir() and not c.name.startswith(".")]
         if not cursos:
-            pytest.skip("No se encontraron carpetas de curso en casos/")
+            pytest.skip("No se encontraron carpetas de curso en 'Aulas a generar/'")
 
         inv = escanear(cursos[0])
         if inv.docx_modulos:
@@ -264,7 +264,7 @@ class TestExtraerNumeroModulo:
         """Verifica que extrae números de módulo de actividades."""
         cursos = [c for c in casos_dir.iterdir() if c.is_dir() and not c.name.startswith(".")]
         if not cursos:
-            pytest.skip("No se encontraron carpetas de curso en casos/")
+            pytest.skip("No se encontraron carpetas de curso en 'Aulas a generar/'")
 
         inv = escanear(cursos[0])
         for item in inv.actividades:
@@ -281,7 +281,7 @@ class TestEstructuraXlsx:
         """Verifica que busca la planilla de estructura general."""
         cursos = [c for c in casos_dir.iterdir() if c.is_dir() and not c.name.startswith(".")]
         if not cursos:
-            pytest.skip("No se encontraron carpetas de curso en casos/")
+            pytest.skip("No se encontraron carpetas de curso en 'Aulas a generar/'")
 
         inv = escanear(cursos[0])
         # estructura_xlsx puede ser None o un Path
@@ -295,7 +295,7 @@ class TestIssues:
         """Verifica que hay un campo issues."""
         cursos = [c for c in casos_dir.iterdir() if c.is_dir() and not c.name.startswith(".")]
         if not cursos:
-            pytest.skip("No se encontraron carpetas de curso en casos/")
+            pytest.skip("No se encontraron carpetas de curso en 'Aulas a generar/'")
 
         inv = escanear(cursos[0])
         assert isinstance(inv.issues, list)
@@ -304,7 +304,7 @@ class TestIssues:
         """Verifica que los issues tienen severidad."""
         cursos = [c for c in casos_dir.iterdir() if c.is_dir() and not c.name.startswith(".")]
         if not cursos:
-            pytest.skip("No se encontraron carpetas de curso en casos/")
+            pytest.skip("No se encontraron carpetas de curso en 'Aulas a generar/'")
 
         inv = escanear(cursos[0])
         for issue in inv.issues:
@@ -319,7 +319,7 @@ class TestMultiplesCasos:
         """Corre escanear contra todos los cursos disponibles."""
         cursos = sorted([c for c in casos_dir.iterdir() if c.is_dir() and not c.name.startswith(".")])
         if not cursos:
-            pytest.skip("No se encontraron carpetas de curso en casos/")
+            pytest.skip("No se encontraron carpetas de curso en 'Aulas a generar/'")
 
         resultados = []
         for curso_dir in cursos[:5]:  # Limitar a 5 para no tardar
@@ -340,7 +340,7 @@ class TestMultiplesCasos:
         """Verifica que escaneando dos veces da el mismo resultado."""
         cursos = [c for c in casos_dir.iterdir() if c.is_dir() and not c.name.startswith(".")]
         if not cursos:
-            pytest.skip("No se encontraron carpetas de curso en casos/")
+            pytest.skip("No se encontraron carpetas de curso en 'Aulas a generar/'")
 
         curso_dir = cursos[0]
         inv1 = escanear(curso_dir)

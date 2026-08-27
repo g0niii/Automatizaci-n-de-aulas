@@ -76,6 +76,20 @@ def _extraer_metadata_nuevo(filas: list, spec: CourseSpec):
             spec.docentes.append(valor)
 
 
+_PAT_NUM_TITULO = re.compile(r"^(\d+(?:\.\d+)*)\.?[ \t]+(.*)", re.DOTALL)
+
+
+def _normalizar_numeracion_titulo(titulo: str) -> str:
+    """"1.1.1 Título"/"1.4.1<TAB>Título" → "1.1.1. Título" (con el punto
+    después del número). La planilla nunca trae el punto, pero el equipo
+    SIEMPRE lo agrega a mano al título de la página, en todos los niveles
+    de numeración — es la convención de título UCC, no algo opcional."""
+    m = _PAT_NUM_TITULO.match(titulo.strip())
+    if not m:
+        return titulo
+    return f"{m.group(1)}. {m.group(2).strip()}"
+
+
 def _clasificar_item(texto: str, seccion_actual: str) -> TipoItem:
     n = normalizar(texto)
     if _PAT_NUMERADO.match(texto):
@@ -224,7 +238,7 @@ def parsear_estructura(path: Path) -> CourseSpec:
         orden += 1
         tipo = _clasificar_item(fila.item, seccion_actual)
         item = ItemCurso(
-            titulo=fila.titulo_actividad or fila.item,
+            titulo=_normalizar_numeracion_titulo(fila.titulo_actividad or fila.item),
             tipo=tipo, orden=orden,
             estado_planilla=fila.estado,
             comentarios_asesor=fila.comentario_asesor,

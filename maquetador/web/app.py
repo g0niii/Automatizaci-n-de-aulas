@@ -30,7 +30,7 @@ from maquetador.plan import guardar_plan, TEMAS_DISPONIBLES
 from maquetador.web.api import guardar_cambios_plan
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-CURSOS_DIRS = [BASE_DIR / "cursos_subidos", BASE_DIR / "casos"]
+CURSOS_DIRS = [BASE_DIR / "Aulas a generar"]
 OUTPUT_DIR = BASE_DIR / "output"
 
 app = Flask(__name__)
@@ -153,7 +153,7 @@ def subir():
         return redirect(url_for("index"))
     nombre = re.sub(r"-\d{8}T\d{6}Z-\d+-\d+$", "",
                     Path(archivo.filename).stem).strip()
-    destino = BASE_DIR / "cursos_subidos" / nombre
+    destino = BASE_DIR / "Aulas a generar" / nombre
     if destino.exists():
         shutil.rmtree(destino)
     try:
@@ -194,12 +194,11 @@ def ver_curso(curso_id):
 
 
 def _ultimo_paquete_de(spec):
-    """Nombre del .imscc más reciente generado para este curso."""
+    """Nombre del .imscc generado para este curso (nombre estable, sin timestamp)."""
     prefijo = (spec.codigo or re.sub(r"[^A-Za-z0-9]+", "_",
                                      spec.nombre)[:40]).strip("_")
-    paquetes = sorted(OUTPUT_DIR.glob(f"{prefijo}_*.imscc"),
-                      key=lambda p: p.stat().st_mtime, reverse=True)
-    return paquetes[0].name if paquetes else None
+    paquete = OUTPUT_DIR / f"{prefijo}.imscc"
+    return paquete.name if paquete.exists() else None
 
 
 def _plan_dict_a_coursespec(plan_dict: dict) -> tuple[CourseSpec, list[str]]:
@@ -604,6 +603,6 @@ def generar_desde_plan_editado(plan_id):
 
 if __name__ == "__main__":
     import os
-    (BASE_DIR / "cursos_subidos").mkdir(exist_ok=True)
+    (BASE_DIR / "Aulas a generar").mkdir(exist_ok=True)
     app.run(host="127.0.0.1", port=int(os.environ.get("PORT", 5000)),
             debug=False)

@@ -18,11 +18,24 @@ from maquetador.models import (CourseSpec, TipoItem, FuenteContenido,
 from maquetador.ingest.folder_scanner import InventarioCurso, normalizar
 from maquetador.ingest.docx_probe import perfilar_docx, PerfilDocx
 
-_PAT_NUM = re.compile(r"^(\d+)\.(\d+)\.?\s*(.*)")
+_PAT_NUM = re.compile(r"^(\d+)\.((?:\d+\.)*\d+)\.?\s*(.*)")
 
 
 def _similitud(a: str, b: str) -> float:
-    return SequenceMatcher(None, normalizar(a), normalizar(b)).ratio()
+    """Similitud tolerante al reordenamiento y a las repeticiones.
+
+    Los asesores escriben el título de la planilla y el del DOCX con las
+    mismas palabras en otro orden ("Tasa de interés nominal. Tasa de interés
+    real. Tasa de interés efectiva." vs "Tasa de interés nominal, real y
+    efectiva"): el ratio de secuencia se hunde y el conjunto de palabras no.
+    Se toma el mayor de los dos.
+    """
+    na, nb = normalizar(a), normalizar(b)
+    seq = SequenceMatcher(None, na, nb).ratio()
+    ta = {w for w in re.findall(r"\w+", na) if len(w) > 2}
+    tb = {w for w in re.findall(r"\w+", nb) if len(w) > 2}
+    jac = len(ta & tb) / len(ta | tb) if ta and tb else 0.0
+    return max(seq, jac)
 
 
 def _match_archivo(nombre_ref: str, candidatos: list) -> tuple:
@@ -176,6 +189,12 @@ def reconciliar(spec: CourseSpec, inv: InventarioCurso) -> CourseSpec:
                         fuente.confianza = min(
                             0.95, 0.7 + 0.25 * _similitud(titulo_planilla, cand[0].titulo))
                         item.detalle["titulo_docx"] = cand[0].texto_completo
+                    elif normalizar(titulo_planilla).startswith("conclusi") \
+                            and perfil.tiene_conclusion:
+                        # La planilla pide la conclusión como página propia y el
+                        # DOCX la trae como bloque de cierre (sin numerar).
+                        fuente.seccion = "conclusion"
+                        fuente.confianza = 0.85
                     else:
                         # 2) match por similitud de título contra secciones
                         #    numeradas Y candidatos sin numerar
@@ -246,6 +265,19 @@ def reconciliar(spec: CourseSpec, inv: InventarioCurso) -> CourseSpec:
                          if any(k in normalizar(p.stem) for k in _KW_APERTURA)), None)
                     if dedicado:
                         archivo, score = dedicado, max(score, 0.9)
+                    else:
+                        # Sin archivo que se llame "apertura/presentación": el
+                        # foro de apertura es de curso, así que un DOCX de foro
+                        # SIN número de módulo es mejor candidato que el del
+                        # módulo 1 (que es el foro obligatorio de ese módulo).
+                        sueltos = [p for n, p in inv.foros if n is None]
+                        if sueltos:
+                            suelto, sc = _match_archivo(ref, sueltos)
+                            archivo, score = suelto, max(sc, 0.7)
+                            item.issues.append(Issue(Severidad.AVISO,
+                                f"Foro de apertura asignado a '{archivo.name}' "
+                                "por ser el único DOCX de foro sin módulo. "
+                                "Verificar.", ctx_item))
                 # Si el título del foro (una frase con entidad, p.ej. "Akio
                 # Toyoda y la crisis Toyota") aparece dentro del nombre del DOCX,
                 # es el foro dedicado a ese tema aunque el parecido global no

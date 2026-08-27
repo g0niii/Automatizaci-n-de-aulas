@@ -72,9 +72,17 @@ def extraer_contenido(spec: CourseSpec) -> dict:
                 clave = f"item_{item.orden}"
                 if item.tipo == TipoItem.INTRO_MODULO:
                     if secciones.get("intro"):
-                        item.fuente.html = secciones["intro"]
+                        item.fuente.html = secciones["intro"].replace(
+                            "__MEDIA__/", f"__MEDIA__/m{modulo.numero}_")
                     if secciones.get("objetivos"):
-                        item.detalle["objetivos_html"] = secciones["objetivos"]
+                        item.detalle["objetivos_html"] = secciones["objetivos"].replace(
+                            "__MEDIA__/", f"__MEDIA__/m{modulo.numero}_")
+                elif item.fuente.seccion == "conclusion":
+                    # La planilla pide la conclusión como página propia:
+                    # se consume acá (el builder ya no la anexa a la última).
+                    if secciones.get("conclusion"):
+                        item.fuente.html = secciones["conclusion"].replace(
+                            "__MEDIA__/", f"__MEDIA__/m{modulo.numero}_")
                 elif clave in secciones:
                     html = secciones[clave]
                     # Renombrar las imágenes al espacio del módulo
@@ -86,10 +94,15 @@ def extraer_contenido(spec: CourseSpec) -> dict:
                         f"cortarla del DOCX ('{item.detalle.get('titulo_docx', '')[:50]}').",
                         item.titulo))
 
-            # Conclusión/referencias del módulo: disponibles aunque la
-            # planilla no las pida; quedan en el spec para decidir en revisión.
-            extras = {k: v for k, v in secciones.items()
-                      if k in ("conclusion", "referencias") and v}
+            # Conclusión/referencias/intro-objetivos del módulo: disponibles
+            # aunque la planilla no traiga una fila explícita para ellas (la
+            # Introducción del módulo es una página FIJA del aula base, no
+            # algo opcional que la planilla decida incluir) — quedan en el
+            # spec como respaldo por si ningún ítem ya las consumió.
+            extras = {k: v.replace("__MEDIA__/", f"__MEDIA__/m{modulo.numero}_")
+                      if k in ("intro", "objetivos") else v
+                      for k, v in secciones.items()
+                      if k in ("conclusion", "referencias", "intro", "objetivos") and v}
             if extras:
                 modulo_extras = getattr(modulo, "extras", {})
                 modulo_extras.update(extras)

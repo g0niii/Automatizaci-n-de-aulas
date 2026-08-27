@@ -8,13 +8,13 @@ from maquetador.models import CourseSpec, ModuloCurso, ItemCurso, TipoItem
 
 @pytest.fixture
 def casos_dir():
-    """Retorna la ruta del directorio casos/ con archivos XLSX de prueba."""
-    return Path(__file__).parent.parent / "casos"
+    """Retorna la ruta del directorio 'Aulas a generar/' con archivos XLSX de prueba."""
+    return Path(__file__).parent.parent / "Aulas a generar"
 
 
 @pytest.fixture
 def xlsx_files_reales(casos_dir):
-    """Retorna paths a archivos XLSX reales encontrados en casos/."""
+    """Retorna paths a archivos XLSX reales encontrados en 'Aulas a generar/'."""
     archivos = []
     for xlsx in casos_dir.rglob("Estructura general*.xlsx"):
         archivos.append(xlsx)

@@ -11,11 +11,11 @@ from maquetador.cli import analizar_curso
 from maquetador.extract.extractor import extraer_contenido
 from maquetador.build.imscc_builder import generar_imscc, TEMAS
 
-_CASO = (Path(__file__).parent.parent / "casos"
+_CASO = (Path(__file__).parent.parent / "Aulas a generar"
          / "Instrumentos del Sistema Financiero"
          / "Instrumentos del Sistema Financiero")
 
-_CASO_LIDERAZGO = (Path(__file__).parent.parent / "casos"
+_CASO_LIDERAZGO = (Path(__file__).parent.parent / "Aulas a generar"
                    / "Seminario I - Liderazgo en Accion"
                    / "Seminario I_ Liderazgo en Acción")
 
@@ -202,7 +202,7 @@ def test_lista_explicativa_no_se_convierte_en_flipcards(tmp_path):
     assert not malas, f"Lista explicativa convertida en flip cards por error: {malas}"
 
 
-_CASO_TALLER = (Path(__file__).parent.parent / "casos"
+_CASO_TALLER = (Path(__file__).parent.parent / "Aulas a generar"
                 / "Taller de Trabajo Final Integrador"
                 / "TALLER DE TRABAJO FINAL INTEGRADOR")
 
@@ -242,7 +242,7 @@ def test_modulo_clonado_renumera_assignment_y_posicion(tmp_path):
         f"Módulos con posición duplicada: {posiciones}"
 
 
-_CASO_DISCAP = (Path(__file__).parent.parent / "casos"
+_CASO_DISCAP = (Path(__file__).parent.parent / "Aulas a generar"
                 / "Problematica Social de la Discapacidad"
                 / "Problemática Social de la Discapacidad")
 

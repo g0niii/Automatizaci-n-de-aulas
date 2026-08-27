@@ -37,7 +37,7 @@ _CARPETAS_DESCARTAR = ("borrador", "borradores", "devoluciones",
                        "version anterior", "versiones anterior")
 
 _PAT_MODULO_NUM = re.compile(
-    r"(?:m[óo]dulo[\s_]*(\d+)|[-_\s]m[\s_]?(\d+)(?![a-z0-9])|"
+    r"(?:m[óo]dulo[\s_]*(\d+)|(?:^|[-_\s])m[\s_]?(\d+)(?![a-z0-9])|"
     r"\bm(\d+)(?![a-z0-9]))", re.I)
 
 # Romanos SOLO pegados a "módulo"/"modular" (así "Material multimedial modular
@@ -169,7 +169,9 @@ def escanear(carpeta: Path) -> InventarioCurso:
             elif "video" in nombre or "guion" in nombre or "audiovisual" in nombre \
                     or ("grabaci" in carpeta_padre and "biograf" not in nombre):
                 inv.guiones_video.append((num, path))
-            elif "biograf" in nombre or "presentacion" in nombre and "foro" not in nombre:
+            elif "biograf" in nombre or "curriculum" in nombre \
+                    or re.search(r"\bcv\b", nombre) \
+                    or "presentacion" in nombre and "foro" not in nombre:
                 inv.biografia.append(path)
             elif "hoja de ruta" in nombre or "hoja_de_ruta" in nombre:
                 inv.hoja_de_ruta.append(path)
@@ -228,9 +230,11 @@ def escanear(carpeta: Path) -> InventarioCurso:
             elif "diseno" in carpeta_padre or "diseño" in carpeta_padre:
                 inv.imagenes_diseno.append(path)
             elif "grabaci" in carpeta_padre or "maquetaci" in carpeta_padre \
-                    or "etapa 3" in carpeta_padre or "etapa 4" in carpeta_padre:
-                # La foto del docente viene con el material de grabación
-                # o en la etapa de maquetación.
+                    or "etapa 3" in carpeta_padre or "etapa 4" in carpeta_padre \
+                    or ("foto" in carpeta_padre and "docente" in carpeta_padre):
+                # La foto del docente viene con el material de grabación, en
+                # la etapa de maquetación, o en una carpeta dedicada "Foto (y
+                # CV) docente".
                 inv.fotos_docente.append(path)
             else:
                 inv.otros.append(path)

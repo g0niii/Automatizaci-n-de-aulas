@@ -23,7 +23,7 @@ mano: el dp-wrapper los estiliza) y estiliza figuras y sus epígrafes.
 import re
 import unicodedata
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString
 from maquetador.build.componentes_asesor import construir_flipcards, construir_panels
 
 ACCENT = "#1b1e31"
@@ -64,6 +64,20 @@ def cta_titulo(etiqueta: str, body_html: str, icono: str = "") -> str:
 </div>"""
 
 
+def cta_descubri_leyendo(body_html: str) -> str:
+    """CTA 'Descubrí leyendo' para una cita/mención del cuerpo del texto que
+    trae un link suelto (p.ej. '… (WEF, 2021): https://…'), distinto del CTA
+    Lectura (que sale de una tabla o de una frase-invitación explícita como
+    'te invito a leer'). Ícono fa-book-reader, markup idéntico al de las
+    aulas maquetadas a mano."""
+    return f"""<div class="dp-callout card dp-callout-position-default dp-callout-type-title-bar dp-callout-color-lg-tip dp-hover-shadow-b1" style="border-radius: 5px; border-color: {ACCENT};">
+<div class="card-body">
+<p class="card-title dp-heading-ignore" style="text-align: left; background-color: {ACCENT};"><span style="font-size: 10pt;"><em><strong style="border-color: {ACCENT};"><i class="dp-icon fas fa-book-reader dp-i-size-med" aria-hidden="true"><span class="dp-icon-content" style="display: none;">&nbsp;</span></i>&nbsp; </strong></em><strong style="border-color: {ACCENT};">Descubrí leyendo</strong></span></p>
+{body_html}
+</div>
+</div>"""
+
+
 def resaltado_profundizacion(titulo: str, body_html: str) -> str:
     """Reflexiona / Para pensar / Para saber más — amarillo con lámpara."""
     return f"""<div class="dp-callout dp-callout-placeholder card dp-callout-position-default dp-callout-type-info dp-callout-color-lg-warning">
@@ -75,7 +89,7 @@ def resaltado_profundizacion(titulo: str, body_html: str) -> str:
 </div>"""
 
 
-def resaltado_atencion(body_html: str, titulo: str = "Atención / Importante") -> str:
+def resaltado_atencion(body_html: str, titulo: str = "No pases de largo") -> str:
     return f"""<div class="dp-callout dp-callout-placeholder card dp-callout-position-default dp-callout-type-info dp-callout-color-danger">
 <div class="dp-callout-side-emphasis"><i class="dp-icon dp-default-icon fas fa-exclamation-triangle">​</i></div>
 <div class="card-body">
@@ -85,7 +99,7 @@ def resaltado_atencion(body_html: str, titulo: str = "Atención / Importante") -
 </div>"""
 
 
-def resaltado_ejemplo(body_html: str, titulo: str = "Ejemplo") -> str:
+def resaltado_ejemplo(body_html: str, titulo: str = "Ejemplo que iluminan") -> str:
     return f"""<div class="dp-callout dp-callout-placeholder card dp-callout-position-default dp-callout-color-dp-primary dp-callout-type-info">
 <div class="dp-callout-side-emphasis"><i class="fas fa-copy dp-default-icon">​</i></div>
 <div class="card-body">
@@ -109,43 +123,52 @@ def resaltado_simple(body_html: str) -> str:
 # ---------------------------------------------------------------------- #
 
 def _clasificar_recuadro(etiqueta: str, texto_completo: str) -> tuple:
-    """Devuelve (tipo, titulo) para una tabla-recuadro según su etiqueta."""
+    """Devuelve (tipo, titulo) para una tabla-recuadro según su etiqueta.
+
+    Busca la palabra clave EN CUALQUIER PARTE de la etiqueta, no solo al
+    principio: los asesores no siempre escriben la etiqueta "pelada"
+    ("Video"), a veces la envuelven en una frase propia ("Auriculares on
+    (Video)", "Una pausa para reflexionar") — con solo `startswith` esas
+    cajas caían al recuadro simple, sin ícono ni título."""
     n = _norm(etiqueta)
     nt = _norm(texto_completo)
 
-    if n.startswith("foro"):
+    if any(k in n for k in ("foro", "debate", "discusion")):
         # Llamado a participar del foro: el título completo va en la barra.
         return "foro", etiqueta
-    if n.startswith("actividad"):
+    if "mural" in n:
+        return "mural", "Voces que construyen"
+    if "recursos" in n or "caja de herramientas" in n:
+        return "recursos", "Caja de herramientas para usar"
+    if "vengo hasta" in n or "autoevaluacion" in n:
+        # CTA oficial de autochequeo: el asesor a veces ya usa el título
+        # oficial en la etiqueta ("¿Cómo vengo hasta acá? (Actividad /
+        # Autoevaluación)") — se limpia el paréntesis de tipo, que es para
+        # nosotros, no para el estudiante.
+        return "actividad_check", "¿Cómo vengo hasta acá?"
+    if "actividad" in n:
         # Actividad de página (rápida/sugerida): recuadro CTA Actividad.
         # (Las obligatorias/integradoras ya fueron extraídas al assignment.)
         return "actividad_cta", etiqueta
 
-    if n.startswith(("reflexion", "reflexiona", "para reflexionar",
-                     "para pensar", "para saber mas")):
-        # El equipo estandariza la etiqueta del docente ("Reflexiona",
-        # "Reflexión") al título oficial del snippet.
-        if n.startswith("para pensar"):
-            titulo = "Para pensar"
-        elif n.startswith("para saber"):
-            titulo = "Para saber más"
-        else:
-            titulo = "Para reflexionar"
-        return "profundizacion", titulo
-    if n.startswith("lectura") or "te invito a leer" in nt \
+    if any(k in n for k in ("reflexion", "pausa")):
+        # El equipo estandariza CUALQUIER etiqueta del docente ("Reflexiona",
+        # "Para pensar") al único título oficial del snippet UCC — no hay
+        # variantes "Para pensar"/"Para saber más", ver catálogo de snippets.
+        return "profundizacion", "Una pausa para reflexionar"
+    if "lectura" in n or "te invito a leer" in nt \
             or "invitamos a leer" in nt or "te invito a la lectura" in nt:
-        return "lectura", "Lectura"
-    if n.startswith("video") or "visualizar el video" in nt[:200]:
-        return "video", "Video"
-    if n.startswith("podcast") or n.startswith("audio"):
-        return "podcast", "Podcast"
-    if n.startswith("imagen"):
-        return "imagen", "Imagen"
-    if n.startswith(("atencion", "importante")):
-        return "atencion", "Atención / Importante"
-    if n.startswith(("ejemplo", "por ejemplo")):
-        titulo = etiqueta if len(etiqueta) <= 35 else "Ejemplo"
-        return "ejemplo", titulo
+        return "lectura", "Descubrí leyendo"
+    if "video" in n or "visualizar el video" in nt[:200]:
+        return "video", "Auriculares on"
+    if "podcast" in n or "audio" in n:
+        return "podcast", "Auriculares on"
+    if "imagen" in n:
+        return "imagen", "Miralo con lupa"
+    if "atencion" in n or "importante" in n:
+        return "atencion", "No pases de largo"
+    if "ejemplo" in n:
+        return "ejemplo", "Ejemplo que iluminan"
     return "simple", ""
 
 
@@ -197,13 +220,22 @@ def _tabla_a_recuadro(tabla) -> str:
     if len(celdas) == 1:
         quitar = (tipo != "simple") or es_instr
     else:
-        quitar = len(etiqueta) <= 35 or tipo == "foro" or es_instr
+        # tipo != "simple" = ya reconocimos la etiqueta como un tipo de
+        # recuadro (aunque sea larga, p.ej. "¿Cómo vengo hasta acá? (Actividad
+        # sugerida)", 44 caracteres) → siempre se saca del cuerpo, si no queda
+        # duplicada como texto suelto debajo de la caja ya armada.
+        quitar = tipo != "simple" or len(etiqueta) <= 35 or es_instr
     body = _html_lineas(lineas[1:] if quitar and len(lineas) > 1 else lineas)
     if not body:
         body = _html_lineas(lineas)
 
     if tipo == "foro":
         return cta_titulo(titulo, body, ICONOS["foro"])
+    if tipo == "actividad_check":
+        # CTA - Actividad/Autoevaluación del catálogo oficial ("¿Cómo vengo
+        # hasta acá?"): mismo estilo title-bar que Lectura/Video, ícono de
+        # consigna.
+        return cta_titulo(titulo, body, ICONOS["consigna"])
     if tipo == "actividad_cta":
         # CTA - Actividad del catálogo oficial (dp-primary, barra de título)
         return f"""<div class="dp-callout dp-callout-placeholder card dp-callout-position-default dp-callout-color-dp-primary dp-callout-type-title-bar">
@@ -212,14 +244,21 @@ def _tabla_a_recuadro(tabla) -> str:
 {body}
 </div>
 </div>"""
+    if tipo == "recursos":
+        return f"""<div class="dp-callout card dp-callout-position-default dp-callout-type-title-bar dp-callout-color-lg-tip dp-hover-shadow-b1" style="border-radius: 5px; border-color: {ACCENT};">
+<div class="card-body">
+<p class="card-title dp-heading-ignore" style="text-align: left; background-color: {ACCENT};"><span style="font-size: 10pt;"><em><strong style="border-color: {ACCENT};"><i class="dp-icon fas fa-layer-group dp-i-size-med" aria-hidden="true"><span class="dp-icon-content" style="display: none;">&nbsp;</span></i>&nbsp; </strong></em><strong style="border-color: {ACCENT};">{titulo}</strong></span></p>
+{body}
+</div>
+</div>"""
     if tipo == "profundizacion":
         return resaltado_profundizacion(titulo, body)
-    if tipo in ("lectura", "video", "podcast", "imagen"):
+    if tipo in ("lectura", "video", "podcast", "imagen", "mural"):
         return cta_titulo(titulo, body, ICONOS.get(tipo, ""))
     if tipo == "atencion":
-        return resaltado_atencion(body)
+        return resaltado_atencion(body, titulo)
     if tipo == "ejemplo":
-        return resaltado_ejemplo(body, titulo or "Ejemplo")
+        return resaltado_ejemplo(body, titulo)
     return resaltado_simple(body)
 
 
@@ -227,7 +266,13 @@ def _tabla_a_recuadro(tabla) -> str:
 #  Figuras de DISEÑO: reemplazan a las imágenes embebidas del DOCX
 # ---------------------------------------------------------------------- #
 
-_PAT_FIG_CAPTION = re.compile(r"^(figura|esquema|tabla)\s*(\d+)?\s*[\.:]", re.I)
+# Separador tras "Figura N" tolerante a cualquier convención del asesor:
+# punto, dos puntos, guión/raya (con o sin espacio), o nada (el marcador
+# solo, sin descripción en el mismo párrafo). NO alcanza con "no sea letra":
+# un espacio tampoco lo es, y agarraría cualquier oración que arranque con
+# "Tabla "/"Figura " como palabra suelta ("Tabla de contenidos…").
+_PAT_FIG_CAPTION = re.compile(
+    r"^(figura|esquema|tabla)\s*(\d+)?\s*(?:[\.:]|[-–—]|$)", re.I)
 # Nombres reales observados: "M_1 Fig 4.jpg", "M1 Figura 2.jpg",
 # "Figura 4 M3.png", "Tabla 1 M2.jpg", "Esquema.jpg"
 _PAT_FIG_FILE = re.compile(
@@ -324,6 +369,26 @@ def reemplazar_figuras_diseno(html: str, modulo: int, indice: dict,
                 f'src="__DISENO__/{path.name}" alt="{texto[:120]}" '
                 f'loading="lazy"></p>', "html.parser")
             vecino.replace_with(nueva)
+            usadas.add(path)
+        else:
+            # Sin imagen ni tabla embebida al lado que reemplazar (el epígrafe
+            # es un marcador propio: "Figura N" sola, o "Figura N. — desc" con
+            # cualquier separador): se inserta la figura de diseño en el lugar
+            # del marcador, conservando el texto del epígrafe como pie de foto
+            # cuando el párrafo traía descripción además del número.
+            resto = texto[m.end():].strip(" .:–—-")
+            img_html = (
+                f'<p style="text-align: center;"><img class="dp-popup-image '
+                f'dp-image-rounded-10 dp-image-padded dp-image-bordered '
+                f'dp-image-shadow" style="width: 700px; height: auto;" '
+                f'src="__DISENO__/{path.name}" alt="{texto[:120]}" '
+                f'loading="lazy"></p>')
+            if resto:
+                img_html += (
+                    '<p class="dp-heading-ignore" style="text-align: center;">'
+                    f'<span style="font-size: 10pt;"><strong>{texto}</strong>'
+                    '</span></p>')
+            p.replace_with(BeautifulSoup(img_html, "html.parser"))
             usadas.add(path)
     return str(soup)
 
@@ -493,11 +558,11 @@ def _procesar_cues_parrafo(soup):
         grupo = [p] + _absorber_siguientes(p)
         body = "\n".join(str(x) for x in grupo)
         if tipo == "lectura":
-            nuevo = cta_titulo("Lectura", body, ICONOS["lectura"])
+            nuevo = cta_titulo("Descubrí leyendo", body, ICONOS["lectura"])
         elif tipo == "video":
-            nuevo = cta_titulo("Video", body, ICONOS["video"])
+            nuevo = cta_titulo("Auriculares on", body, ICONOS["video"])
         elif tipo == "imagen":
-            nuevo = cta_titulo("Imagen", body, ICONOS["imagen"])
+            nuevo = cta_titulo("Miralo con lupa", body, ICONOS["imagen"])
         else:
             nuevo = resaltado_atencion(body)
         p.replace_with(BeautifulSoup(nuevo, "html.parser"))
@@ -525,12 +590,46 @@ def _procesar_cues_parrafo(soup):
         cita.decompose()
 
 
+def _procesar_citas_con_link(soup):
+    """Párrafo con una mención/cita + un link suelto (autolinkeado, texto del
+    link = la URL) → recuadro 'Descubrí leyendo', reemplazando la URL cruda
+    por 'Acceso al documento'. Corre DESPUÉS de _autolink_urls.
+
+    No toca: epígrafes/notas de figura (_NO_H3: ya llevan su propia
+    atribución, p.ej. una imagen hecha con IA — no son una invitación a leer
+    algo aparte) ni párrafos que YA son solo el link (esos quedan con el
+    estilo de bibliografía más liviano, ver más abajo en procesar_contenido)."""
+    for p in list(soup.find_all("p")):
+        if p.parent is None or p.find_parent(class_="dp-callout"):
+            continue
+        if p.get("data-keep-plain"):
+            continue
+        texto = p.get_text(" ", strip=True)
+        if not texto or _NO_H3.match(texto):
+            continue
+        link = next((a for a in p.find_all("a")
+                     if a.get("href", "").startswith("http")
+                     and a.get_text(strip=True) == a.get("href", "")), None)
+        if link is None:
+            continue
+        hijos = [x for x in p.children
+                 if getattr(x, "name", None) or str(x).strip()]
+        if len(hijos) == 1:
+            continue   # el párrafo ya es solo el link: no es este caso
+        link.extract()   # saca el link (a cualquier nivel de anidamiento);
+                          # lo que queda en p es la intro tal cual
+        intro = "".join(str(x) for x in p.children).strip()
+        link.string = "Acceso al documento"
+        body = (f"<p><span>{intro}</span></p>" if intro else "") + f"<p>{link}</p>"
+        p.replace_with(BeautifulSoup(cta_descubri_leyendo(body), "html.parser"))
+
+
 # ---------------------------------------------------------------------- #
 #  Procesador principal
 # ---------------------------------------------------------------------- #
 
-_PAT_CAPTION = re.compile(r"^(figura|tabla|esquema)\s*\d*[\.:]", re.I)
-_NO_H3 = re.compile(r"^(figura|tabla|esquema|nota[\.:]|fuente[\.:])", re.I)
+_PAT_CAPTION = re.compile(r"^(figura|tabla|esquema)\s*\d*\s*(?:[\.:]|[-–—]|$)", re.I)
+_NO_H3 = re.compile(r"^(figura|tabla|esquema|nota\s*[\.:]|fuente\s*[\.:])", re.I)
 _PAT_URL = re.compile(r"(https?://[^\s<>\"')\]]+)")
 
 
@@ -615,25 +714,35 @@ def _tabla_a_flipcards(tabla):
 
 def _tabla_a_acordeon(tabla):
     """Tabla cuya etiqueta es 'Expander/Expandible/Acordeón' → acordeón
-    (dp-panels-wrapper). Cada párrafo con título en negrita es un panel:
-    el <strong> es el encabezado y el resto, el contenido."""
+    (dp-panels-wrapper). Cada párrafo con título en negrita abre un panel: el
+    <strong> es el encabezado, y el contenido son el resto del párrafo del
+    encabezado MÁS los párrafos siguientes hasta el próximo encabezado en
+    negrita (igual que _tabla_a_flipcards) — el DOCX trae el cuerpo de cada
+    ítem en párrafos aparte, no en el mismo párrafo que el título."""
     cell = tabla.find(["td", "th"])
     if cell is None:
         return None
     parrafos = [p for p in cell.find_all("p") if p.get_text(strip=True)]
     # El primer párrafo es la etiqueta ('Expander'); si la etiqueta y el primer
     # ítem comparten párrafo, igual se procesan los que tienen <strong>.
-    grupos = []
-    for p in parrafos:
+    grupos, i, n = [], 0, len(parrafos)
+    while i < n:
+        p = parrafos[i]
         strong = p.find("strong")
         if not strong:
+            i += 1
             continue
         heading = strong.get_text(" ", strip=True).strip(" .:–-")
         strong.extract()
-        cuerpo = "".join(str(x) for x in p.children).strip()
-        cuerpo = re.sub(r"^[\s.:–-]+", "", cuerpo)
+        resto = re.sub(r"^[\s.:–-]+", "", "".join(str(x) for x in p.children).strip())
+        piezas = [f"<p>{resto}</p>"] if resto else []
+        j = i + 1
+        while j < n and not parrafos[j].find("strong"):
+            piezas.append(str(parrafos[j]))
+            j += 1
         if heading:
-            grupos.append((heading, cuerpo or "&nbsp;"))
+            grupos.append((heading, "".join(piezas) or "&nbsp;"))
+        i = j
     if len(grupos) < 2:        # un acordeón necesita al menos 2 paneles
         return None
     return construir_panels(grupos)
@@ -712,8 +821,26 @@ def procesar_contenido(html: str) -> str:
     # 1.6 Párrafos con frases-señal → recuadros (Lectura / Video / Atención)
     _procesar_cues_parrafo(soup)
 
-    # 2. Subtítulos en negrita → <h3> (el dp-wrapper los estiliza)
+    # 1.7 Encabezados reales de Word (estilo "Título 1"/"Título 2") dentro
+    # del cuerpo → <h3>. El título de la página en Canvas ya cumple el rol
+    # de encabezado principal; cualquier subtítulo numerado interno es
+    # siempre h3, tanto si el asesor lo marcó en negrita (ver paso 2) como
+    # si usó el estilo de título de Word (mammoth lo vuelca tal cual a
+    # <h1>/<h2>, sin bajarlo de nivel).
+    for h in soup.find_all(["h1", "h2"]):
+        for strong in h.find_all(["strong", "b"]):
+            strong.unwrap()
+        h.name = "h3"
+
+    # 2. Subtítulos en negrita → <h3> (el dp-wrapper los estiliza). Solo
+    # texto SUELTO del flujo principal — no el cuerpo de un componente que
+    # otro paso ya armó (recuadro/acordeón/flip-card): ahí "en negrita y
+    # corto" puede ser contenido legítimo (p.ej. el placeholder de Genially),
+    # no un subtítulo, y convertirlo duplicaba el título del recuadro.
     for p in soup.find_all("p"):
+        if p.find_parent(class_=("dp-callout", "dp-panels-wrapper",
+                                  "dp-flip-card-deck")):
+            continue
         strongs = p.find_all("strong")
         if not strongs:
             continue
@@ -760,14 +887,36 @@ def procesar_contenido(html: str) -> str:
             p["class"] = "text-break"
             p["style"] = "margin: 0; padding: 0;"
 
+    # 3.6 Cita/mención + link suelto (no epígrafe, no párrafo-solo-link) →
+    #     CTA 'Descubrí leyendo' con 'Acceso al documento' en vez de la URL.
+    _procesar_citas_con_link(soup)
+
     # 4. Epígrafes (Figura N. / Nota.) → centrados, tamaño 10pt
     for p in soup.find_all("p"):
         texto = p.get_text(" ", strip=True)
-        if _PAT_CAPTION.match(texto) or texto.startswith("Nota."):
+        if _PAT_CAPTION.match(texto) or re.match(r"^nota\s*[\.:]", texto, re.I):
             p["class"] = "dp-heading-ignore"
             p["style"] = "text-align: center;"
             inner = f'<span style="font-size: 10pt;"><strong>{texto}</strong></span>'
             p.clear()
             p.append(BeautifulSoup(inner, "html.parser"))
+
+    # 5. Espaciador antes de subtítulos sueltos (h3 sin clase — de los pasos
+    # 1.7 y 2, no los card-title/dp-panel-heading de componentes): el equipo
+    # SIEMPRE separa un subtítulo del párrafo anterior con <p>&nbsp;</p>,
+    # salvo que sea el primer elemento de la página.
+    for h3 in soup.find_all("h3", class_=lambda c: not c):
+        if h3.parent is not soup:
+            continue
+        anterior = h3.previous_sibling
+        while isinstance(anterior, NavigableString) and not anterior.strip():
+            anterior = anterior.previous_sibling
+        if anterior is None:
+            continue
+        ya_espaciado = (getattr(anterior, "name", None) == "p"
+                        and anterior.get_text(strip=True) in ("", "\xa0")
+                        and not anterior.find("img"))
+        if not ya_espaciado:
+            h3.insert_before(BeautifulSoup("<p>&nbsp;</p>", "html.parser"))
 
     return str(soup)
