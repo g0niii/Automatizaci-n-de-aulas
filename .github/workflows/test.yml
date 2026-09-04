@@ -14,17 +14,17 @@ jobs:
         python-version: ["3.11"]
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         fetch-depth: 0
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v7
       with:
         python-version: ${{ matrix.python-version }}
 
     - name: Cache Python dependencies
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -41,9 +41,15 @@ jobs:
       run: |
         pytest tests/ -v --cov=maquetador --cov-report=term-missing --cov-report=html --cov-report=xml
 
+    # Requiere el secret CODECOV_TOKEN en el repo (Settings > Secrets and
+    # variables > Actions). Sin él, Codecov rechaza la subida con
+    # "Token required - not valid tokenless upload".
+    # fail_ci_if_error queda en false a propósito: una caída de codecov.io
+    # no debe poner en rojo un build cuyos tests pasaron.
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v5
+      uses: codecov/codecov-action@v7
       with:
+        token: ${{ secrets.CODECOV_TOKEN }}
         files: ./coverage.xml
         flags: unittests
         name: codecov-umbrella
@@ -51,7 +57,7 @@ jobs:
         verbose: true
 
     - name: Store coverage HTML report
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       if: always()
       with:
         name: coverage-report-${{ matrix.python-version }}
