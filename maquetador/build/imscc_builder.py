@@ -105,17 +105,23 @@ def _buscar_archivo_wiki(working: Path, patron: str) -> Path:
 
 
 def _copytree_longpath(src: Path, dst: Path) -> None:
-    r"""shutil.copytree con soporte de rutas largas en Windows (prefijo \\?\)."""
+    r"""shutil.copytree con soporte de rutas largas en Windows (prefijo \\?\).
+
+    El proyecto se usa en Windows, pero el prefijo se aplica solo si el SO es
+    ese: aplicado a una ruta POSIX queda '\\?\/home/...', que no existe, y
+    entonces os.walk no itera y la copia sale VACÍA sin lanzar ningún error —
+    el fallo recién aparece más tarde, al leer el imsmanifest. Fallar en
+    silencio es peor que no soportarlo. (Mismo criterio que _rmtree_longpath.)
+    """
     import os
     src_s = str(src.resolve())
     dst_s = str(dst.resolve())
-    lp_src = "\\\\?\\" + src_s if not src_s.startswith("\\\\") else src_s
-    lp_dst = "\\\\?\\" + dst_s if not dst_s.startswith("\\\\") else dst_s
-    import ctypes
-    kernel32 = ctypes.windll.kernel32 if hasattr(ctypes, "windll") else None
+    es_windows = os.name == "nt"
+    lp_src = "\\\\?\\" + src_s if es_windows and not src_s.startswith("\\\\") else src_s
+    lp_dst = "\\\\?\\" + dst_s if es_windows and not dst_s.startswith("\\\\") else dst_s
 
     for root, dirs, files in os.walk(lp_src):
-        rel = root[len(lp_src):].lstrip("\\")
+        rel = root[len(lp_src):].lstrip("\\/")
         dest_dir = os.path.join(lp_dst, rel) if rel else lp_dst
         os.makedirs(dest_dir, exist_ok=True)
         for f in files:

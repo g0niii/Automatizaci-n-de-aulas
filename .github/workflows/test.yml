@@ -8,12 +8,21 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # Windows a propósito: el maquetador se usa exclusivamente en Windows, y
+    # sus problemas históricos son de ese entorno (rutas que superan MAX_PATH
+    # en los nombres de página del aula base). Un runner Linux daría verde sin
+    # ejercitar nada de eso.
+    runs-on: windows-latest
     strategy:
       matrix:
         python-version: ["3.11"]
 
     steps:
+    # El aula base tiene nombres de archivo que superan los 260 caracteres:
+    # sin esto, el propio checkout falla con "Filename too long".
+    - name: Habilitar rutas largas en Git
+      run: git config --global core.longpaths true
+
     - uses: actions/checkout@v7
       with:
         fetch-depth: 0
