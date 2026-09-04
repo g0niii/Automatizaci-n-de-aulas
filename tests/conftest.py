@@ -4,21 +4,61 @@
 import pytest
 from pathlib import Path
 from maquetador.models import CourseSpec, ModuloCurso, ItemCurso, TipoItem
+from tests.fixtures.curso_sintetico import construir as construir_curso_sintetico
+
+
+@pytest.fixture(scope="session")
+def curso_sintetico(tmp_path_factory):
+    """Curso de prueba generado por código, equivalente a una entrega de
+    asesoría. Ver tests/fixtures/curso_sintetico.py."""
+    destino = tmp_path_factory.mktemp("aulas_a_generar")
+    construir_curso_sintetico(destino)
+    return destino
+
+
+@pytest.fixture(scope="session")
+def paquete_sintetico(curso_sintetico, tmp_path_factory):
+    """Genera un .imscc de verdad a partir del curso sintético.
+
+    Es lo que hace que el generador —`imscc_builder.py`, el corazón del
+    proyecto— se ejercite en cada corrida. Sin esto solo se ejecutaba en la
+    máquina de quien tuviera el material de asesoría, nunca en CI.
+    """
+    from maquetador.cli import analizar_curso
+    from maquetador.extract.extractor import extraer_contenido
+    from maquetador.build.imscc_builder import generar_imscc
+
+    curso = next(p for p in curso_sintetico.iterdir() if p.is_dir())
+    spec = analizar_curso(curso, "posgrado")
+    media = extraer_contenido(spec)
+    return generar_imscc(spec, media, tmp_path_factory.mktemp("salida_imscc"))
+
+
+@pytest.fixture(scope="session")
+def paquetes_imscc(request):
+    """Paquetes .imscc a validar.
+
+    Si el equipo ya generó paquetes en output/ se validan esos (son los
+    reales, con material de cátedra); si no hay ninguno, se genera uno a
+    partir del curso sintético para no dejar la validación sin correr.
+    """
+    reales = sorted((Path(__file__).parent.parent / "output").glob("*.imscc"))
+    return reales or [request.getfixturevalue("paquete_sintetico")]
 
 
 @pytest.fixture
-def casos_dir():
-    """Retorna la ruta del directorio 'Aulas a generar/' con archivos XLSX de prueba.
+def casos_dir(curso_sintetico):
+    """Directorio con carpetas de curso para escanear.
 
-    Esa carpeta trae material real de asesoría: es local y no se versiona
-    (ver .gitignore). Sin ella no hay nada que escanear, así que los tests
-    que la piden se saltean en vez de romper (mismo criterio que
-    test_docx_probe.py y test_build_actividades.py).
+    Prioriza el material real de asesoría ('Aulas a generar/'), que es local y
+    no se versiona por peso y por tratarse de contenido de cátedra. Cuando no
+    está —CI, o un clon limpio— cae al curso sintético, para que la suite
+    corra igual en todos lados en vez de saltearse media docena de módulos.
     """
-    carpeta = Path(__file__).parent.parent / "Aulas a generar"
-    if not carpeta.is_dir():
-        pytest.skip("No existe 'Aulas a generar/' (material local, no versionado)")
-    return carpeta
+    real = Path(__file__).parent.parent / "Aulas a generar"
+    if real.is_dir() and any(p.is_dir() for p in real.iterdir()):
+        return real
+    return curso_sintetico
 
 
 @pytest.fixture

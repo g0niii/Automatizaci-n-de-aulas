@@ -125,10 +125,21 @@ piso definido en el script. Corre igual en local y en CI, sin depender de
 ningún servicio externo. El piso es un trinquete: se sube a medida que la
 cobertura mejora, nunca se baja.
 
-> Los tests que necesitan material de asesoría (`Aulas a generar/`) o paquetes
-> ya generados (`output/`) se saltean solos cuando ese contenido no está —
-> es local y no se versiona. Por eso en CI la cobertura del generador es baja:
-> ver la nota sobre el curso sintético de prueba.
+### Curso sintético de prueba
+
+El material real de asesoría (`Aulas a generar/`) y los paquetes generados
+(`output/`) no se versionan. Para que la suite no dependa de tenerlos,
+`tests/fixtures/curso_sintetico.py` **construye por código** una entrega
+mínima pero completa —planilla, DOCX de dos módulos, foro, actividad, guion,
+figuras, foto del docente y material descartable— y de ahí se genera un
+`.imscc` real en cada corrida.
+
+Se genera en vez de commitearse porque un `.docx` es un ZIP: como binario
+sería un blob imposible de revisar en un diff o de ajustar sin abrir Word.
+
+Los tests usan el material real cuando está y el sintético cuando no, así que
+el flujo local no cambia. Quedan salteados solo los tests atados a cursos
+reales concretos, que no tiene sentido sintetizar.
 
 ## Notas
 

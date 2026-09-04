@@ -30,7 +30,9 @@ if hasattr(sys.stdout, "buffer"):
 
 # Piso actual. Subirlo a medida que la cobertura mejore: es un trinquete, no
 # una meta — solo debería moverse hacia arriba.
-PISO_POR_DEFECTO = 30.0
+#   30% → 55%  al incorporar el curso sintético, que hizo que el generador
+#              (imscc_builder) pasara de 8,8% a ~64%.
+PISO_POR_DEFECTO = 55.0
 
 
 def leer_cobertura(path: Path) -> list:
