@@ -8,8 +8,17 @@ from maquetador.models import CourseSpec, ModuloCurso, ItemCurso, TipoItem
 
 @pytest.fixture
 def casos_dir():
-    """Retorna la ruta del directorio 'Aulas a generar/' con archivos XLSX de prueba."""
-    return Path(__file__).parent.parent / "Aulas a generar"
+    """Retorna la ruta del directorio 'Aulas a generar/' con archivos XLSX de prueba.
+
+    Esa carpeta trae material real de asesoría: es local y no se versiona
+    (ver .gitignore). Sin ella no hay nada que escanear, así que los tests
+    que la piden se saltean en vez de romper (mismo criterio que
+    test_docx_probe.py y test_build_actividades.py).
+    """
+    carpeta = Path(__file__).parent.parent / "Aulas a generar"
+    if not carpeta.is_dir():
+        pytest.skip("No existe 'Aulas a generar/' (material local, no versionado)")
+    return carpeta
 
 
 @pytest.fixture
