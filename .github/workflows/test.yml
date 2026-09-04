@@ -41,20 +41,12 @@ jobs:
       run: |
         pytest tests/ -v --cov=maquetador --cov-report=term-missing --cov-report=html --cov-report=xml
 
-    # Requiere el secret CODECOV_TOKEN en el repo (Settings > Secrets and
-    # variables > Actions). Sin él, Codecov rechaza la subida con
-    # "Token required - not valid tokenless upload".
-    # fail_ci_if_error queda en false a propósito: una caída de codecov.io
-    # no debe poner en rojo un build cuyos tests pasaron.
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v7
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        files: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: false
-        verbose: true
+    # Informe propio: sin servicios externos, sin cuentas ni tokens.
+    # Rankea los módulos por líneas sin cubrir (dónde está el riesgo real,
+    # no el porcentaje plano) y corta el build si la cobertura baja del piso.
+    - name: Informe de cobertura
+      if: always()
+      run: python scripts/cobertura.py
 
     - name: Store coverage HTML report
       uses: actions/upload-artifact@v7

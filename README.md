@@ -112,6 +112,24 @@ rompe la importación en Canvas) y compara la fidelidad de las páginas contra l
 aulas hechas a mano. Suite de 6 cursos de referencia (~88% de páginas idénticas;
 el resto son decisiones editoriales que se resuelven en revisión).
 
+### Tests y cobertura
+
+```bash
+pytest tests/ --cov=maquetador --cov-report=xml   # correr la suite
+python scripts/cobertura.py                        # informe de cobertura
+```
+
+`scripts/cobertura.py` rankea los módulos por **líneas sin cubrir** (dónde está
+el riesgo real, no el porcentaje plano) y corta si la cobertura total baja del
+piso definido en el script. Corre igual en local y en CI, sin depender de
+ningún servicio externo. El piso es un trinquete: se sube a medida que la
+cobertura mejora, nunca se baja.
+
+> Los tests que necesitan material de asesoría (`Aulas a generar/`) o paquetes
+> ya generados (`output/`) se saltean solos cuando ese contenido no está —
+> es local y no se versiona. Por eso en CI la cobertura del generador es baja:
+> ver la nota sobre el curso sintético de prueba.
+
 ## Notas
 
 - La elección del aula base es **siempre manual** (decisión del maquetador).
